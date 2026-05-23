@@ -1,0 +1,369 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Kaga's Market</title>
+  <link rel="stylesheet" href="styles.css" />
+</head>
+<body>
+  <header class="site-header">
+    <div class="brand">
+      <h1 data-i18n="brand-title">Kaga's Market</h1>
+      <p data-i18n="brand-subtitle">Marketplace + Delivery Platform</p>
+    </div>
+    <nav class="nav-links">
+      <button id="show-home-btn" class="nav-button active">🏠 <span data-i18n="nav-home">Home</span></button>
+      <button id="show-shop-btn" class="nav-button">🛍️ <span data-i18n="nav-shop">Shop</span></button>
+      <button id="show-account-btn" class="nav-button">👤 <span data-i18n="nav-account">Account</span></button>
+      <button id="show-messenger-btn" class="nav-button">💬 <span data-i18n="nav-messenger">Messenger</span></button>
+    </nav>
+    <div class="header-search-wrapper">
+      <div class="header-search">
+        <svg class="search-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <circle cx="11" cy="11" r="8"></circle>
+          <path d="m21 21-4.35-4.35"></path>
+        </svg>
+        <input id="global-search-input" type="search" placeholder="Search products, shops, orders..." data-placeholder-i18n="search-placeholder" />
+        <button id="search-clear-btn" class="search-clear-btn hidden" aria-label="Clear search">
+          <svg viewBox="0 0 24 24" fill="currentColor">
+            <path d="M19 6.41L17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"></path>
+          </svg>
+        </button>
+      </div>
+      <div id="search-results" class="search-results hidden">
+        <div id="search-results-content"></div>
+      </div>
+    </div>
+    <div class="header-menu">
+      <button id="show-cart-btn" class="nav-button mini-icon">🛒 <span id="cart-count">0</span></button>
+      <select id="language-switcher" class="language-switcher">
+        <option value="en" data-i18n="lang-english">English</option>
+        <option value="sw" data-i18n="lang-kiswahili">Kiswahili</option>
+      </select>
+      <button id="account-menu-btn" class="account-btn" data-i18n="header-account">👤 Account</button>
+      <div id="account-dropdown" class="account-dropdown hidden">
+        <button id="profile-link" class="dropdown-item" data-i18n="menu-profile">My Profile</button>
+        <button id="orders-link" class="dropdown-item" data-i18n="menu-orders">Order History</button>
+        <button id="settings-link" class="dropdown-item" data-i18n="menu-settings">Settings</button>
+        <hr class="dropdown-divider" />
+        <button id="logout-link" class="dropdown-item" data-i18n="menu-logout">Logout</button>
+      </div>
+    </div>
+  </header>
+
+  <main>
+    <section class="hero">
+      <div>
+        <h2 data-i18n="hero-title">Your Local Marketplace & Delivery Platform</h2>
+        <p data-i18n="hero-subtitle">Shop from trusted local businesses and get fast delivery right to your door</p>
+      </div>
+    </section>
+
+    <section class="panel" id="home-panel">
+      <div class="panel-header">
+        <div>
+          <h2 data-i18n="home-title">Welcome to Kaga's Market</h2>
+          <p data-i18n="home-subtitle">Fast access to local shops, products, orders, and messages.</p>
+        </div>
+        <div class="home-actions">
+          <button class="primary-button" onclick="switchView('shop')" data-i18n="home-shop-cta">Browse the Shop</button>
+          <button class="secondary-button" onclick="switchView('messenger')" data-i18n="home-messenger-cta">Open Messenger</button>
+        </div>
+      </div>
+      <div class="home-grid">
+        <div class="home-card">
+          <h3 data-i18n="home-card-products">Top products</h3>
+          <p data-i18n="home-card-products-desc">Discover curated local items and trending deals.</p>
+        </div>
+        <div class="home-card">
+          <h3 data-i18n="home-card-businesses">Trusted shops</h3>
+          <p data-i18n="home-card-businesses-desc">Shop from registered businesses and local vendors.</p>
+        </div>
+        <div class="home-card">
+          <h3 data-i18n="home-card-account">Your account</h3>
+          <p data-i18n="home-card-account-desc">Manage your details, settings, and preferences.</p>
+        </div>
+        <div class="home-card">
+          <h3 data-i18n="home-card-messenger">Orders & alerts</h3>
+          <p data-i18n="home-card-messenger-desc">Track orders and get notified right away.</p>
+        </div>
+      </div>
+      <div class="panel-header">
+        <h3 data-i18n="home-featured">Featured products</h3>
+      </div>
+      <div id="home-featured-list" class="card-grid"></div>
+    </section>
+
+    <section class="panel hidden" id="shop-panel">
+      <div class="panel-header">
+        <div>
+          <h2 data-i18n="shop-title">Shop</h2>
+          <p data-i18n="shop-subtitle">One page for products, businesses, and local shops.</p>
+        </div>
+      </div>
+
+      <div class="shop-grid">
+        <section class="panel shop-subpanel" id="products-panel">
+          <div class="panel-header">
+            <div>
+              <h2 data-i18n="browse-products">Browse Products</h2>
+              <p data-i18n="explore-categories">Explore categories and find exactly what you need</p>
+            </div>
+            <label>
+              <span data-i18n="label-search">Search</span>
+              <input id="search-input" type="search" placeholder="Search by name or vendor..." data-placeholder-i18n="search-placeholder" />
+            </label>
+          </div>
+          <div id="category-filter" class="category-filter"></div>
+          <div id="product-list" class="card-grid"></div>
+        </section>
+
+        <section class="panel shop-subpanel" id="business-panel">
+          <div class="panel-header">
+            <div>
+              <h2 data-i18n="business-title">Business Listings</h2>
+              <p data-i18n="business-subtitle">Browse direct business postings and vendor products</p>
+            </div>
+            <label>
+              <span data-i18n="label-search">Search</span>
+              <input id="business-search-input" type="search" placeholder="Search by business or product..." data-placeholder-i18n="search-placeholder" />
+            </label>
+          </div>
+          <div id="business-category-filter" class="category-filter"></div>
+          <div id="business-list" class="card-grid"></div>
+        </section>
+
+        <section class="panel shop-subpanel" id="upload-panel">
+          <div class="panel-header">
+            <div>
+              <h2 data-i18n="upload-image-title">Upload Product Image</h2>
+              <p data-i18n="upload-image-desc">Businesses can attach a photo to any product listing.</p>
+            </div>
+          </div>
+          <form id="product-image-upload-form" class="settings-form">
+            <label>
+              <span data-i18n="upload-select-product">Choose product</span>
+              <select id="product-select"></select>
+            </label>
+            <label>
+              <span data-i18n="upload-select-file">Select image</span>
+              <input id="product-image-input" type="file" accept="image/*" />
+            </label>
+            <div class="upload-preview hidden" id="upload-preview">
+              <h3 data-i18n="upload-preview-title">Preview</h3>
+              <img id="upload-preview-image" src="" alt="Product preview" />
+            </div>
+            <div class="form-actions">
+              <button type="submit" class="primary-button" data-i18n="upload-submit">Upload Image</button>
+            </div>
+          </form>
+        </section>
+
+        <section class="panel shop-subpanel" id="services-panel">
+          <div class="panel-header">
+            <div>
+              <h2 data-i18n="services-title">Services</h2>
+              <p data-i18n="services-subtitle">Get professional help delivered to your location</p>
+            </div>
+          </div>
+          <div id="service-list" class="card-grid"></div>
+        </section>
+      </div>
+    </section>
+
+    <section class="panel hidden" id="cart-panel">
+      <div class="panel-header">
+        <h2 data-i18n="cart-title">Shopping Cart</h2>
+        <p data-i18n="cart-subtitle">Review your items and proceed to delivery checkout</p>
+      </div>
+      <div id="cart-list" class="cart-list"></div>
+      <div class="cart-summary">
+        <span data-i18n="cart-total-label">Order Total</span>
+        <strong id="cart-total">$0.00</strong>
+      </div>
+      <button id="checkout-btn" class="primary-button" disabled data-i18n="btn-checkout">Proceed to Checkout</button>
+    </section>
+
+    <section class="panel hidden" id="delivery-panel">
+      <div class="panel-header">
+        <h2 data-i18n="delivery-title">Delivery & Checkout</h2>
+        <p data-i18n="delivery-subtitle">Enter address and delivery details to complete your order.</p>
+      </div>
+      <form id="delivery-form" class="delivery-form">
+        <div class="form-grid">
+          <label>
+            <span data-i18n="form-name">Full name</span>
+            <input id="delivery-name" type="text" placeholder="Your name" data-placeholder-i18n="delivery-name-placeholder" required />
+          </label>
+          <label>
+            <span data-i18n="form-phone">Phone</span>
+            <input id="delivery-phone" type="tel" placeholder="Phone number" data-placeholder-i18n="delivery-phone-placeholder" required />
+          </label>
+          <label>
+            <span data-i18n="form-address">Address</span>
+            <input id="delivery-address" type="text" placeholder="Street address" data-placeholder-i18n="delivery-address-placeholder" required />
+          </label>
+          <label>
+            <span data-i18n="form-city">City</span>
+            <input id="delivery-city" type="text" placeholder="City" data-placeholder-i18n="delivery-city-placeholder" required />
+          </label>
+          <label>
+            <span data-i18n="delivery-option-label">Delivery option</span>
+            <select id="delivery-method">
+              <option value="standard" data-i18n="delivery-standard">Standard delivery</option>
+              <option value="express" data-i18n="delivery-express">Express delivery</option>
+            </select>
+          </label>
+          <label class="full-width">
+            <span data-i18n="delivery-notes-label">Delivery notes</span>
+            <textarea id="delivery-notes" rows="3" placeholder="Special instructions" data-placeholder-i18n="delivery-notes-placeholder"></textarea>
+          </label>
+        </div>
+        <div class="cart-summary delivery-summary">
+          <span data-i18n="delivery-total-label">Order total</span>
+          <strong id="delivery-total">$0.00</strong>
+        </div>
+        <div class="actions form-actions">
+          <button type="button" id="delivery-back-btn" class="secondary-button" data-i18n="btn-back">Back to Cart</button>
+          <button type="submit" id="place-order-btn" class="primary-button" data-i18n="btn-place-order">Place Order</button>
+        </div>
+      </form>
+    </section>
+
+    <section class="panel hidden" id="account-panel">
+      <div class="panel-header">
+        <div>
+          <h2 data-i18n="account-title">Account</h2>
+          <p data-i18n="account-subtitle">View and update your personal details.</p>
+        </div>
+        <button type="button" class="secondary-button" onclick="openSettings()" data-i18n="btn-settings">Settings</button>
+      </div>
+      <div class="account-grid">
+        <section class="panel" id="profile-panel">
+          <div class="panel-header">
+            <h2 data-i18n="profile-title">My Profile</h2>
+            <p data-i18n="profile-subtitle">Manage your account information</p>
+          </div>
+          <form id="profile-form" class="delivery-form">
+            <div class="form-grid">
+              <label>
+                <span data-i18n="form-username">Username</span>
+                <input id="profile-username" type="text" placeholder="Your username" data-placeholder-i18n="profile-username-placeholder" required />
+              </label>
+              <label>
+                <span data-i18n="form-phone">Phone</span>
+                <input id="profile-phone" type="tel" placeholder="Phone number" data-placeholder-i18n="profile-phone-placeholder" required />
+              </label>
+              <label>
+                <span data-i18n="form-location">Location</span>
+                <input id="profile-location" type="text" placeholder="City/Area" data-placeholder-i18n="profile-location-placeholder" required />
+              </label>
+              <label class="full-width">
+                <span data-i18n="form-email">Email</span>
+                <input id="profile-email" type="email" placeholder="Email address" data-placeholder-i18n="profile-email-placeholder" required />
+              </label>
+            </div>
+            <div class="form-actions">
+              <button type="button" id="profile-back-btn" class="secondary-button" data-i18n="btn-back">Back</button>
+              <button type="submit" class="primary-button" data-i18n="btn-save">Save Changes</button>
+            </div>
+          </form>
+        </section>
+      </div>
+    </section>
+
+    <section class="panel hidden" id="settings-panel">
+      <div class="panel-header">
+        <div>
+          <h2 data-i18n="settings-title">Settings</h2>
+          <p data-i18n="settings-subtitle">Customize your experience</p>
+        </div>
+      </div>
+      <form id="settings-form" class="settings-form">
+        <div class="settings-section">
+          <h3 data-i18n="settings-appearance">Appearance</h3>
+          <label>
+            <span data-i18n="settings-theme">Color Theme</span>
+            <div class="color-options">
+              <button type="button" class="color-btn" data-theme="default" style="background: #0066cc;"></button>
+              <button type="button" class="color-btn" data-theme="dark" style="background: #1a1a1a;"></button>
+              <button type="button" class="color-btn" data-theme="green" style="background: #10b981;"></button>
+              <button type="button" class="color-btn" data-theme="purple" style="background: #8b5cf6;"></button>
+            </div>
+          </label>
+          <label>
+            <span data-i18n="settings-color-scheme">Display Mode</span>
+            <select id="display-mode-selector">
+              <option value="light" data-i18n="theme-light">Light</option>
+              <option value="dark" data-i18n="theme-dark">Dark</option>
+            </select>
+          </label>
+          <label>
+            <span data-i18n="settings-fontsize">Font Size</span>
+            <input id="font-size" type="range" min="80" max="130" value="100" />
+            <span id="font-size-display">100%</span>
+          </label>
+        </div>
+        <div class="settings-section">
+          <h3 data-i18n="settings-account">Account Settings</h3>
+          <label>
+            <span data-i18n="settings-location">Default Location</span>
+            <input id="settings-location" type="text" placeholder="City/Area" data-placeholder-i18n="settings-location-placeholder" />
+          </label>
+          <label>
+            <span data-i18n="settings-phone">Phone Number</span>
+            <input id="settings-phone" type="tel" placeholder="Phone number" data-placeholder-i18n="settings-phone-placeholder" />
+          </label>
+          <label>
+            <span data-i18n="settings-username">Username</span>
+            <input id="settings-username" type="text" placeholder="Username" data-placeholder-i18n="settings-username-placeholder" />
+          </label>
+        </div>
+        <div class="form-actions">
+          <button type="button" id="settings-back-btn" class="secondary-button" data-i18n="btn-back">Back</button>
+          <button type="submit" class="primary-button" data-i18n="btn-save">Save Settings</button>
+        </div>
+      </form>
+    </section>
+
+    <section class="panel hidden" id="messenger-panel">
+      <div class="panel-header">
+        <div>
+          <h2 data-i18n="messenger-title">Messenger</h2>
+          <p data-i18n="messenger-subtitle">Order updates, notifications, and delivery alerts.</p>
+        </div>
+      </div>
+      <div class="messenger-grid">
+        <div class="panel messenger-card">
+          <h3 data-i18n="notifications-title">Notifications</h3>
+          <label class="messenger-search">
+            <input id="messenger-search-input" type="search" placeholder="Search notifications or orders..." data-placeholder-i18n="search-placeholder" />
+          </label>
+          <div id="notification-list" class="notification-list"></div>
+        </div>
+        <div class="panel messenger-card">
+          <h3 data-i18n="orders-title">Order History</h3>
+          <p data-i18n="orders-subtitle">Track your past orders and deliveries</p>
+          <div id="orders-list" class="orders-list"></div>
+        </div>
+      </div>
+      <button type="button" id="orders-back-btn" class="secondary-button" data-i18n="btn-back">Back</button>
+    </section>
+
+  </main>
+
+  <nav class="mobile-bottom-nav">
+    <button type="button" class="mobile-nav-btn" onclick="switchView('home')">🏠<span>Home</span></button>
+    <button type="button" class="mobile-nav-btn" onclick="switchView('shop')">🛍️<span>Shop</span></button>
+    <button type="button" class="mobile-nav-btn" onclick="switchView('account')">👤<span>Account</span></button>
+    <button type="button" class="mobile-nav-btn" onclick="switchView('messenger')">💬<span>Chat</span></button>
+  </nav>
+
+  <footer class="site-footer">
+    <p data-i18n="footer-text">Built for businesses and customers to connect with delivery-ready products and services.</p>
+  </footer>
+
+  <script src="app.js"></script>
+</body>
+</html>
