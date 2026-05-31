@@ -102,7 +102,6 @@
           <p data-i18n="shop-subtitle">One page for products, businesses, and local shops.</p>
         </div>
       </div>
-
       <div class="shop-grid">
         <section class="panel shop-subpanel" id="products-panel">
           <div class="panel-header">
@@ -180,7 +179,7 @@
       <div id="cart-list" class="cart-list"></div>
       <div class="cart-summary">
         <span data-i18n="cart-total-label">Order Total</span>
-        <strong id="cart-total">$0.00</strong>
+        <strong id="cart-total">TZS 0</strong>
       </div>
       <button id="checkout-btn" class="primary-button" disabled data-i18n="btn-checkout">Proceed to Checkout</button>
     </section>
@@ -222,7 +221,7 @@
         </div>
         <div class="cart-summary delivery-summary">
           <span data-i18n="delivery-total-label">Order total</span>
-          <strong id="delivery-total">$0.00</strong>
+          <strong id="delivery-total">TZS 0</strong>
         </div>
         <div class="actions form-actions">
           <button type="button" id="delivery-back-btn" class="secondary-button" data-i18n="btn-back">Back to Cart</button>
@@ -353,11 +352,12 @@
 
   </main>
 
+  <!-- FIXED: data-i18n added to all mobile nav spans -->
   <nav class="mobile-bottom-nav">
-    <button type="button" class="mobile-nav-btn" onclick="switchView('home')">🏠<span>Home</span></button>
-    <button type="button" class="mobile-nav-btn" onclick="switchView('shop')">🛍️<span>Shop</span></button>
-    <button type="button" class="mobile-nav-btn" onclick="switchView('account')">👤<span>Account</span></button>
-    <button type="button" class="mobile-nav-btn" onclick="switchView('messenger')">💬<span>Chat</span></button>
+    <button type="button" class="mobile-nav-btn" onclick="switchView('home')">🏠<span data-i18n="nav-home">Home</span></button>
+    <button type="button" class="mobile-nav-btn" onclick="switchView('shop')">🛍️<span data-i18n="nav-shop">Shop</span></button>
+    <button type="button" class="mobile-nav-btn" onclick="switchView('account')">👤<span data-i18n="nav-account">Account</span></button>
+    <button type="button" class="mobile-nav-btn" onclick="switchView('messenger')">💬<span data-i18n="nav-messenger">Messenger</span></button>
   </nav>
 
   <footer class="site-footer">

@@ -1,124 +1,21 @@
 const products = [
-  {
-    id: 1,
-    title: 'Fresh Market Basket',
-    type: 'product',
-    category: 'Groceries',
-    price: 29.99,
-    description: 'Local organic produce and pantry essentials delivered fresh daily.',
-    vendor: "Kaga's Grocers",
-    rating: 4.8,
-  },
-  {
-    id: 2,
-    title: 'Handcrafted Beauty Kit',
-    type: 'product',
-    category: 'Beauty & Personal Care',
-    price: 45.0,
-    description: 'Premium natural skincare and self-care products from local artisans.',
-    vendor: 'Luna Craft',
-    rating: 4.9,
-  },
-  {
-    id: 3,
-    title: 'Electronics & Gadgets Pack',
-    type: 'product',
-    category: 'Electronics',
-    price: 89.99,
-    description: 'Quality electronics and gadgets at competitive prices with warranty.',
-    vendor: 'TechHub Store',
-    rating: 4.7,
-  },
-  {
-    id: 4,
-    title: 'Home Decor Bundle',
-    type: 'product',
-    category: 'Home & Garden',
-    price: 65.0,
-    description: 'Modern home decor items to enhance your living space.',
-    vendor: 'HomeStyle Co',
-    rating: 4.6,
-  },
-  {
-    id: 5,
-    title: 'Fashion & Apparel Set',
-    type: 'product',
-    category: 'Fashion & Clothing',
-    price: 120.0,
-    description: 'Latest fashion clothing and accessories from top local designers.',
-    vendor: "Kaga's Fashion",
-    rating: 4.8,
-  },
-  {
-    id: 6,
-    title: 'Sports Equipment Pack',
-    type: 'product',
-    category: 'Sports & Fitness',
-    price: 95.0,
-    description: 'Professional-grade fitness and sports equipment for all levels.',
-    vendor: 'Fit First',
-    rating: 4.7,
-  },
-  {
-    id: 7,
-    title: 'Professional Repair Service',
-    type: 'service',
-    category: 'Home Services',
-    price: 60.0,
-    description: 'Expert home repair and maintenance services with fast turnaround.',
-    vendor: 'QuickFix Services',
-    rating: 4.9,
-  },
-  {
-    id: 8,
-    title: 'Personal Shopping Assistant',
-    type: 'service',
-    category: 'Delivery & Support',
-    price: 30.0,
-    description: 'Professional shopping and delivery assistance for your convenience.',
-    vendor: "Kaga's Helpers",
-    rating: 4.8,
-  },
-  {
-    id: 9,
-    title: 'Books & Educational Materials',
-    type: 'product',
-    category: 'Books & Education',
-    price: 35.0,
-    description: 'Curated selection of books and educational resources.',
-    vendor: 'Knowledge Hub',
-    rating: 4.7,
-  },
-  {
-    id: 10,
-    title: 'Direct Business Showcase',
-    type: 'product',
-    category: 'Business Marketplace',
-    price: 49.99,
-    description: 'Products posted directly by local businesses for fast, trusted delivery.',
-    vendor: 'Direct Seller Hub',
-    rating: 4.8,
-  },
-  {
-    id: 11,
-    title: 'Vendor Shop Starter Pack',
-    type: 'product',
-    category: 'Business Marketplace',
-    price: 59.99,
-    description: 'A special bundle featuring directly posted business products and services.',
-    vendor: 'Vendor Village',
-    rating: 4.6,
-  },
+  { id: 1, title: 'Fresh Market Basket', type: 'product', category: 'Groceries', price: 29.99, description: 'Local organic produce and pantry essentials delivered fresh daily.', vendor: "Kaga's Grocers", rating: 4.8 },
+  { id: 2, title: 'Handcrafted Beauty Kit', type: 'product', category: 'Beauty & Personal Care', price: 45.0, description: 'Premium natural skincare and self-care products from local artisans.', vendor: 'Luna Craft', rating: 4.9 },
+  { id: 3, title: 'Electronics & Gadgets Pack', type: 'product', category: 'Electronics', price: 89.99, description: 'Quality electronics and gadgets at competitive prices with warranty.', vendor: 'TechHub Store', rating: 4.7 },
+  { id: 4, title: 'Home Decor Bundle', type: 'product', category: 'Home & Garden', price: 65.0, description: 'Modern home decor items to enhance your living space.', vendor: 'HomeStyle Co', rating: 4.6 },
+  { id: 5, title: 'Fashion & Apparel Set', type: 'product', category: 'Fashion & Clothing', price: 120.0, description: 'Latest fashion clothing and accessories from top local designers.', vendor: "Kaga's Fashion", rating: 4.8 },
+  { id: 6, title: 'Sports Equipment Pack', type: 'product', category: 'Sports & Fitness', price: 95.0, description: 'Professional-grade fitness and sports equipment for all levels.', vendor: 'Fit First', rating: 4.7 },
+  { id: 7, title: 'Professional Repair Service', type: 'service', category: 'Home Services', price: 60.0, description: 'Expert home repair and maintenance services with fast turnaround.', vendor: 'QuickFix Services', rating: 4.9 },
+  { id: 8, title: 'Personal Shopping Assistant', type: 'service', category: 'Delivery & Support', price: 30.0, description: 'Professional shopping and delivery assistance for your convenience.', vendor: "Kaga's Helpers", rating: 4.8 },
+  { id: 9, title: 'Books & Educational Materials', type: 'product', category: 'Books & Education', price: 35.0, description: 'Curated selection of books and educational resources.', vendor: 'Knowledge Hub', rating: 4.7 },
+  { id: 10, title: 'Direct Business Showcase', type: 'product', category: 'Business Marketplace', price: 49.99, description: 'Products posted directly by local businesses for fast, trusted delivery.', vendor: 'Direct Seller Hub', rating: 4.8 },
+  { id: 11, title: 'Vendor Shop Starter Pack', type: 'product', category: 'Business Marketplace', price: 59.99, description: 'A special bundle featuring directly posted business products and services.', vendor: 'Vendor Village', rating: 4.6 },
 ];
 
 const translations = {
   en: {
     'brand-title': "Kaga's Market",
     'brand-subtitle': 'Marketplace + Delivery Platform',
-    'nav-products': 'Products',
-    'nav-business': 'Business',
-    'nav-services': 'Services',
-    'nav-cart': 'Cart',
     'nav-home': 'Home',
     'nav-shop': 'Shop',
     'nav-account': 'Account',
@@ -163,6 +60,8 @@ const translations = {
     'delivery-title': 'Delivery & Checkout',
     'delivery-subtitle': 'Enter address and delivery details to complete your order.',
     'delivery-option-label': 'Delivery option',
+    'delivery-standard': 'Standard delivery',
+    'delivery-express': 'Express delivery',
     'delivery-notes-label': 'Delivery notes',
     'delivery-total-label': 'Order total',
     'cart-title': 'Shopping Cart',
@@ -205,28 +104,26 @@ const translations = {
     'settings-location-placeholder': 'City/Area',
     'settings-phone-placeholder': 'Phone number',
     'settings-username-placeholder': 'Username',
-    'order-number': 'Order #',
-    'order-date': 'Date:',
-    'order-items': 'Items:',
-    'order-total': 'Total:',
-    'order-delivery': 'Delivery to:',
-    'order-status': 'Status:',
-    'alert-fill-fields': 'Please complete all delivery fields before placing your order.',
-    'alert-order-success': 'Order placed successfully!',
-    'alert-profile-updated': 'Profile updated successfully!',
-    'alert-settings-saved': 'Settings saved successfully!',
-    'alert-logout-confirm': 'Are you sure you want to logout?',
-    'alert-logged-out': 'Logged out successfully',
+    'upload-image-title': 'Upload Product Image',
+    'upload-image-desc': 'Businesses can attach a photo to any product listing.',
+    'upload-select-product': 'Choose product',
+    'upload-select-file': 'Select image',
+    'upload-preview-title': 'Preview',
+    'upload-submit': 'Upload Image',
+    'account-title': 'Account',
+    'account-subtitle': 'View and update your personal details.',
+    'footer-text': 'Built for businesses and customers to connect with delivery-ready products and services.',
     'lang-english': 'English',
     'lang-kiswahili': 'Kiswahili',
   },
+  // ✅ FIXED: Full Kiswahili translations added
   sw: {
     'brand-title': "Kaga's Market",
     'brand-subtitle': 'Soko ya Mahitaji + Jukwaa la Uhamiaji',
-    'nav-products': 'Bidhaa',
-    'nav-business': 'Biashara',
-    'nav-services': 'Huduma',
-    'nav-cart': 'Karata',
+    'nav-home': 'Nyumbani',
+    'nav-shop': 'Duka',
+    'nav-account': 'Akaunti',
+    'nav-messenger': 'Ujumbe',
     'header-account': '👤 Akaunti',
     'menu-profile': 'Wasifu Wangu',
     'menu-orders': 'Historia ya Agizo',
@@ -247,16 +144,55 @@ const translations = {
     'theme-dark': 'Giza',
     'settings-fontsize': 'Ukubwa wa Herufi',
     'settings-account': 'Mipango ya Akaunti',
-    'settings-location': 'Mahali Mbali Hapo Kwa Kawaida',
+    'settings-location': 'Mahali pa Kawaida',
     'settings-phone': 'Nambari ya Simu',
     'settings-username': 'Jina la Mtumiaji',
+    'btn-settings': 'Mipango',
     'form-username': 'Jina la Mtumiaji',
     'form-phone': 'Simu',
     'form-location': 'Mahali',
     'form-email': 'Barua Pepe',
     'btn-back': 'Rudi',
     'btn-save': 'Hifadhi',
-    'btn-add': 'Ongeza katika Karata',
+    'btn-add': 'Ongeza kwenye Kikapu',
+    'btn-checkout': 'Endelea na Malipo',
+    'btn-place-order': 'Weka Agizo',
+    'form-name': 'Jina kamili',
+    'form-address': 'Anwani',
+    'form-city': 'Jiji',
+    'label-search': 'Tafuta',
+    'delivery-title': 'Uwasilishaji na Malipo',
+    'delivery-subtitle': 'Ingiza anwani na maelezo ya uwasilishaji kukamilisha agizo lako.',
+    'delivery-option-label': 'Chaguo la uwasilishaji',
+    'delivery-standard': 'Uwasilishaji wa kawaida',
+    'delivery-express': 'Uwasilishaji wa haraka',
+    'delivery-notes-label': 'Maelezo ya uwasilishaji',
+    'delivery-total-label': 'Jumla ya agizo',
+    'cart-title': 'Kikapu cha Ununuzi',
+    'cart-subtitle': 'Kagua vitu vyako na uendelee kwa uwasilishaji',
+    'cart-total-label': 'Jumla ya Agizo',
+    'services-title': 'Huduma',
+    'services-subtitle': 'Pata msaada wa kitaalamu uwasilishwaji mahali pako',
+    'hero-title': 'Soko Lako la Ndani & Jukwaa la Uwasilishaji',
+    'hero-subtitle': 'Nunua kutoka kwa biashara za ndani na upate uwasilishaji wa haraka mlangoni kwako',
+    'home-title': "Karibu Kaga's Market",
+    'home-subtitle': 'Ufikiaji wa haraka wa maduka, bidhaa, maagizo, na ujumbe.',
+    'home-shop-cta': 'Vinjari Duka',
+    'home-messenger-cta': 'Fungua Ujumbe',
+    'home-card-products': 'Bidhaa Bora',
+    'home-card-products-desc': 'Gundua bidhaa za ndani na matoleo ya mtindo.',
+    'home-card-businesses': 'Maduka Yanayoaminika',
+    'home-card-businesses-desc': 'Nunua kutoka kwa biashara zilizosajiliwa na wachuuzi wa ndani.',
+    'home-card-account': 'Akaunti Yako',
+    'home-card-account-desc': 'Dhibiti maelezo, mipango, na mapendeleo yako.',
+    'home-card-messenger': 'Maagizo na Arifa',
+    'home-card-messenger-desc': 'Fuatilia maagizo na upate arifa mara moja.',
+    'home-featured': 'Bidhaa Zilizoangaziwa',
+    'shop-title': 'Duka',
+    'shop-subtitle': 'Ukurasa mmoja wa bidhaa, biashara, na maduka ya ndani.',
+    'messenger-title': 'Ujumbe',
+    'messenger-subtitle': 'Masasisho ya maagizo, arifa, na tahadhari za uwasilishaji.',
+    'notifications-title': 'Arifa',
     'browse-products': 'Vinjari Bidhaa',
     'explore-categories': 'Tafuta kategori na pata kile unachotaka',
     'search-placeholder': 'Tafuta kwa jina la bidhaa au biashara...',
@@ -272,6 +208,15 @@ const translations = {
     'settings-location-placeholder': 'Jiji/Eneo',
     'settings-phone-placeholder': 'Nambari ya simu',
     'settings-username-placeholder': 'Jina la mtumiaji',
+    'upload-image-title': 'Pakia Picha ya Bidhaa',
+    'upload-image-desc': 'Biashara zinaweza kuambatisha picha kwa orodha yoyote ya bidhaa.',
+    'upload-select-product': 'Chagua bidhaa',
+    'upload-select-file': 'Chagua picha',
+    'upload-preview-title': 'Hakiki',
+    'upload-submit': 'Pakia Picha',
+    'account-title': 'Akaunti',
+    'account-subtitle': 'Angalia na usasisha maelezo yako ya kibinafsi.',
+    'footer-text': 'Imejengwa kwa biashara na wateja kuunganika na bidhaa na huduma tayari kwa uwasilishaji.',
     'lang-english': 'Kiingereza',
     'lang-kiswahili': 'Kiswahili',
   },
@@ -298,14 +243,7 @@ const state = {
     { title: "Welcome to Kaga's Market", message: 'Start shopping or check your orders now.', time: 'Just now' },
     { title: 'Delivery reminder', message: 'Your next delivery can arrive today if ordered early.', time: 'Today' },
   ],
-  delivery: {
-    name: '',
-    phone: '',
-    address: '',
-    city: '',
-    method: 'standard',
-    notes: '',
-  },
+  delivery: { name: '', phone: '', address: '', city: '', method: 'standard', notes: '' },
 };
 
 const elements = {
@@ -377,17 +315,13 @@ const elements = {
 };
 
 const getCategories = () => {
-  const allCategories = [...new Set(products.filter((item) => item.type === 'product').map((item) => item.category))];
+  const allCategories = [...new Set(products.filter(i => i.type === 'product').map(i => i.category))];
   return ['All', ...allCategories.sort()];
 };
 
 const renderCategoryFilter = () => {
-  const categories = getCategories();
-  elements.categoryFilter.innerHTML = categories
-    .map(
-      (cat) =>
-        `<button class="category-btn ${state.selectedCategory === cat ? 'active' : ''}" onclick="selectCategory('${cat}')">\n        ${cat}\n      </button>`
-    )
+  elements.categoryFilter.innerHTML = getCategories()
+    .map(cat => `<button class="category-btn ${state.selectedCategory === cat ? 'active' : ''}" onclick="selectCategory('${cat}')">${cat}</button>`)
     .join('');
 };
 
@@ -398,47 +332,41 @@ window.selectCategory = (category) => {
 };
 
 const renderCards = () => {
-  const activeProducts = products.filter((item) => item.type === 'product');
-  const activeServices = products.filter((item) => item.type === 'service');
+  const activeProducts = products.filter(i => i.type === 'product');
+  const activeServices = products.filter(i => i.type === 'service');
 
-  let filteredProducts = activeProducts.filter((item) =>
-    item.title.toLowerCase().includes(state.query.toLowerCase()) ||
-    item.vendor.toLowerCase().includes(state.query.toLowerCase())
+  let filteredProducts = activeProducts.filter(i =>
+    i.title.toLowerCase().includes(state.query.toLowerCase()) ||
+    i.vendor.toLowerCase().includes(state.query.toLowerCase())
   );
-
   if (state.selectedCategory !== 'All') {
-    filteredProducts = filteredProducts.filter((item) => item.category === state.selectedCategory);
+    filteredProducts = filteredProducts.filter(i => i.category === state.selectedCategory);
   }
 
-  const filteredServices = activeServices.filter((item) =>
-    item.title.toLowerCase().includes(state.query.toLowerCase()) ||
-    item.vendor.toLowerCase().includes(state.query.toLowerCase())
+  const filteredServices = activeServices.filter(i =>
+    i.title.toLowerCase().includes(state.query.toLowerCase()) ||
+    i.vendor.toLowerCase().includes(state.query.toLowerCase())
   );
 
   elements.productList.innerHTML = filteredProducts.length
     ? filteredProducts.map(createCardHtml).join('')
-    : '<p class="no-results">No products found. Try a different search or category.</p>';
+    : '<p class="no-results">No products found.</p>';
   elements.serviceList.innerHTML = filteredServices.length
     ? filteredServices.map(createCardHtml).join('')
     : '<p class="no-results">No services available right now.</p>';
+
   renderCart();
   renderHomeFeatured();
 };
 
 const getBusinessCategories = () => {
-  const businessCategories = [...new Set(products.map((item) => item.category))];
-  return ['All Businesses', ...businessCategories.sort()];
+  const cats = [...new Set(products.map(i => i.category))];
+  return ['All Businesses', ...cats.sort()];
 };
 
 const renderBusinessCategoryFilter = () => {
-  const categories = getBusinessCategories();
-  elements.businessCategoryFilter.innerHTML = categories
-    .map(
-      (cat) =>
-        `<button class="category-btn ${state.selectedBusinessCategory === cat ? 'active' : ''}" onclick="selectBusinessCategory('${cat}')">
-        ${cat}
-      </button>`
-    )
+  elements.businessCategoryFilter.innerHTML = getBusinessCategories()
+    .map(cat => `<button class="category-btn ${state.selectedBusinessCategory === cat ? 'active' : ''}" onclick="selectBusinessCategory('${cat}')">${cat}</button>`)
     .join('');
 };
 
@@ -449,42 +377,31 @@ window.selectBusinessCategory = (category) => {
 };
 
 const renderBusinessCards = () => {
-  const businessItems = products.filter((item) => item.type === 'product');
-  let filteredBusinesses = businessItems.filter((item) =>
-    item.title.toLowerCase().includes(state.query.toLowerCase()) ||
-    item.vendor.toLowerCase().includes(state.query.toLowerCase())
+  let filtered = products.filter(i => i.type === 'product').filter(i =>
+    i.title.toLowerCase().includes(state.query.toLowerCase()) ||
+    i.vendor.toLowerCase().includes(state.query.toLowerCase())
   );
-
   if (state.selectedBusinessCategory !== 'All Businesses') {
-    filteredBusinesses = filteredBusinesses.filter((item) => item.category === state.selectedBusinessCategory);
+    filtered = filtered.filter(i => i.category === state.selectedBusinessCategory);
   }
-
-  elements.businessList.innerHTML = filteredBusinesses.length
-    ? filteredBusinesses.map(createCardHtml).join('')
+  elements.businessList.innerHTML = filtered.length
+    ? filtered.map(createCardHtml).join('')
     : '<p class="no-results">No business shops match your search.</p>';
 };
 
 const populateProductSelect = () => {
   if (!elements.productSelect) return;
   elements.productSelect.innerHTML = products
-    .filter((item) => item.type === 'product')
-    .map((item) => `<option value="${item.id}">${item.title} — ${item.vendor}</option>`)
+    .filter(i => i.type === 'product')
+    .map(i => `<option value="${i.id}">${i.title} — ${i.vendor}</option>`)
     .join('');
 };
 
 const handleProductImageFile = (event) => {
   const file = event.target.files[0];
-  if (!file) {
-    elements.uploadPreview.classList.add('hidden');
-    elements.uploadPreviewImage.src = '';
-    return;
-  }
-
+  if (!file) { elements.uploadPreview.classList.add('hidden'); elements.uploadPreviewImage.src = ''; return; }
   const reader = new FileReader();
-  reader.onload = () => {
-    elements.uploadPreviewImage.src = reader.result;
-    elements.uploadPreview.classList.remove('hidden');
-  };
+  reader.onload = () => { elements.uploadPreviewImage.src = reader.result; elements.uploadPreview.classList.remove('hidden'); };
   reader.readAsDataURL(file);
 };
 
@@ -492,24 +409,16 @@ const uploadProductImage = (event) => {
   event.preventDefault();
   const productId = parseInt(elements.productSelect.value, 10);
   const file = elements.productImageInput.files[0];
-
-  if (!productId || !file) {
-    alert('Please choose a product and select an image before uploading.');
-    return;
-  }
-
-  const product = products.find((item) => item.id === productId);
+  if (!productId || !file) { alert('Please choose a product and select an image before uploading.'); return; }
+  const product = products.find(i => i.id === productId);
   if (!product) return;
-
   const reader = new FileReader();
   reader.onload = () => {
     product.image = reader.result;
     alert('Product image uploaded successfully.');
     elements.productImageInput.value = '';
     elements.uploadPreview.classList.add('hidden');
-    renderCards();
-    renderBusinessCards();
-    renderHomeFeatured();
+    renderCards(); renderBusinessCards(); renderHomeFeatured();
   };
   reader.readAsDataURL(file);
 };
@@ -520,30 +429,27 @@ const createCardHtml = (item) => {
   const imageHtml = item.image
     ? `<div class="card-image"><img src="${item.image}" alt="${item.title}" /></div>`
     : `<div class="card-image placeholder">📦</div>`;
+  // ✅ FIXED: Currency changed from $ to TZS
   return `
     <article class="card">
       ${imageHtml}
       <div class="card-content">
-        <div class="card-header">
-          <h3>${item.title}</h3>
-          ${categoryHtml}
-        </div>
+        <div class="card-header"><h3>${item.title}</h3>${categoryHtml}</div>
         ${ratingHtml}
         <p class="vendor">${item.vendor}</p>
         <p class="description">${item.description}</p>
-        <p class="price">$${item.price.toFixed(2)}</p>
+        <p class="price">TZS ${item.price.toLocaleString()}</p>
         <div class="actions">
           <button class="secondary-button" onclick="handleDetails(${item.id})">Details</button>
           <button class="primary-button" onclick="addToCart(${item.id})">Add Cart</button>
         </div>
       </div>
-    </article>
-  `;
+    </article>`;
 };
 
 const renderHomeFeatured = () => {
   if (!elements.homeFeaturedList) return;
-  const featured = products.filter((item) => item.type === 'product').slice(0, 4);
+  const featured = products.filter(i => i.type === 'product').slice(0, 4);
   elements.homeFeaturedList.innerHTML = featured.length
     ? featured.map(createCardHtml).join('')
     : '<p class="no-results">No featured products available yet.</p>';
@@ -552,40 +458,25 @@ const renderHomeFeatured = () => {
 const renderNotifications = () => {
   if (!elements.notificationList) return;
   elements.notificationList.innerHTML = state.notifications
-    .map(
-      (notification) => `
-      <div class="notification-item">
-        <h4>${notification.title}</h4>
-        <p>${notification.message}</p>
-        <span>${notification.time}</span>
-      </div>
-    `
-    )
+    .map(n => `<div class="notification-item"><h4>${n.title}</h4><p>${n.message}</p><span>${n.time}</span></div>`)
     .join('');
 };
 
 window.handleDetails = (id) => {
-  const item = products.find((entry) => entry.id === id);
+  const item = products.find(e => e.id === id);
   if (!item) return;
-  alert(`${item.title} by ${item.vendor}\n\n${item.description}\n\nPrice: $${item.price.toFixed(2)}`);
+  alert(`${item.title} by ${item.vendor}\n\n${item.description}\n\nPrice: TZS ${item.price.toLocaleString()}`);
 };
 
 window.addToCart = (id) => {
-  const item = products.find((entry) => entry.id === id);
+  const item = products.find(e => e.id === id);
   if (!item) return;
-
-  const cartItem = state.cart.find((entry) => entry.id === id);
-  if (cartItem) {
-    cartItem.quantity += 1;
-  } else {
-    state.cart.push({ ...item, quantity: 1 });
-  }
+  const cartItem = state.cart.find(e => e.id === id);
+  if (cartItem) { cartItem.quantity += 1; } else { state.cart.push({ ...item, quantity: 1 }); }
   renderCart();
 };
 
-const calculateTotal = () => {
-  return state.cart.reduce((sum, item) => sum + item.price * item.quantity, 0);
-};
+const calculateTotal = () => state.cart.reduce((sum, item) => sum + item.price * item.quantity, 0);
 
 const renderCart = () => {
   elements.cartList.innerHTML = state.cart.length
@@ -593,45 +484,42 @@ const renderCart = () => {
     : '<p>Your cart is empty. Add products or services to start your order.</p>';
 
   const total = calculateTotal();
-  elements.cartCount.textContent = state.cart.reduce((sum, item) => sum + item.quantity, 0);
-  elements.cartTotal.textContent = `$${total.toFixed(2)}`;
-  elements.checkoutBtn.disabled = total === 0;
+  elements.cartCount.textContent = state.cart.reduce((sum, i) => sum + i.quantity, 0);
+  // ✅ FIXED: Currency changed to TZS
+  elements.cartTotal.textContent = `TZS ${total.toLocaleString()}`;
+  // ✅ FIXED: Checkout button now enables correctly
+  elements.checkoutBtn.disabled = state.cart.length === 0;
   renderDeliverySummary();
 };
 
 const renderDeliverySummary = () => {
   if (!elements.deliveryTotal) return;
-  elements.deliveryTotal.textContent = `$${calculateTotal().toFixed(2)}`;
+  elements.deliveryTotal.textContent = `TZS ${calculateTotal().toLocaleString()}`;
 };
 
-const createCartHtml = (item) => {
-  return `
-    <div class="cart-item">
-      <h3>${item.title}</h3>
-      <p class="meta">${item.vendor}</p>
-      <p>Quantity: ${item.quantity}</p>
-      <p class="meta">Subtotal: $${(item.price * item.quantity).toFixed(2)}</p>
-      <div class="actions">
-        <button class="secondary-button" onclick="updateQuantity(${item.id}, -1)">-</button>
-        <button class="secondary-button" onclick="updateQuantity(${item.id}, 1)">+</button>
-        <button class="secondary-button" onclick="removeFromCart(${item.id})">Remove</button>
-      </div>
+const createCartHtml = (item) => `
+  <div class="cart-item">
+    <h3>${item.title}</h3>
+    <p class="meta">${item.vendor}</p>
+    <p>Quantity: ${item.quantity}</p>
+    <p class="meta">Subtotal: TZS ${(item.price * item.quantity).toLocaleString()}</p>
+    <div class="actions">
+      <button class="secondary-button" onclick="updateQuantity(${item.id}, -1)">-</button>
+      <button class="secondary-button" onclick="updateQuantity(${item.id}, 1)">+</button>
+      <button class="secondary-button" onclick="removeFromCart(${item.id})">Remove</button>
     </div>
-  `;
-};
+  </div>`;
 
 window.updateQuantity = (id, delta) => {
-  const item = state.cart.find((entry) => entry.id === id);
+  const item = state.cart.find(e => e.id === id);
   if (!item) return;
   item.quantity += delta;
-  if (item.quantity <= 0) {
-    state.cart = state.cart.filter((entry) => entry.id !== id);
-  }
+  if (item.quantity <= 0) state.cart = state.cart.filter(e => e.id !== id);
   renderCart();
 };
 
 window.removeFromCart = (id) => {
-  state.cart = state.cart.filter((entry) => entry.id !== id);
+  state.cart = state.cart.filter(e => e.id !== id);
   renderCart();
 };
 
@@ -657,30 +545,19 @@ const placeOrder = () => {
     alert('Please complete all delivery fields before placing your order.');
     return;
   }
-
   const total = calculateTotal();
   const methodText = method === 'express' ? 'Express delivery' : 'Standard delivery';
-  alert(`Order placed for ${name}.\n${methodText}\nTotal: $${total.toFixed(2)}\nDelivery to: ${address}, ${city}`);
+  // ✅ FIXED: Currency changed to TZS
+  alert(`Order placed for ${name}.\n${methodText}\nTotal: TZS ${total.toLocaleString()}\nDelivery to: ${address}, ${city}`);
 
   state.orders.unshift({
     date: new Date().toLocaleDateString(),
-    items: state.cart.map((item) => `${item.quantity}x ${item.title}`).join(', '),
-    total,
-    address,
-    city,
-    status: 'Delivered',
+    items: state.cart.map(i => `${i.quantity}x ${i.title}`).join(', '),
+    total, address, city, status: 'Delivered',
   });
   localStorage.setItem('orders', JSON.stringify(state.orders));
-
   state.cart = [];
-  state.delivery = {
-    name: '',
-    phone: '',
-    address: '',
-    city: '',
-    method: 'standard',
-    notes: '',
-  };
+  state.delivery = { name: '', phone: '', address: '', city: '', method: 'standard', notes: '' };
   renderCart();
   switchView('home');
 };
@@ -701,48 +578,27 @@ const switchView = (view) => {
   elements.showMessengerBtn.classList.toggle('active', view === 'messenger');
   elements.showCartBtn.classList.toggle('active', view === 'cart');
 
-  if (view === 'shop') {
-    elements.businessSearchInput.value = state.query;
-    renderBusinessCategoryFilter();
-    renderBusinessCards();
-    renderCards();
-  }
-
-  if (view === 'home') {
-    renderHomeFeatured();
-  }
-
+  if (view === 'shop') { renderBusinessCategoryFilter(); renderBusinessCards(); renderCards(); }
+  if (view === 'home') renderHomeFeatured();
   closeAccountDropdown();
 };
 
-const translate = (key) => {
-  const lang = state.language;
-  return translations[lang]?.[key] || translations.en[key] || key;
-};
+const translate = (key) => translations[state.language]?.[key] || translations.en[key] || key;
 
+// ✅ FIXED: updateLanguage now also updates the mobile bottom nav
 const updateLanguage = () => {
   document.querySelectorAll('[data-i18n]').forEach(el => {
-    const key = el.getAttribute('data-i18n');
-    el.textContent = translate(key);
+    el.textContent = translate(el.getAttribute('data-i18n'));
   });
-  document.getElementById('search-input').placeholder = translate('search-placeholder');
+  document.querySelectorAll('[data-placeholder-i18n]').forEach(el => {
+    el.placeholder = translate(el.getAttribute('data-placeholder-i18n'));
+  });
   localStorage.setItem('language', state.language);
   document.documentElement.lang = state.language;
-  document.querySelectorAll('[data-placeholder-i18n]').forEach((el) => {
-    const placeholderKey = el.getAttribute('data-placeholder-i18n');
-    if (placeholderKey) {
-      el.placeholder = translate(placeholderKey);
-    }
-  });
 };
 
-const toggleAccountDropdown = () => {
-  elements.accountDropdown.classList.toggle('hidden');
-};
-
-const closeAccountDropdown = () => {
-  elements.accountDropdown.classList.add('hidden');
-};
+const toggleAccountDropdown = () => elements.accountDropdown.classList.toggle('hidden');
+const closeAccountDropdown = () => elements.accountDropdown.classList.add('hidden');
 
 const openProfile = () => {
   switchView('account');
@@ -757,12 +613,10 @@ const saveProfile = () => {
   state.user.phone = elements.profilePhone.value;
   state.user.location = elements.profileLocation.value;
   state.user.email = elements.profileEmail.value;
-  
   localStorage.setItem('username', state.user.username);
   localStorage.setItem('phone', state.user.phone);
   localStorage.setItem('location', state.user.location);
   localStorage.setItem('email', state.user.email);
-  
   alert('Profile updated successfully!');
 };
 
@@ -771,17 +625,16 @@ const renderOrders = () => {
     elements.ordersList.innerHTML = '<p>No orders yet. Start shopping to see your order history.</p>';
     return;
   }
-  
+  // ✅ FIXED: Currency changed to TZS
   elements.ordersList.innerHTML = state.orders.map((order, idx) => `
     <div class="order-item">
       <h3>Order #${idx + 1}</h3>
       <p><strong>Date:</strong> ${order.date}</p>
       <p><strong>Items:</strong> ${order.items}</p>
-      <p><strong>Total:</strong> $${order.total.toFixed(2)}</p>
+      <p><strong>Total:</strong> TZS ${order.total.toLocaleString()}</p>
       <p><strong>Delivery to:</strong> ${order.address}, ${order.city}</p>
       <p><strong>Status:</strong> <span class="status-badge">${order.status || 'Delivered'}</span></p>
-    </div>
-  `).join('');
+    </div>`).join('');
 };
 
 const openOrders = () => {
@@ -792,18 +645,13 @@ const openOrders = () => {
 
 const applyTheme = (theme) => {
   state.currentTheme = theme;
-  const root = document.documentElement;
-  
   const themes = {
     default: { '--primary': '#0066cc', '--primary-dark': '#004499', '--accent': '#ff9900' },
     dark: { '--primary': '#1a1a1a', '--primary-dark': '#000000', '--accent': '#ffaa00' },
     green: { '--primary': '#10b981', '--primary-dark': '#059669', '--accent': '#3b82f6' },
     purple: { '--primary': '#8b5cf6', '--primary-dark': '#7c3aed', '--accent': '#ec4899' },
   };
-  
-  Object.entries(themes[theme] || themes.default).forEach(([key, value]) => {
-    root.style.setProperty(key, value);
-  });
+  Object.entries(themes[theme] || themes.default).forEach(([k, v]) => document.documentElement.style.setProperty(k, v));
   applyDisplayMode(state.displayMode);
   localStorage.setItem('theme', theme);
   renderCategoryFilter();
@@ -811,26 +659,11 @@ const applyTheme = (theme) => {
 
 const applyDisplayMode = (mode) => {
   state.displayMode = mode;
-  const root = document.documentElement;
   const modes = {
-    light: {
-      '--bg': '#f8fafb',
-      '--surface': '#ffffff',
-      '--text': '#1f2937',
-      '--text-light': '#6b7280',
-      '--border': '#e5e7eb',
-      '--hover': '#f3f4f6',
-    },
-    dark: {
-      '--bg': '#111827',
-      '--surface': '#1f2937',
-      '--text': '#f9fafb',
-      '--text-light': '#d1d5db',
-      '--border': '#374151',
-      '--hover': '#1f2937',
-    },
+    light: { '--bg': '#f8fafb', '--surface': '#ffffff', '--text': '#1f2937', '--text-light': '#6b7280', '--border': '#e5e7eb', '--hover': '#f3f4f6' },
+    dark: { '--bg': '#111827', '--surface': '#1f2937', '--text': '#f9fafb', '--text-light': '#d1d5db', '--border': '#374151', '--hover': '#1f2937' },
   };
-  Object.entries(modes[mode] || modes.light).forEach(([key, value]) => root.style.setProperty(key, value));
+  Object.entries(modes[mode] || modes.light).forEach(([k, v]) => document.documentElement.style.setProperty(k, v));
   localStorage.setItem('displayMode', mode);
 };
 
@@ -845,16 +678,11 @@ const saveSettings = () => {
   state.user.location = elements.settingsLocation.value;
   state.user.phone = elements.settingsPhone.value;
   state.user.username = elements.settingsUsername.value;
-  if (elements.displayModeSelector) {
-    state.displayMode = elements.displayModeSelector.value;
-    applyDisplayMode(state.displayMode);
-  }
-  
+  if (elements.displayModeSelector) { state.displayMode = elements.displayModeSelector.value; applyDisplayMode(state.displayMode); }
   localStorage.setItem('location', state.user.location);
   localStorage.setItem('phone', state.user.phone);
   localStorage.setItem('username', state.user.username);
   localStorage.setItem('displayMode', state.displayMode);
-  
   alert('Settings saved successfully!');
 };
 
@@ -877,94 +705,47 @@ const logout = () => {
   }
 };
 
-window.selectCategory = (category) => {
-  state.selectedCategory = category;
-  renderCategoryFilter();
-  renderCards();
-};
-
-elements.searchInput.addEventListener('input', (event) => {
-  state.query = event.target.value.trim();
-  renderCards();
-  if (state.view === 'shop') renderBusinessCards();
-});
-elements.businessSearchInput.addEventListener('input', (event) => {
-  state.query = event.target.value.trim();
-  renderBusinessCards();
-  renderCards();
-});
-
-// Global search functionality
-const globalSearchInput = document.getElementById('global-search-input');
-const searchResults = document.getElementById('search-results');
-const searchResultsContent = document.getElementById('search-results-content');
-const searchClearBtn = document.getElementById('search-clear-btn');
-
-window.handleSearchResult = (id) => {
-  const item = products.find(p => p.id === id);
-  if (item) {
-    globalSearchInput.value = '';
-    searchResults.classList.add('hidden');
-    searchClearBtn.classList.add('hidden');
-    handleDetails(id);
-  }
-};
-
+// --- Event Listeners ---
+elements.searchInput.addEventListener('input', (e) => { state.query = e.target.value.trim(); renderCards(); if (state.view === 'shop') renderBusinessCards(); });
+elements.businessSearchInput.addEventListener('input', (e) => { state.query = e.target.value.trim(); renderBusinessCards(); renderCards(); });
 elements.showHomeBtn.addEventListener('click', () => switchView('home'));
 elements.showShopBtn.addEventListener('click', () => switchView('shop'));
 elements.showAccountBtn.addEventListener('click', () => switchView('account'));
 elements.showMessengerBtn.addEventListener('click', () => switchView('messenger'));
 elements.showCartBtn.addEventListener('click', () => switchView('cart'));
 elements.checkoutBtn.addEventListener('click', openDeliveryForm);
-elements.deliveryForm.addEventListener('submit', (event) => {
-  event.preventDefault();
-  placeOrder();
-});
+elements.deliveryForm.addEventListener('submit', (e) => { e.preventDefault(); placeOrder(); });
 elements.deliveryBackBtn.addEventListener('click', () => switchView('cart'));
-elements.deliveryName.addEventListener('input', (event) => { state.delivery.name = event.target.value; });
-elements.deliveryPhone.addEventListener('input', (event) => { state.delivery.phone = event.target.value; });
-elements.deliveryAddress.addEventListener('input', (event) => { state.delivery.address = event.target.value; });
-elements.deliveryCity.addEventListener('input', (event) => { state.delivery.city = event.target.value; });
-elements.deliveryMethod.addEventListener('change', (event) => { state.delivery.method = event.target.value; renderDeliverySummary(); });
-elements.deliveryNotes.addEventListener('input', (event) => { state.delivery.notes = event.target.value; });
-
+elements.deliveryName.addEventListener('input', (e) => { state.delivery.name = e.target.value; });
+elements.deliveryPhone.addEventListener('input', (e) => { state.delivery.phone = e.target.value; });
+elements.deliveryAddress.addEventListener('input', (e) => { state.delivery.address = e.target.value; });
+elements.deliveryCity.addEventListener('input', (e) => { state.delivery.city = e.target.value; });
+elements.deliveryMethod.addEventListener('change', (e) => { state.delivery.method = e.target.value; renderDeliverySummary(); });
+elements.deliveryNotes.addEventListener('input', (e) => { state.delivery.notes = e.target.value; });
 elements.accountMenuBtn.addEventListener('click', toggleAccountDropdown);
 elements.profileLink.addEventListener('click', openProfile);
 elements.ordersLink.addEventListener('click', openOrders);
 elements.settingsLink.addEventListener('click', openSettings);
 elements.logoutLink.addEventListener('click', logout);
-elements.languageSwitcher.addEventListener('change', (event) => {
-  state.language = event.target.value;
-  updateLanguage();
-});
 
-elements.profileForm.addEventListener('submit', (event) => {
-  event.preventDefault();
-  saveProfile();
-});
+// ✅ FIXED: Language switcher now triggers full translation
+elements.languageSwitcher.addEventListener('change', (e) => { state.language = e.target.value; updateLanguage(); });
+
+elements.profileForm.addEventListener('submit', (e) => { e.preventDefault(); saveProfile(); });
 elements.profileBackBtn.addEventListener('click', () => switchView('home'));
-
-elements.settingsForm.addEventListener('submit', (event) => {
-  event.preventDefault();
-  saveSettings();
-});
+elements.settingsForm.addEventListener('submit', (e) => { e.preventDefault(); saveSettings(); });
 elements.settingsBackBtn.addEventListener('click', () => switchView('account'));
 elements.ordersBackBtn.addEventListener('click', () => switchView('home'));
-
-elements.fontSizeInput.addEventListener('input', (event) => {
-  applyFontSize(event.target.value);
-});
+elements.fontSizeInput.addEventListener('input', (e) => applyFontSize(e.target.value));
 
 if (elements.displayModeSelector) {
   elements.displayModeSelector.value = state.displayMode;
-  elements.displayModeSelector.addEventListener('change', (event) => {
-    applyDisplayMode(event.target.value);
-  });
+  elements.displayModeSelector.addEventListener('change', (e) => applyDisplayMode(e.target.value));
 }
 
 document.querySelectorAll('.color-btn').forEach(btn => {
-  btn.addEventListener('click', (event) => {
-    event.preventDefault();
+  btn.addEventListener('click', (e) => {
+    e.preventDefault();
     const theme = btn.getAttribute('data-theme');
     applyTheme(theme);
     document.querySelectorAll('.color-btn').forEach(b => b.classList.remove('selected'));
@@ -972,96 +753,82 @@ document.querySelectorAll('.color-btn').forEach(btn => {
   });
 });
 
-document.addEventListener('click', (event) => {
-  if (!elements.accountMenuBtn.contains(event.target) && !elements.accountDropdown.contains(event.target)) {
-    closeAccountDropdown();
-  }
+document.addEventListener('click', (e) => {
+  if (!elements.accountMenuBtn.contains(e.target) && !elements.accountDropdown.contains(e.target)) closeAccountDropdown();
 });
 
-elements.languageSwitcher.value = state.language;
-applyFontSize(state.fontSize);
-applyTheme(state.currentTheme);
-document.querySelectorAll('.color-btn').forEach((btn) => {
-  if (btn.getAttribute('data-theme') === state.currentTheme) {
-    btn.classList.add('selected');
-  }
-});
-populateProductSelect();
-updateLanguage();
+// Global search
+const globalSearchInput = document.getElementById('global-search-input');
+const searchResults = document.getElementById('search-results');
 
-if (elements.productImageInput) {
-  elements.productImageInput.addEventListener('change', handleProductImageFile);
-}
-const uploadForm = document.getElementById('product-image-upload-form');
-if (uploadForm) {
-  uploadForm.addEventListener('submit', uploadProductImage);
-}
-
-// Hook search UI elements (global + messenger) and initialize placeholders
-elements.globalSearchInput = document.getElementById('global-search-input');
-elements.searchResults = document.getElementById('search-results');
-elements.messengerSearchInput = document.getElementById('messenger-search-input');
-if (elements.globalSearchInput) elements.globalSearchInput.placeholder = translate('search-placeholder');
-if (elements.messengerSearchInput) elements.messengerSearchInput.placeholder = translate('search-placeholder');
-
-// Global search behavior: searches products, notifications, and orders
 const performGlobalSearch = (query) => {
-  if (!elements.searchResults) return;
+  if (!searchResults) return;
   const q = (query || '').trim().toLowerCase();
-  if (!q) {
-    elements.searchResults.classList.add('hidden');
-    elements.searchResults.innerHTML = '';
-    return;
-  }
-
-  const prodMatches = products.filter(p => (p.title + ' ' + p.vendor + ' ' + (p.category||'')).toLowerCase().includes(q)).slice(0, 6);
-  const notifMatches = (state.notifications || []).filter(n => (n.title + ' ' + n.message).toLowerCase().includes(q)).slice(0, 4);
-  const orderMatches = (state.orders || []).filter(o => (o.items + ' ' + (o.date||'') + ' ' + (o.address||'')).toLowerCase().includes(q)).slice(0, 4);
-
+  if (!q) { searchResults.classList.add('hidden'); searchResults.innerHTML = ''; return; }
+  const prodMatches = products.filter(p => (p.title + ' ' + p.vendor + ' ' + (p.category || '')).toLowerCase().includes(q)).slice(0, 6);
+  const notifMatches = state.notifications.filter(n => (n.title + ' ' + n.message).toLowerCase().includes(q)).slice(0, 4);
+  const orderMatches = state.orders.filter(o => (o.items + ' ' + (o.date || '') + ' ' + (o.address || '')).toLowerCase().includes(q)).slice(0, 4);
   let html = '';
   if (prodMatches.length) {
     html += '<div class="result-group"><strong>Products</strong>';
-    prodMatches.forEach(p => html += `<div class="result-item" onclick="handleDetails(${p.id});document.getElementById('search-results').classList.add('hidden')">${p.title} — <span class="meta">${p.vendor}</span></div>`);
+    prodMatches.forEach(p => html += `<div class="result-item" onclick="handleDetails(${p.id});document.getElementById('search-results').classList.add('hidden')">${p.title} — <span>${p.vendor}</span></div>`);
     html += '</div>';
   }
   if (notifMatches.length) {
     html += '<div class="result-group"><strong>Notifications</strong>';
-    notifMatches.forEach(n => html += `<div class="result-item" onclick="switchView('messenger');document.getElementById('search-results').classList.add('hidden')"><strong>${n.title}</strong><div class="meta">${n.message}</div></div>`);
+    notifMatches.forEach(n => html += `<div class="result-item" onclick="switchView('messenger');document.getElementById('search-results').classList.add('hidden')"><strong>${n.title}</strong><div>${n.message}</div></div>`);
     html += '</div>';
   }
   if (orderMatches.length) {
     html += '<div class="result-group"><strong>Orders</strong>';
-    orderMatches.forEach((o, idx) => html += `<div class="result-item" onclick="switchView('messenger');document.getElementById('search-results').classList.add('hidden')">Order #${idx+1} — ${o.items} — $${o.total.toFixed(2)}</div>`);
+    orderMatches.forEach((o, idx) => html += `<div class="result-item" onclick="switchView('messenger');document.getElementById('search-results').classList.add('hidden')">Order #${idx + 1} — ${o.items} — TZS ${o.total.toLocaleString()}</div>`);
     html += '</div>';
   }
-
-  elements.searchResults.innerHTML = html || '<div class="result-group"><em>No results</em></div>';
-  elements.searchResults.classList.remove('hidden');
+  searchResults.innerHTML = html || '<div class="result-group"><em>No results</em></div>';
+  searchResults.classList.remove('hidden');
 };
 
-if (elements.globalSearchInput) {
-  elements.globalSearchInput.addEventListener('input', (e) => performGlobalSearch(e.target.value));
-  elements.globalSearchInput.addEventListener('keydown', (e) => { if (e.key === 'Escape') { elements.searchResults.classList.add('hidden'); elements.globalSearchInput.value = ''; } });
+if (globalSearchInput) {
+  globalSearchInput.addEventListener('input', (e) => performGlobalSearch(e.target.value));
+  globalSearchInput.addEventListener('keydown', (e) => { if (e.key === 'Escape') { searchResults.classList.add('hidden'); globalSearchInput.value = ''; } });
 }
 
-// Messenger-specific search: filters notifications and orders in-place
-if (elements.messengerSearchInput) {
-  elements.messengerSearchInput.addEventListener('input', (e) => {
+const messengerSearchInput = document.getElementById('messenger-search-input');
+if (messengerSearchInput) {
+  messengerSearchInput.addEventListener('input', (e) => {
     const q = (e.target.value || '').trim().toLowerCase();
-    const notifs = (state.notifications || []).filter(n => (n.title + ' ' + n.message).toLowerCase().includes(q));
-    elements.notificationList.innerHTML = notifs.length ? notifs.map(n => `<div class="notification-item"><h4>${n.title}</h4><p>${n.message}</p><span>${n.time}</span></div>`).join('') : '<p class="no-results">No notifications match your search.</p>';
-    const ords = (state.orders || []).filter(o => (o.items + ' ' + (o.date||'')).toLowerCase().includes(q));
-    elements.ordersList.innerHTML = ords.length ? ords.map((order, idx) => `<div class="order-item"><h3>Order #${idx+1}</h3><p><strong>Date:</strong> ${order.date}</p><p><strong>Items:</strong> ${order.items}</p><p><strong>Total:</strong> $${order.total.toFixed(2)}</p></div>`).join('') : '<p class="no-results">No orders match your search.</p>';
+    const notifs = state.notifications.filter(n => (n.title + ' ' + n.message).toLowerCase().includes(q));
+    elements.notificationList.innerHTML = notifs.length
+      ? notifs.map(n => `<div class="notification-item"><h4>${n.title}</h4><p>${n.message}</p><span>${n.time}</span></div>`).join('')
+      : '<p class="no-results">No notifications match your search.</p>';
+    const ords = state.orders.filter(o => (o.items + ' ' + (o.date || '')).toLowerCase().includes(q));
+    elements.ordersList.innerHTML = ords.length
+      ? ords.map((o, idx) => `<div class="order-item"><h3>Order #${idx + 1}</h3><p><strong>Date:</strong> ${o.date}</p><p><strong>Items:</strong> ${o.items}</p><p><strong>Total:</strong> TZS ${o.total.toLocaleString()}</p></div>`).join('')
+      : '<p class="no-results">No orders match your search.</p>';
   });
 }
 
-// Close search results when clicking outside
 document.addEventListener('click', (e) => {
-  const sr = elements.searchResults;
-  if (sr && !sr.contains(e.target) && e.target !== elements.globalSearchInput) {
-    sr.classList.add('hidden');
-  }
+  if (searchResults && !searchResults.contains(e.target) && e.target !== globalSearchInput) searchResults.classList.add('hidden');
 });
 
+if (elements.productImageInput) elements.productImageInput.addEventListener('change', handleProductImageFile);
+const uploadForm = document.getElementById('product-image-upload-form');
+if (uploadForm) uploadForm.addEventListener('submit', uploadProductImage);
+
+// ✅ Cart count badge style
+const style = document.createElement('style');
+style.textContent = `#cart-count { background: #ff3b30; color: white; border-radius: 50%; padding: 0.1rem 0.45rem; font-size: 0.75rem; font-weight: 700; margin-left: 0.25rem; }`;
+document.head.appendChild(style);
+
+// --- Init ---
+elements.languageSwitcher.value = state.language;
+applyFontSize(state.fontSize);
+applyTheme(state.currentTheme);
+document.querySelectorAll('.color-btn').forEach(btn => {
+  if (btn.getAttribute('data-theme') === state.currentTheme) btn.classList.add('selected');
+});
+populateProductSelect();
+updateLanguage();
 renderCategoryFilter();
 renderCards();
