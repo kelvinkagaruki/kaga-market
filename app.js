@@ -561,25 +561,85 @@ const placeOrder = () => {
   renderCart();
   switchView('home');
 };
-
 const switchView = (view) => {
   state.view = view;
-  elements.homePanel.classList.toggle('hidden', view !== 'home');
-  elements.shopPanel.classList.toggle('hidden', view !== 'shop');
-  elements.accountPanel.classList.toggle('hidden', view !== 'account');
-  elements.settingsPanel.classList.toggle('hidden', view !== 'settings');
-  elements.messengerPanel.classList.toggle('hidden', view !== 'messenger');
-  elements.cartPanel.classList.toggle('hidden', view !== 'cart');
-  elements.deliveryPanel.classList.toggle('hidden', view !== 'delivery');
 
-  elements.showHomeBtn.classList.toggle('active', view === 'home');
-  elements.showShopBtn.classList.toggle('active', view === 'shop');
-  elements.showAccountBtn.classList.toggle('active', view === 'account');
-  elements.showMessengerBtn.classList.toggle('active', view === 'messenger');
-  elements.showCartBtn.classList.toggle('active', view === 'cart');
+  // =========================
+  // PANEL VISIBILITY CONTROL
+  // =========================
+  const panels = [
+    elements.homePanel,
+    elements.shopPanel,
+    elements.accountPanel,
+    elements.messengerPanel,
+    elements.cartPanel,
+    elements.deliveryPanel,
+    elements.settingsPanel
+  ];
 
-  if (view === 'shop') { renderBusinessCategoryFilter(); renderBusinessCards(); renderCards(); }
-  if (view === 'home') renderHomeFeatured();
+  panels.forEach(panel => {
+    if (panel) panel.classList.add('hidden');
+  });
+
+  const map = {
+    home: elements.homePanel,
+    shop: elements.shopPanel,
+    account: elements.accountPanel,
+    messenger: elements.messengerPanel,
+    cart: elements.cartPanel,
+    delivery: elements.deliveryPanel,
+    settings: elements.settingsPanel
+  };
+
+  if (map[view]) {
+    map[view].classList.remove('hidden');
+  }
+
+  // =========================
+  // DESKTOP BUTTONS ACTIVE STATE
+  // =========================
+  const buttons = [
+    elements.showHomeBtn,
+    elements.showShopBtn,
+    elements.showAccountBtn,
+    elements.showMessengerBtn,
+    elements.showCartBtn
+  ];
+
+  buttons.forEach(btn => {
+    if (btn) btn.classList.remove('active');
+  });
+
+  const activeMap = {
+    home: elements.showHomeBtn,
+    shop: elements.showShopBtn,
+    account: elements.showAccountBtn,
+    messenger: elements.showMessengerBtn,
+    cart: elements.showCartBtn
+  };
+
+  if (activeMap[view]) {
+    activeMap[view].classList.add('active');
+  }
+
+  // =========================
+  // AUTO FEATURES PER VIEW
+  // =========================
+  if (view === 'shop') {
+    renderBusinessCategoryFilter();
+    renderBusinessCards();
+    renderCards();
+  }
+
+  if (view === 'home') {
+    renderHomeFeatured();
+  }
+
+  if (view === 'messenger') {
+    renderNotifications();
+    renderOrders();
+  }
+
   closeAccountDropdown();
 };
 
