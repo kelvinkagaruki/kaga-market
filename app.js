@@ -1,3 +1,12 @@
+function loadData() {
+  let data = localStorage.getItem("kagaMarket");
+
+  if (data) {
+    state = JSON.parse(data);
+  }
+}
+
+loadData();
 const products = [
   { id: 1, title: 'Fresh Market Basket', type: 'product', category: 'Groceries', price: 29.99, description: 'Local organic produce and pantry essentials delivered fresh daily.', vendor: "Kaga's Grocers", rating: 4.8 },
   { id: 2, title: 'Handcrafted Beauty Kit', type: 'product', category: 'Beauty & Personal Care', price: 45.0, description: 'Premium natural skincare and self-care products from local artisans.', vendor: 'Luna Craft', rating: 4.9 },
@@ -11,7 +20,9 @@ const products = [
   { id: 10, title: 'Direct Business Showcase', type: 'product', category: 'Business Marketplace', price: 49.99, description: 'Products posted directly by local businesses for fast, trusted delivery.', vendor: 'Direct Seller Hub', rating: 4.8 },
   { id: 11, title: 'Vendor Shop Starter Pack', type: 'product', category: 'Business Marketplace', price: 59.99, description: 'A special bundle featuring directly posted business products and services.', vendor: 'Vendor Village', rating: 4.6 },
 ];
-
+let state = {
+  products: []
+};
 const translations = {
   en: {
     'brand-title': "Kaga's Market",
@@ -891,4 +902,79 @@ document.querySelectorAll('.color-btn').forEach(btn => {
 populateProductSelect();
 updateLanguage();
 renderCategoryFilter();
-renderCards();
+renderCards();function openAdmin() {
+  let pass = prompt("Enter Admin Password:");
+
+  if (pass === "1234") {
+    switchView("admin");
+  } else {
+    alert("Wrong password!");
+  }
+}function loadAdminProducts() {
+
+  let container = document.getElementById("admin-products-container");
+
+  container.innerHTML = "";
+
+  state.products.forEach((p, index) => {
+
+    container.innerHTML += `
+      <div style="border:1px solid #ccc; margin:10px; padding:10px;">
+
+        <h3>${p.name}</h3>
+        <p>Price: ${p.price}</p>
+        <p>Status: ${p.status || "pending"}</p>
+
+        <button onclick="approveProduct(${index})">
+          Approve
+        </button>
+
+        <button onclick="deleteProduct(${index})">
+          Delete
+        </button>
+
+      </div>
+    `;
+  });
+}
+function loadPendingProducts() {
+
+  let container = document.getElementById("admin-products-container");
+
+  container.innerHTML = "";
+
+  state.products
+    .filter(p => !p.status || p.status === "pending")
+    .forEach((p, index) => {
+
+      container.innerHTML += `
+        <div style="border:1px solid orange; margin:10px; padding:10px;">
+
+          <h3>${p.name}</h3>
+          <p>Price: ${p.price}</p>
+
+          <button onclick="approveProduct(${index})">
+            Approve
+          </button>
+
+          <button onclick="deleteProduct(${index})">
+            Delete
+          </button>
+
+        </div>
+      `;
+    });
+}
+function approveProduct(index) {
+  state.products[index].status = "approved";
+  saveData();
+  loadAdminProducts();
+}
+function deleteProduct(index) {
+  state.products.splice(index, 1);
+  saveData();
+  loadAdminProducts();
+}
+function saveData() {
+  localStorage.setItem("kagaMarket", JSON.stringify(state));
+}

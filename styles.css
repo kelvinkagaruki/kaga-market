@@ -1095,3 +1095,12 @@ main {
   color: white;
   border-radius: 5px;
 }
+#admin-panel button {
+  margin: 5px;
+  padding: 8px;
+}
+
+#admin-products-container div {
+  background: #f5f5f5;
+  border-radius: 10px;
+}
