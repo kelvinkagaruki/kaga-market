@@ -4,113 +4,2108 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Kaga's Market</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Sans:wght@400;500&display=swap" rel="stylesheet" />
   <link rel="stylesheet" href="styles.css" />
+  <style>
+    /* ===== CSS VARIABLES ===== */
+    :root {
+      --brand:        #0F6E56;
+      --brand-light:  #E1F5EE;
+      --brand-mid:    #1D9E75;
+      --brand-dark:   #085041;
+      --accent:       #D85A30;
+      --accent-light: #FAECE7;
+      --gold:         #BA7517;
+      --gold-light:   #FAEEDA;
+      --bg:           #F7F6F2;
+      --surface:      #FFFFFF;
+      --surface2:     #F1EFE8;
+      --border:       rgba(0,0,0,0.10);
+      --text:         #2C2C2A;
+      --text-muted:   #5F5E5A;
+      --text-light:   #888780;
+      --radius-sm:    8px;
+      --radius-md:    12px;
+      --radius-lg:    18px;
+      --shadow:       0 2px 12px rgba(0,0,0,0.07);
+      --shadow-lg:    0 8px 32px rgba(0,0,0,0.10);
+      --font-head:    'Syne', sans-serif;
+      --font-body:    'DM Sans', sans-serif;
+      --nav-h:        64px;
+      --mobile-nav-h: 64px;
+    }
+
+    /* ===== RESET ===== */
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    html { scroll-behavior: smooth; }
+    body {
+      font-family: var(--font-body);
+      background: var(--bg);
+      color: var(--text);
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+    }
+    button { cursor: pointer; font-family: var(--font-body); }
+    input, select, textarea { font-family: var(--font-body); }
+    a { text-decoration: none; color: inherit; }
+
+    /* ===== HEADER ===== */
+    .site-header {
+      position: sticky;
+      top: 0;
+      z-index: 100;
+      background: var(--surface);
+      border-bottom: 1px solid var(--border);
+      height: var(--nav-h);
+      display: flex;
+      align-items: center;
+      padding: 0 20px;
+      gap: 16px;
+    }
+    .brand {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      flex-shrink: 0;
+    }
+    .brand-logo {
+      width: 36px;
+      height: 36px;
+      background: var(--brand);
+      border-radius: var(--radius-sm);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-family: var(--font-head);
+      font-weight: 800;
+      font-size: 18px;
+      color: #fff;
+    }
+    .brand-text h1 {
+      font-family: var(--font-head);
+      font-weight: 700;
+      font-size: 16px;
+      color: var(--text);
+      line-height: 1.1;
+    }
+    .brand-text p {
+      font-size: 11px;
+      color: var(--text-muted);
+      line-height: 1;
+    }
+    .header-search {
+      flex: 1;
+      max-width: 380px;
+      position: relative;
+    }
+    .header-search input {
+      width: 100%;
+      height: 38px;
+      background: var(--surface2);
+      border: 1px solid var(--border);
+      border-radius: 999px;
+      padding: 0 16px 0 38px;
+      font-size: 13px;
+      color: var(--text);
+      outline: none;
+      transition: border-color 0.2s;
+    }
+    .header-search input:focus { border-color: var(--brand); }
+    .header-search .search-icon {
+      position: absolute;
+      left: 12px;
+      top: 50%;
+      transform: translateY(-50%);
+      font-size: 15px;
+      color: var(--text-light);
+    }
+    .header-nav {
+      display: flex;
+      align-items: center;
+      gap: 4px;
+    }
+    .nav-btn {
+      height: 36px;
+      padding: 0 14px;
+      border: none;
+      background: transparent;
+      border-radius: var(--radius-sm);
+      font-size: 13px;
+      font-weight: 500;
+      color: var(--text-muted);
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      transition: background 0.15s, color 0.15s;
+    }
+    .nav-btn:hover { background: var(--surface2); color: var(--text); }
+    .nav-btn.active { background: var(--brand-light); color: var(--brand-dark); }
+    .nav-btn .nav-icon { font-size: 16px; }
+    .header-actions {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      margin-left: auto;
+      flex-shrink: 0;
+    }
+    .icon-btn {
+      width: 38px;
+      height: 38px;
+      border: 1px solid var(--border);
+      background: var(--surface);
+      border-radius: var(--radius-sm);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 18px;
+      color: var(--text-muted);
+      position: relative;
+      transition: background 0.15s;
+    }
+    .icon-btn:hover { background: var(--surface2); }
+    .cart-badge {
+      position: absolute;
+      top: -4px;
+      right: -4px;
+      background: var(--accent);
+      color: #fff;
+      font-size: 10px;
+      font-weight: 600;
+      min-width: 16px;
+      height: 16px;
+      border-radius: 999px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 0 3px;
+    }
+    .lang-select {
+      height: 36px;
+      padding: 0 10px;
+      border: 1px solid var(--border);
+      border-radius: var(--radius-sm);
+      background: var(--surface);
+      font-size: 12px;
+      color: var(--text-muted);
+      outline: none;
+    }
+    .login-btn {
+      height: 36px;
+      padding: 0 16px;
+      background: var(--brand);
+      color: #fff;
+      border: none;
+      border-radius: var(--radius-sm);
+      font-size: 13px;
+      font-weight: 500;
+      transition: background 0.15s;
+    }
+    .login-btn:hover { background: var(--brand-dark); }
+
+    /* ===== MAIN LAYOUT ===== */
+    main { flex: 1; padding-bottom: var(--mobile-nav-h); }
+    .panel { display: none; }
+    .panel.active { display: block; }
+
+    /* ===== HOME PANEL ===== */
+    .hero {
+      background: linear-gradient(135deg, var(--brand-dark) 0%, var(--brand) 60%, var(--brand-mid) 100%);
+      padding: 48px 20px 56px;
+      text-align: center;
+      position: relative;
+      overflow: hidden;
+    }
+    .hero::before {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background: url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%23ffffff' fill-opacity='0.04'%3E%3Cpath d='M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E");
+    }
+    .hero-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      background: rgba(255,255,255,0.15);
+      color: rgba(255,255,255,0.9);
+      padding: 6px 14px;
+      border-radius: 999px;
+      font-size: 12px;
+      font-weight: 500;
+      margin-bottom: 18px;
+      backdrop-filter: blur(4px);
+    }
+    .hero h2 {
+      font-family: var(--font-head);
+      font-size: clamp(28px, 5vw, 46px);
+      font-weight: 800;
+      color: #fff;
+      line-height: 1.1;
+      margin-bottom: 12px;
+    }
+    .hero p {
+      font-size: 15px;
+      color: rgba(255,255,255,0.8);
+      max-width: 420px;
+      margin: 0 auto 28px;
+      line-height: 1.6;
+    }
+    .hero-actions {
+      display: flex;
+      gap: 12px;
+      justify-content: center;
+      flex-wrap: wrap;
+    }
+    .btn-primary {
+      height: 46px;
+      padding: 0 24px;
+      background: #fff;
+      color: var(--brand-dark);
+      border: none;
+      border-radius: var(--radius-sm);
+      font-size: 14px;
+      font-weight: 600;
+      font-family: var(--font-body);
+      transition: transform 0.15s, box-shadow 0.15s;
+    }
+    .btn-primary:hover { transform: translateY(-1px); box-shadow: 0 6px 20px rgba(0,0,0,0.15); }
+    .btn-secondary {
+      height: 46px;
+      padding: 0 24px;
+      background: rgba(255,255,255,0.15);
+      color: #fff;
+      border: 1px solid rgba(255,255,255,0.3);
+      border-radius: var(--radius-sm);
+      font-size: 14px;
+      font-weight: 500;
+      font-family: var(--font-body);
+      backdrop-filter: blur(4px);
+      transition: background 0.15s;
+    }
+    .btn-secondary:hover { background: rgba(255,255,255,0.25); }
+
+    /* Hero search */
+    .hero-search {
+      max-width: 520px;
+      margin: 0 auto 28px;
+      position: relative;
+    }
+    .hero-search input {
+      width: 100%;
+      height: 52px;
+      background: #fff;
+      border: none;
+      border-radius: var(--radius-sm);
+      padding: 0 130px 0 20px;
+      font-size: 15px;
+      color: var(--text);
+      outline: none;
+      box-shadow: 0 4px 24px rgba(0,0,0,0.15);
+    }
+    .hero-search button {
+      position: absolute;
+      right: 6px;
+      top: 6px;
+      height: 40px;
+      padding: 0 18px;
+      background: var(--brand);
+      color: #fff;
+      border: none;
+      border-radius: var(--radius-sm);
+      font-size: 13px;
+      font-weight: 600;
+      font-family: var(--font-body);
+    }
+
+    /* Categories */
+    .section { padding: 32px 20px; }
+    .section-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 18px;
+    }
+    .section-title {
+      font-family: var(--font-head);
+      font-size: 20px;
+      font-weight: 700;
+      color: var(--text);
+    }
+    .see-all {
+      font-size: 13px;
+      color: var(--brand);
+      font-weight: 500;
+      background: none;
+      border: none;
+    }
+    .categories-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(88px, 1fr));
+      gap: 12px;
+    }
+    .category-card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-md);
+      padding: 16px 8px;
+      text-align: center;
+      cursor: pointer;
+      transition: border-color 0.2s, transform 0.15s;
+    }
+    .category-card:hover { border-color: var(--brand); transform: translateY(-2px); }
+    .category-icon { font-size: 26px; margin-bottom: 8px; display: block; }
+    .category-name { font-size: 12px; font-weight: 500; color: var(--text); }
+    .category-count { font-size: 10px; color: var(--text-light); margin-top: 2px; }
+
+    /* Products grid */
+    .products-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
+      gap: 14px;
+    }
+    .product-card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-md);
+      overflow: hidden;
+      cursor: pointer;
+      transition: box-shadow 0.2s, transform 0.15s;
+    }
+    .product-card:hover { box-shadow: var(--shadow-lg); transform: translateY(-2px); }
+    .product-img {
+      width: 100%;
+      aspect-ratio: 1;
+      background: var(--surface2);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 40px;
+    }
+    .product-info { padding: 10px 12px 12px; }
+    .product-name { font-size: 13px; font-weight: 500; color: var(--text); margin-bottom: 4px; line-height: 1.3; }
+    .product-price { font-size: 14px; font-weight: 600; color: var(--brand-dark); }
+    .product-seller { font-size: 11px; color: var(--text-light); margin-top: 4px; }
+    .product-actions {
+      display: flex;
+      gap: 6px;
+      padding: 0 12px 12px;
+    }
+    .btn-cart {
+      flex: 1;
+      height: 32px;
+      background: var(--brand);
+      color: #fff;
+      border: none;
+      border-radius: var(--radius-sm);
+      font-size: 12px;
+      font-weight: 500;
+      font-family: var(--font-body);
+    }
+    .btn-whatsapp {
+      width: 32px;
+      height: 32px;
+      background: #25D366;
+      color: #fff;
+      border: none;
+      border-radius: var(--radius-sm);
+      font-size: 15px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    /* Businesses */
+    .businesses-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+      gap: 14px;
+    }
+    .business-card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-md);
+      padding: 16px;
+      cursor: pointer;
+      transition: box-shadow 0.2s;
+    }
+    .business-card:hover { box-shadow: var(--shadow-lg); }
+    .biz-header { display: flex; align-items: center; gap: 12px; margin-bottom: 10px; }
+    .biz-logo {
+      width: 44px;
+      height: 44px;
+      border-radius: var(--radius-sm);
+      background: var(--brand-light);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 22px;
+      flex-shrink: 0;
+    }
+    .biz-name { font-size: 14px; font-weight: 600; }
+    .biz-type { font-size: 11px; color: var(--text-light); }
+    .verified-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
+      background: var(--brand-light);
+      color: var(--brand-dark);
+      font-size: 11px;
+      font-weight: 500;
+      padding: 3px 8px;
+      border-radius: 999px;
+      margin-top: 4px;
+    }
+    .biz-rating { font-size: 13px; color: var(--gold); margin-top: 8px; }
+
+    /* ===== SHOP / MARKETPLACE PANEL ===== */
+    .shop-layout {
+      display: flex;
+      gap: 0;
+      min-height: calc(100vh - var(--nav-h) - var(--mobile-nav-h));
+    }
+    .shop-filters {
+      width: 220px;
+      flex-shrink: 0;
+      background: var(--surface);
+      border-right: 1px solid var(--border);
+      padding: 20px 16px;
+    }
+    .filter-title {
+      font-family: var(--font-head);
+      font-size: 14px;
+      font-weight: 700;
+      color: var(--text);
+      margin-bottom: 14px;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      font-size: 11px;
+    }
+    .filter-group { margin-bottom: 20px; }
+    .filter-label { font-size: 12px; color: var(--text-muted); font-weight: 500; margin-bottom: 8px; display: block; }
+    .filter-option {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      padding: 7px 10px;
+      border-radius: var(--radius-sm);
+      cursor: pointer;
+      font-size: 13px;
+      color: var(--text);
+      transition: background 0.15s;
+    }
+    .filter-option:hover { background: var(--surface2); }
+    .filter-option.active { background: var(--brand-light); color: var(--brand-dark); font-weight: 500; }
+    .filter-option input[type="checkbox"] { accent-color: var(--brand); }
+    .price-range { padding: 4px 0; }
+    .price-range input[type="range"] { width: 100%; accent-color: var(--brand); }
+    .price-labels { display: flex; justify-content: space-between; font-size: 11px; color: var(--text-light); margin-top: 4px; }
+    .shop-main { flex: 1; padding: 20px; }
+    .shop-toolbar {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 18px;
+      gap: 12px;
+    }
+    .shop-search {
+      flex: 1;
+      height: 38px;
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-sm);
+      padding: 0 14px;
+      font-size: 13px;
+      color: var(--text);
+      outline: none;
+    }
+    .shop-search:focus { border-color: var(--brand); }
+    .sort-select {
+      height: 38px;
+      padding: 0 12px;
+      border: 1px solid var(--border);
+      border-radius: var(--radius-sm);
+      background: var(--surface);
+      font-size: 13px;
+      color: var(--text);
+      outline: none;
+    }
+    .results-count { font-size: 13px; color: var(--text-muted); flex-shrink: 0; }
+
+    /* ===== PRODUCT PAGE PANEL ===== */
+    .product-page { max-width: 900px; margin: 0 auto; padding: 24px 20px; }
+    .product-page-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 32px;
+      margin-bottom: 32px;
+    }
+    .product-images { }
+    .main-img {
+      width: 100%;
+      aspect-ratio: 1;
+      background: var(--surface2);
+      border-radius: var(--radius-lg);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 80px;
+      margin-bottom: 10px;
+      border: 1px solid var(--border);
+    }
+    .img-thumbs { display: flex; gap: 8px; }
+    .img-thumb {
+      width: 56px;
+      height: 56px;
+      background: var(--surface2);
+      border-radius: var(--radius-sm);
+      border: 2px solid transparent;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 22px;
+      cursor: pointer;
+    }
+    .img-thumb.active { border-color: var(--brand); }
+    .product-details-side { }
+    .product-page-name {
+      font-family: var(--font-head);
+      font-size: 24px;
+      font-weight: 700;
+      line-height: 1.2;
+      margin-bottom: 8px;
+    }
+    .product-page-price {
+      font-size: 26px;
+      font-weight: 700;
+      color: var(--brand-dark);
+      margin-bottom: 16px;
+    }
+    .product-rating { display: flex; align-items: center; gap: 6px; margin-bottom: 16px; font-size: 13px; }
+    .stars { color: var(--gold); }
+    .rating-count { color: var(--text-light); }
+    .product-desc {
+      font-size: 14px;
+      color: var(--text-muted);
+      line-height: 1.7;
+      margin-bottom: 20px;
+    }
+    .seller-box {
+      background: var(--surface2);
+      border-radius: var(--radius-md);
+      padding: 14px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 20px;
+      border: 1px solid var(--border);
+    }
+    .seller-info { display: flex; align-items: center; gap: 10px; }
+    .seller-avatar {
+      width: 38px;
+      height: 38px;
+      background: var(--brand-light);
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 18px;
+    }
+    .seller-name { font-size: 13px; font-weight: 600; }
+    .seller-label { font-size: 11px; color: var(--text-light); }
+    .btn-wa {
+      height: 36px;
+      padding: 0 16px;
+      background: #25D366;
+      color: #fff;
+      border: none;
+      border-radius: var(--radius-sm);
+      font-size: 13px;
+      font-weight: 500;
+      font-family: var(--font-body);
+    }
+    .product-page-actions { display: flex; gap: 10px; }
+    .btn-add-cart {
+      flex: 1;
+      height: 46px;
+      background: var(--brand);
+      color: #fff;
+      border: none;
+      border-radius: var(--radius-sm);
+      font-size: 14px;
+      font-weight: 600;
+      font-family: var(--font-body);
+    }
+    .btn-save {
+      width: 46px;
+      height: 46px;
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-sm);
+      font-size: 20px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    /* ===== BUSINESSES PANEL ===== */
+    .businesses-page { padding: 24px 20px; }
+    .page-title {
+      font-family: var(--font-head);
+      font-size: 26px;
+      font-weight: 800;
+      margin-bottom: 20px;
+    }
+    .biz-reviews { margin-top: 10px; }
+    .review-card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-md);
+      padding: 14px;
+      margin-bottom: 10px;
+    }
+    .reviewer { display: flex; align-items: center; gap: 8px; margin-bottom: 8px; }
+    .reviewer-avatar {
+      width: 32px; height: 32px;
+      background: var(--surface2);
+      border-radius: 50%;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 14px;
+    }
+    .reviewer-name { font-size: 13px; font-weight: 500; }
+    .review-text { font-size: 13px; color: var(--text-muted); line-height: 1.5; }
+
+    /* ===== SERVICES PANEL ===== */
+    .services-page { padding: 24px 20px; }
+    .services-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+      gap: 14px;
+      margin-bottom: 24px;
+    }
+    .service-cat-card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-md);
+      padding: 20px 16px;
+      text-align: center;
+      cursor: pointer;
+      transition: border-color 0.2s, box-shadow 0.2s;
+    }
+    .service-cat-card:hover { border-color: var(--brand); box-shadow: var(--shadow); }
+    .service-icon { font-size: 36px; margin-bottom: 10px; display: block; }
+    .service-cat-name { font-size: 15px; font-weight: 600; margin-bottom: 4px; }
+    .service-cat-count { font-size: 12px; color: var(--text-light); }
+    .professionals-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+      gap: 14px;
+    }
+    .professional-card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-md);
+      padding: 16px;
+    }
+    .pro-header { display: flex; align-items: center; gap: 12px; margin-bottom: 12px; }
+    .pro-avatar {
+      width: 48px; height: 48px;
+      background: var(--brand-light);
+      border-radius: 50%;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 22px;
+    }
+    .pro-name { font-size: 14px; font-weight: 600; }
+    .pro-title { font-size: 12px; color: var(--brand); font-weight: 500; }
+    .pro-rate { font-size: 13px; color: var(--text-muted); margin-bottom: 12px; }
+    .btn-contact {
+      width: 100%;
+      height: 36px;
+      background: var(--brand-light);
+      color: var(--brand-dark);
+      border: none;
+      border-radius: var(--radius-sm);
+      font-size: 13px;
+      font-weight: 500;
+      font-family: var(--font-body);
+    }
+
+    /* ===== CUSTOMER DASHBOARD ===== */
+    .dashboard-page { padding: 24px 20px; }
+    .dashboard-tabs {
+      display: flex;
+      gap: 4px;
+      background: var(--surface2);
+      border-radius: var(--radius-sm);
+      padding: 4px;
+      margin-bottom: 24px;
+    }
+    .dash-tab {
+      flex: 1;
+      height: 36px;
+      border: none;
+      background: transparent;
+      border-radius: 6px;
+      font-size: 13px;
+      font-weight: 500;
+      color: var(--text-muted);
+      font-family: var(--font-body);
+      transition: background 0.15s, color 0.15s;
+    }
+    .dash-tab.active { background: var(--surface); color: var(--text); box-shadow: 0 1px 4px rgba(0,0,0,0.08); }
+    .orders-list { }
+    .order-card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-md);
+      padding: 14px 16px;
+      margin-bottom: 10px;
+      display: flex;
+      align-items: center;
+      gap: 14px;
+    }
+    .order-emoji { font-size: 28px; }
+    .order-info { flex: 1; }
+    .order-name { font-size: 14px; font-weight: 500; }
+    .order-meta { font-size: 12px; color: var(--text-light); margin-top: 2px; }
+    .order-status {
+      font-size: 11px;
+      font-weight: 600;
+      padding: 4px 10px;
+      border-radius: 999px;
+    }
+    .status-delivered { background: #EAF3DE; color: #3B6D11; }
+    .status-processing { background: var(--gold-light); color: var(--gold); }
+    .status-shipped { background: var(--brand-light); color: var(--brand-dark); }
+    .order-price { font-size: 14px; font-weight: 600; color: var(--text); }
+
+    /* ===== BUSINESS DASHBOARD ===== */
+    .biz-dashboard { padding: 24px 20px; }
+    .stats-row {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
+      gap: 12px;
+      margin-bottom: 24px;
+    }
+    .stat-card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-md);
+      padding: 16px;
+    }
+    .stat-label { font-size: 11px; color: var(--text-light); text-transform: uppercase; letter-spacing: 0.04em; margin-bottom: 8px; }
+    .stat-value { font-family: var(--font-head); font-size: 24px; font-weight: 700; color: var(--text); }
+    .stat-change { font-size: 11px; color: var(--brand); margin-top: 4px; }
+    .dash-section-title {
+      font-family: var(--font-head);
+      font-size: 16px;
+      font-weight: 700;
+      margin-bottom: 14px;
+      color: var(--text);
+    }
+    .biz-products-table {
+      width: 100%;
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-md);
+      overflow: hidden;
+      border-collapse: collapse;
+      font-size: 13px;
+    }
+    .biz-products-table th {
+      background: var(--surface2);
+      padding: 10px 14px;
+      text-align: left;
+      font-size: 11px;
+      text-transform: uppercase;
+      letter-spacing: 0.04em;
+      color: var(--text-light);
+      font-weight: 600;
+    }
+    .biz-products-table td {
+      padding: 12px 14px;
+      border-top: 1px solid var(--border);
+      color: var(--text);
+    }
+    .biz-products-table tr:hover td { background: var(--surface2); }
+
+    /* ===== ADMIN DASHBOARD ===== */
+    .admin-page { padding: 24px 20px; }
+    .admin-header {
+      background: var(--brand-dark);
+      color: #fff;
+      padding: 20px;
+      border-radius: var(--radius-lg);
+      margin-bottom: 24px;
+    }
+    .admin-header h2 { font-family: var(--font-head); font-size: 20px; font-weight: 700; margin-bottom: 4px; }
+    .admin-header p { font-size: 13px; opacity: 0.7; }
+    .admin-stats {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+      gap: 12px;
+      margin-bottom: 24px;
+    }
+    .admin-stat {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-md);
+      padding: 16px;
+    }
+    .admin-stat-icon { font-size: 24px; margin-bottom: 8px; }
+    .admin-stat-value { font-family: var(--font-head); font-size: 22px; font-weight: 700; color: var(--text); }
+    .admin-stat-label { font-size: 11px; color: var(--text-light); margin-top: 4px; }
+    .admin-actions-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+      gap: 12px;
+    }
+    .admin-action-card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-md);
+      padding: 18px;
+      cursor: pointer;
+      transition: border-color 0.2s, box-shadow 0.2s;
+    }
+    .admin-action-card:hover { border-color: var(--brand); box-shadow: var(--shadow); }
+    .admin-action-icon { font-size: 28px; margin-bottom: 10px; }
+    .admin-action-title { font-size: 14px; font-weight: 600; margin-bottom: 4px; }
+    .admin-action-desc { font-size: 12px; color: var(--text-light); }
+
+    /* ===== ACCOUNT PANEL ===== */
+    .account-page { padding: 24px 20px; max-width: 500px; margin: 0 auto; }
+    .account-card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-lg);
+      overflow: hidden;
+      margin-bottom: 16px;
+    }
+    .account-profile {
+      background: linear-gradient(135deg, var(--brand-dark), var(--brand));
+      padding: 28px 20px;
+      text-align: center;
+      color: #fff;
+    }
+    .account-avatar {
+      width: 70px;
+      height: 70px;
+      background: rgba(255,255,255,0.2);
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 32px;
+      margin: 0 auto 12px;
+    }
+    .account-name { font-family: var(--font-head); font-size: 20px; font-weight: 700; }
+    .account-role { font-size: 13px; opacity: 0.8; margin-top: 4px; }
+    .account-menu { }
+    .account-menu-item {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      padding: 14px 16px;
+      border-bottom: 1px solid var(--border);
+      font-size: 14px;
+      cursor: pointer;
+      transition: background 0.15s;
+    }
+    .account-menu-item:last-child { border-bottom: none; }
+    .account-menu-item:hover { background: var(--surface2); }
+    .account-menu-icon { font-size: 18px; width: 24px; text-align: center; }
+    .account-menu-label { flex: 1; }
+    .account-menu-arrow { color: var(--text-light); font-size: 14px; }
+
+    /* ===== MESSENGER PANEL ===== */
+    .messenger-page { display: flex; height: calc(100vh - var(--nav-h) - var(--mobile-nav-h)); }
+    .messenger-list {
+      width: 280px;
+      border-right: 1px solid var(--border);
+      background: var(--surface);
+      overflow-y: auto;
+    }
+    .messenger-list-header {
+      padding: 16px;
+      border-bottom: 1px solid var(--border);
+      font-family: var(--font-head);
+      font-size: 16px;
+      font-weight: 700;
+    }
+    .convo-item {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      padding: 12px 16px;
+      border-bottom: 1px solid var(--border);
+      cursor: pointer;
+      transition: background 0.15s;
+    }
+    .convo-item:hover, .convo-item.active { background: var(--brand-light); }
+    .convo-avatar {
+      width: 42px; height: 42px;
+      background: var(--surface2);
+      border-radius: 50%;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 20px;
+      flex-shrink: 0;
+    }
+    .convo-info { flex: 1; min-width: 0; }
+    .convo-name { font-size: 13px; font-weight: 600; }
+    .convo-preview { font-size: 12px; color: var(--text-light); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+    .convo-time { font-size: 10px; color: var(--text-light); flex-shrink: 0; }
+    .messenger-chat { flex: 1; display: flex; flex-direction: column; }
+    .chat-header {
+      padding: 14px 18px;
+      border-bottom: 1px solid var(--border);
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      background: var(--surface);
+    }
+    .chat-messages {
+      flex: 1;
+      overflow-y: auto;
+      padding: 20px;
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+      background: var(--bg);
+    }
+    .msg-bubble {
+      max-width: 70%;
+      padding: 10px 14px;
+      border-radius: 16px;
+      font-size: 13px;
+      line-height: 1.5;
+    }
+    .msg-in { background: var(--surface); border-radius: 4px 16px 16px 16px; align-self: flex-start; color: var(--text); }
+    .msg-out { background: var(--brand); color: #fff; border-radius: 16px 4px 16px 16px; align-self: flex-end; }
+    .chat-input-bar {
+      padding: 12px 16px;
+      border-top: 1px solid var(--border);
+      display: flex;
+      gap: 8px;
+      background: var(--surface);
+    }
+    .chat-input-bar input {
+      flex: 1;
+      height: 40px;
+      background: var(--surface2);
+      border: 1px solid var(--border);
+      border-radius: 999px;
+      padding: 0 16px;
+      font-size: 13px;
+      color: var(--text);
+      outline: none;
+    }
+    .send-btn {
+      width: 40px;
+      height: 40px;
+      background: var(--brand);
+      color: #fff;
+      border: none;
+      border-radius: 50%;
+      font-size: 16px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    /* ===== MOBILE BOTTOM NAV ===== */
+    .mobile-bottom-nav {
+      position: fixed;
+      bottom: 0;
+      left: 0;
+      right: 0;
+      height: var(--mobile-nav-h);
+      background: var(--surface);
+      border-top: 1px solid var(--border);
+      display: flex;
+      z-index: 100;
+    }
+    .mob-nav-btn {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      gap: 3px;
+      border: none;
+      background: transparent;
+      color: var(--text-light);
+      font-size: 10px;
+      font-weight: 500;
+      font-family: var(--font-body);
+      transition: color 0.15s;
+    }
+    .mob-nav-btn .m-icon { font-size: 22px; }
+    .mob-nav-btn.active { color: var(--brand); }
+    .mob-nav-btn.active .m-icon { color: var(--brand); }
+
+    /* ===== CART PANEL ===== */
+    .cart-page { padding: 24px 20px; max-width: 600px; margin: 0 auto; }
+    .cart-item {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-md);
+      padding: 12px 14px;
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      margin-bottom: 10px;
+    }
+    .cart-item-img { font-size: 36px; width: 56px; height: 56px; background: var(--surface2); border-radius: var(--radius-sm); display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
+    .cart-item-info { flex: 1; }
+    .cart-item-name { font-size: 14px; font-weight: 500; }
+    .cart-item-price { font-size: 13px; color: var(--brand-dark); font-weight: 600; margin-top: 2px; }
+    .qty-control { display: flex; align-items: center; gap: 6px; margin-top: 6px; }
+    .qty-btn { width: 24px; height: 24px; background: var(--surface2); border: 1px solid var(--border); border-radius: 4px; font-size: 14px; display: flex; align-items: center; justify-content: center; }
+    .qty-num { font-size: 13px; font-weight: 500; min-width: 20px; text-align: center; }
+    .cart-total-bar {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-md);
+      padding: 16px;
+      margin-top: 8px;
+    }
+    .cart-total-row { display: flex; justify-content: space-between; font-size: 13px; color: var(--text-muted); margin-bottom: 8px; }
+    .cart-total-main { display: flex; justify-content: space-between; font-size: 16px; font-weight: 700; margin-top: 10px; padding-top: 10px; border-top: 1px solid var(--border); }
+    .btn-checkout {
+      width: 100%;
+      height: 48px;
+      background: var(--brand);
+      color: #fff;
+      border: none;
+      border-radius: var(--radius-sm);
+      font-size: 15px;
+      font-weight: 600;
+      font-family: var(--font-body);
+      margin-top: 14px;
+    }
+
+    /* ===== DELIVERY PANEL ===== */
+    .delivery-page { padding: 24px 20px; max-width: 520px; margin: 0 auto; }
+    .form-group { margin-bottom: 16px; }
+    .form-label { font-size: 13px; font-weight: 500; color: var(--text); margin-bottom: 6px; display: block; }
+    .form-input {
+      width: 100%;
+      height: 44px;
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-sm);
+      padding: 0 14px;
+      font-size: 14px;
+      color: var(--text);
+      outline: none;
+      transition: border-color 0.2s;
+    }
+    .form-input:focus { border-color: var(--brand); }
+    .btn-place-order {
+      width: 100%;
+      height: 48px;
+      background: var(--brand);
+      color: #fff;
+      border: none;
+      border-radius: var(--radius-sm);
+      font-size: 15px;
+      font-weight: 600;
+      font-family: var(--font-body);
+      margin-top: 8px;
+    }
+
+    /* ===== FOOTER ===== */
+    .site-footer {
+      background: var(--brand-dark);
+      color: rgba(255,255,255,0.7);
+      padding: 32px 20px;
+      margin-bottom: var(--mobile-nav-h);
+    }
+    .footer-inner {
+      max-width: 900px;
+      margin: 0 auto;
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
+      gap: 24px;
+      margin-bottom: 24px;
+    }
+    .footer-col h4 { font-family: var(--font-head); font-size: 13px; font-weight: 700; color: #fff; margin-bottom: 12px; }
+    .footer-col a { display: block; font-size: 12px; color: rgba(255,255,255,0.6); margin-bottom: 8px; transition: color 0.15s; }
+    .footer-col a:hover { color: #fff; }
+    .footer-bottom {
+      border-top: 1px solid rgba(255,255,255,0.1);
+      padding-top: 20px;
+      text-align: center;
+      font-size: 12px;
+    }
+
+    /* ===== HELPERS ===== */
+    .hidden-mob { }
+    @media (max-width: 640px) {
+      .header-nav { display: none; }
+      .header-search { display: none; }
+      .brand-text p { display: none; }
+      .shop-filters { display: none; }
+      .product-page-grid { grid-template-columns: 1fr; }
+      .messenger-list { display: none; }
+      .footer-inner { grid-template-columns: 1fr 1fr; }
+    }
+  </style>
 </head>
 
 <body>
 
+  <!-- ===== HEADER ===== -->
   <header class="site-header">
     <div class="brand">
-      <h1 data-i18n="brand-title">Kaga's Market</h1>
-      <p data-i18n="brand-subtitle">Marketplace + Delivery Platform</p>
-    </div>
-
-    <nav class="nav-links">
-      <button id="show-home-btn" class="nav-button active">🏠 <span data-i18n="nav-home">Home</span></button>
-      <button id="show-shop-btn" class="nav-button">🛍️ <span data-i18n="nav-shop">Shop</span></button>
-      <button id="show-account-btn" class="nav-button">👤 <span data-i18n="nav-account">Account</span></button>
-      <button id="show-messenger-btn" class="nav-button">💬 <span data-i18n="nav-messenger">Messenger</span></button>
-    </nav>
-
-    <div class="header-search-wrapper">
-      <div class="header-search">
-        <input id="global-search-input" type="search" placeholder="Search products, shops, orders..." />
+      <div class="brand-logo">K</div>
+      <div class="brand-text">
+        <h1>Kaga's Market</h1>
+        <p>Marketplace &amp; Delivery</p>
       </div>
     </div>
 
-    <div class="header-menu">
-      <button id="show-cart-btn" class="nav-button mini-icon">🛒 <span id="cart-count">0</span></button>
+    <div class="header-search">
+      <span class="search-icon">🔍</span>
+      <input id="global-search-input" type="search" placeholder="Search products, shops, services..." />
+    </div>
 
-      <select id="language-switcher" class="language-switcher">
-        <option value="en">English</option>
-        <option value="sw">Kiswahili</option>
+    <nav class="header-nav">
+      <button class="nav-btn active" onclick="switchView('home')">
+        <span class="nav-icon">🏠</span> Home
+      </button>
+      <button class="nav-btn" onclick="switchView('shop')">
+        <span class="nav-icon">🛍️</span> Shop
+      </button>
+      <button class="nav-btn" onclick="switchView('businesses')">
+        <span class="nav-icon">🏪</span> Businesses
+      </button>
+      <button class="nav-btn" onclick="switchView('services')">
+        <span class="nav-icon">🔧</span> Services
+      </button>
+    </nav>
+
+    <div class="header-actions">
+      <button class="icon-btn" onclick="switchView('cart')">
+        🛒
+        <span class="cart-badge" id="cart-count">0</span>
+      </button>
+      <select id="language-switcher" class="lang-select">
+        <option value="en">🇬🇧 EN</option>
+        <option value="sw">🇹🇿 SW</option>
       </select>
-
-      <button id="account-menu-btn" class="account-btn">👤 Account</button>
+      <button class="login-btn" onclick="switchView('account')">👤 Account</button>
     </div>
   </header>
 
+  <!-- ===== MAIN ===== -->
   <main>
 
-    <!-- HOME -->
-    <section class="panel" id="home-panel">
-      <h2>Welcome to Kaga's Market</h2>
-      <button onclick="switchView('shop')">Browse Shop</button>
+    <!-- HOME PANEL -->
+    <section class="panel active" id="home-panel">
+
+      <!-- Hero -->
+      <div class="hero">
+        <div class="hero-badge">📍 Tanzania's Local Marketplace</div>
+        <h2>Buy, Sell &amp; Get It<br />Delivered Today</h2>
+        <p>Connect with local sellers, verified businesses, and professional services across Tanzania.</p>
+        <div class="hero-search">
+          <input type="search" placeholder="What are you looking for?" />
+          <button>Search</button>
+        </div>
+        <div class="hero-actions">
+          <button class="btn-primary" onclick="switchView('shop')">Browse Products</button>
+          <button class="btn-secondary" onclick="switchView('services')">Find Services</button>
+        </div>
+      </div>
+
+      <!-- Categories -->
+      <div class="section">
+        <div class="section-header">
+          <h2 class="section-title">Categories</h2>
+          <button class="see-all" onclick="switchView('shop')">See all →</button>
+        </div>
+        <div class="categories-grid" id="categories-grid">
+          <!-- filled by JS -->
+        </div>
+      </div>
+
+      <!-- Featured Products -->
+      <div class="section" style="background: var(--surface2); margin: 0; padding: 32px 20px;">
+        <div class="section-header">
+          <h2 class="section-title">Featured Products</h2>
+          <button class="see-all" onclick="switchView('shop')">See all →</button>
+        </div>
+        <div class="products-grid" id="featured-products">
+          <!-- filled by JS -->
+        </div>
+      </div>
+
+      <!-- Verified Businesses -->
+      <div class="section">
+        <div class="section-header">
+          <h2 class="section-title">Verified Businesses</h2>
+          <button class="see-all" onclick="switchView('businesses')">See all →</button>
+        </div>
+        <div class="businesses-grid" id="home-businesses">
+          <!-- filled by JS -->
+        </div>
+      </div>
+
+      <!-- Footer -->
+      <footer class="site-footer">
+        <div class="footer-inner">
+          <div class="footer-col">
+            <h4>Kaga's Market</h4>
+            <a href="#">About Us</a>
+            <a href="#">How It Works</a>
+            <a href="#">Contact Us</a>
+          </div>
+          <div class="footer-col">
+            <h4>For Buyers</h4>
+            <a href="#">Browse Products</a>
+            <a href="#">Track Order</a>
+            <a href="#">Returns</a>
+          </div>
+          <div class="footer-col">
+            <h4>For Sellers</h4>
+            <a href="#">Register Business</a>
+            <a href="#">Seller Guide</a>
+            <a href="#">Pricing</a>
+          </div>
+          <div class="footer-col">
+            <h4>Legal</h4>
+            <a href="#">Privacy Policy</a>
+            <a href="#">Terms of Use</a>
+            <a href="#">Cookie Policy</a>
+          </div>
+        </div>
+        <div class="footer-bottom">
+          <p>© 2025 Kaga's Market · Built for Tanzania 🇹🇿</p>
+        </div>
+      </footer>
     </section>
 
-    <!-- SHOP -->
-    <section class="panel hidden" id="shop-panel">
-      <h2>Shop</h2>
-      <div id="product-list"></div>
+    <!-- SHOP / MARKETPLACE PANEL -->
+    <section class="panel" id="shop-panel">
+      <div class="shop-layout">
+
+        <!-- Filters Sidebar -->
+        <aside class="shop-filters">
+          <p class="filter-title">Filters</p>
+
+          <div class="filter-group">
+            <span class="filter-label">Category</span>
+            <div class="filter-option active">📱 Electronics</div>
+            <div class="filter-option">👗 Fashion</div>
+            <div class="filter-option">🍎 Food &amp; Groceries</div>
+            <div class="filter-option">🏠 Home &amp; Living</div>
+            <div class="filter-option">💄 Beauty</div>
+            <div class="filter-option">⚽ Sports</div>
+          </div>
+
+          <div class="filter-group">
+            <span class="filter-label">Price Range (TZS)</span>
+            <div class="price-range">
+              <input type="range" min="0" max="500000" value="200000" id="price-slider" />
+              <div class="price-labels">
+                <span>0</span>
+                <span id="price-val">200,000</span>
+              </div>
+            </div>
+          </div>
+
+          <div class="filter-group">
+            <span class="filter-label">Location</span>
+            <div class="filter-option">
+              <input type="checkbox" checked /> Dar es Salaam
+            </div>
+            <div class="filter-option">
+              <input type="checkbox" /> Mwanza
+            </div>
+            <div class="filter-option">
+              <input type="checkbox" /> Arusha
+            </div>
+            <div class="filter-option">
+              <input type="checkbox" /> Dodoma
+            </div>
+          </div>
+
+          <div class="filter-group">
+            <span class="filter-label">Condition</span>
+            <div class="filter-option active">✅ New</div>
+            <div class="filter-option">♻️ Used</div>
+          </div>
+        </aside>
+
+        <!-- Main Shop Content -->
+        <div class="shop-main">
+          <div class="shop-toolbar">
+            <input class="shop-search" type="search" placeholder="Search products..." id="shop-search-input" />
+            <select class="sort-select">
+              <option>Sort: Newest</option>
+              <option>Price: Low–High</option>
+              <option>Price: High–Low</option>
+              <option>Most Popular</option>
+            </select>
+            <span class="results-count" id="results-count">48 products</span>
+          </div>
+          <div class="products-grid" id="shop-product-list">
+            <!-- filled by JS -->
+          </div>
+        </div>
+      </div>
     </section>
 
-    <!-- CART -->
-    <section class="panel hidden" id="cart-panel">
-      <h2>Cart</h2>
-      <div id="cart-list"></div>
-      <strong id="cart-total">TZS 0</strong>
+    <!-- PRODUCT PAGE PANEL -->
+    <section class="panel" id="product-panel">
+      <div class="product-page">
+        <button style="margin-bottom:16px; background:none; border:none; font-size:14px; color:var(--brand); cursor:pointer;" onclick="switchView('shop')">← Back to Shop</button>
+        <div class="product-page-grid">
+          <!-- Images -->
+          <div class="product-images">
+            <div class="main-img" id="main-product-img">📱</div>
+            <div class="img-thumbs">
+              <div class="img-thumb active">📱</div>
+              <div class="img-thumb">🔋</div>
+              <div class="img-thumb">📦</div>
+            </div>
+          </div>
+          <!-- Details -->
+          <div class="product-details-side">
+            <h2 class="product-page-name" id="product-page-name">Samsung Galaxy A15</h2>
+            <div class="product-page-price" id="product-page-price">TZS 450,000</div>
+            <div class="product-rating">
+              <span class="stars">★★★★☆</span>
+              <span class="rating-count">(128 reviews)</span>
+            </div>
+            <p class="product-desc" id="product-page-desc">
+              Powerful smartphone with 6.5" display, 50MP camera, 5000mAh battery, and Android 14. 
+              Available in Black, Blue, and Gold. Perfect for everyday use and business.
+            </p>
+            <div class="seller-box">
+              <div class="seller-info">
+                <div class="seller-avatar">🏪</div>
+                <div>
+                  <div class="seller-name">TechHub Tanzania</div>
+                  <div class="seller-label">Verified Seller · Dar es Salaam</div>
+                </div>
+              </div>
+              <a href="https://wa.me/255700000000" target="_blank">
+                <button class="btn-wa">💬 WhatsApp</button>
+              </a>
+            </div>
+            <div class="product-page-actions">
+              <button class="btn-add-cart" onclick="addToCart('Sample Product', 450000)">🛒 Add to Cart</button>
+              <button class="btn-save">❤️</button>
+            </div>
+          </div>
+        </div>
+      </div>
     </section>
 
-    <!-- DELIVERY -->
-    <section class="panel hidden" id="delivery-panel">
-      <h2>Delivery</h2>
-      <form id="delivery-form">
-        <input type="text" placeholder="Name" required />
-        <input type="text" placeholder="Phone" required />
-        <input type="text" placeholder="Address" required />
-        <button type="submit">Place Order</button>
-      </form>
+    <!-- BUSINESSES PANEL -->
+    <section class="panel" id="businesses-panel">
+      <div class="businesses-page">
+        <h2 class="page-title">Verified Businesses</h2>
+        <div class="businesses-grid" id="all-businesses">
+          <!-- filled by JS -->
+        </div>
+      </div>
     </section>
 
-    <!-- ACCOUNT -->
-    <section class="panel hidden" id="account-panel">
-      <h2>Account</h2>
+    <!-- SERVICES PANEL -->
+    <section class="panel" id="services-panel">
+      <div class="services-page">
+        <h2 class="page-title">Find Professionals</h2>
+        <div class="services-grid">
+          <div class="service-cat-card">
+            <span class="service-icon">⚡</span>
+            <div class="service-cat-name">Engineers</div>
+            <div class="service-cat-count">24 professionals</div>
+          </div>
+          <div class="service-cat-card">
+            <span class="service-icon">🏗️</span>
+            <div class="service-cat-name">Contractors</div>
+            <div class="service-cat-count">38 professionals</div>
+          </div>
+          <div class="service-cat-card">
+            <span class="service-icon">🔨</span>
+            <div class="service-cat-name">Fundis</div>
+            <div class="service-cat-count">56 professionals</div>
+          </div>
+          <div class="service-cat-card">
+            <span class="service-icon">🧹</span>
+            <div class="service-cat-name">Cleaning</div>
+            <div class="service-cat-count">19 professionals</div>
+          </div>
+          <div class="service-cat-card">
+            <span class="service-icon">🚗</span>
+            <div class="service-cat-name">Auto Repair</div>
+            <div class="service-cat-count">15 professionals</div>
+          </div>
+          <div class="service-cat-card">
+            <span class="service-icon">💻</span>
+            <div class="service-cat-name">IT Support</div>
+            <div class="service-cat-count">22 professionals</div>
+          </div>
+          <div class="service-cat-card">
+            <span class="service-icon">🎓</span>
+            <div class="service-cat-name">Tutors</div>
+            <div class="service-cat-count">41 professionals</div>
+          </div>
+          <div class="service-cat-card">
+            <span class="service-icon">🍳</span>
+            <div class="service-cat-name">Caterers</div>
+            <div class="service-cat-count">11 professionals</div>
+          </div>
+        </div>
+
+        <h3 class="dash-section-title">Top Professionals</h3>
+        <div class="professionals-grid" id="professionals-list">
+          <!-- filled by JS -->
+        </div>
+      </div>
     </section>
 
-    <!-- SETTINGS -->
-    <section class="panel hidden" id="settings-panel">
-      <h2>Settings</h2>
+    <!-- CUSTOMER DASHBOARD PANEL -->
+    <section class="panel" id="customer-dashboard-panel">
+      <div class="dashboard-page">
+        <h2 class="page-title">My Dashboard</h2>
+        <div class="dashboard-tabs">
+          <button class="dash-tab active" onclick="showDashTab('orders', this)">📦 Orders</button>
+          <button class="dash-tab" onclick="showDashTab('saved', this)">❤️ Saved</button>
+          <button class="dash-tab" onclick="showDashTab('messages', this)">💬 Messages</button>
+        </div>
+
+        <!-- Orders Tab -->
+        <div id="dash-orders" class="dash-tab-content">
+          <div class="order-card">
+            <div class="order-emoji">📱</div>
+            <div class="order-info">
+              <div class="order-name">Samsung Galaxy A15</div>
+              <div class="order-meta">Order #1042 · 2 Jun 2025</div>
+            </div>
+            <span class="order-status status-delivered">Delivered</span>
+            <div class="order-price">TZS 450,000</div>
+          </div>
+          <div class="order-card">
+            <div class="order-emoji">👟</div>
+            <div class="order-info">
+              <div class="order-name">Nike Air Max (Size 42)</div>
+              <div class="order-meta">Order #1039 · 30 May 2025</div>
+            </div>
+            <span class="order-status status-shipped">Shipped</span>
+            <div class="order-price">TZS 120,000</div>
+          </div>
+          <div class="order-card">
+            <div class="order-emoji">🧴</div>
+            <div class="order-info">
+              <div class="order-name">Skincare Bundle x3</div>
+              <div class="order-meta">Order #1036 · 28 May 2025</div>
+            </div>
+            <span class="order-status status-processing">Processing</span>
+            <div class="order-price">TZS 85,000</div>
+          </div>
+        </div>
+
+        <!-- Saved Tab -->
+        <div id="dash-saved" class="dash-tab-content" style="display:none;">
+          <div class="products-grid" id="saved-products">
+            <!-- saved items loaded by JS -->
+          </div>
+          <p style="color:var(--text-light); font-size:14px; text-align:center; margin-top:24px;">No saved items yet. ❤️</p>
+        </div>
+
+        <!-- Messages Tab -->
+        <div id="dash-messages" class="dash-tab-content" style="display:none;">
+          <p style="color:var(--text-light); font-size:14px; text-align:center; margin-top:24px;">No messages yet. Go to 💬 Messenger.</p>
+        </div>
+      </div>
     </section>
 
-    <!-- MESSENGER -->
-    <section class="panel hidden" id="messenger-panel">
-      <h2>Messenger</h2>
+    <!-- BUSINESS DASHBOARD PANEL -->
+    <section class="panel" id="business-dashboard-panel">
+      <div class="biz-dashboard">
+        <h2 class="page-title">Business Dashboard</h2>
+
+        <div class="stats-row">
+          <div class="stat-card">
+            <div class="stat-label">Total Sales</div>
+            <div class="stat-value">TZS 2.4M</div>
+            <div class="stat-change">↑ 12% this month</div>
+          </div>
+          <div class="stat-card">
+            <div class="stat-label">Orders</div>
+            <div class="stat-value">34</div>
+            <div class="stat-change">↑ 5 new today</div>
+          </div>
+          <div class="stat-card">
+            <div class="stat-label">Products</div>
+            <div class="stat-value">18</div>
+            <div class="stat-change">3 pending review</div>
+          </div>
+          <div class="stat-card">
+            <div class="stat-label">Customers</div>
+            <div class="stat-value">127</div>
+            <div class="stat-change">↑ 8 new</div>
+          </div>
+        </div>
+
+        <div style="margin-bottom:24px;">
+          <div class="dash-section-title">My Products</div>
+          <table class="biz-products-table">
+            <thead>
+              <tr>
+                <th>Product</th>
+                <th>Price</th>
+                <th>Stock</th>
+                <th>Status</th>
+                <th>Actions</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>📱 Samsung Galaxy A15</td>
+                <td>TZS 450,000</td>
+                <td>12</td>
+                <td><span class="order-status status-delivered">Active</span></td>
+                <td><button style="background:none;border:none;color:var(--brand);font-size:13px;cursor:pointer;">Edit</button></td>
+              </tr>
+              <tr>
+                <td>🎧 Bluetooth Headphones</td>
+                <td>TZS 85,000</td>
+                <td>5</td>
+                <td><span class="order-status status-processing">Pending</span></td>
+                <td><button style="background:none;border:none;color:var(--brand);font-size:13px;cursor:pointer;">Edit</button></td>
+              </tr>
+              <tr>
+                <td>🔋 Power Bank 20000mAh</td>
+                <td>TZS 65,000</td>
+                <td>20</td>
+                <td><span class="order-status status-delivered">Active</span></td>
+                <td><button style="background:none;border:none;color:var(--brand);font-size:13px;cursor:pointer;">Edit</button></td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+
+        <div>
+          <div class="dash-section-title">Recent Orders</div>
+          <div class="order-card">
+            <div class="order-emoji">📱</div>
+            <div class="order-info">
+              <div class="order-name">Samsung Galaxy A15 — Juma Ally</div>
+              <div class="order-meta">Order #1042 · Today, 10:32am</div>
+            </div>
+            <span class="order-status status-processing">Processing</span>
+            <div class="order-price">TZS 450,000</div>
+          </div>
+        </div>
+      </div>
     </section>
 
-    <!-- ✅ FIXED ADMIN PANEL (NOW INSIDE BODY) -->
-    <section id="admin-panel" class="panel hidden">
-      <h2>Admin Dashboard</h2>
+    <!-- ADMIN DASHBOARD PANEL -->
+    <section class="panel" id="admin-panel">
+      <div class="admin-page">
+        <div class="admin-header">
+          <h2>Admin Dashboard</h2>
+          <p>Manage the entire Kaga's Market platform</p>
+        </div>
 
-      <button onclick="loadAdminProducts()">Load All Products</button>
-      <button onclick="loadPendingProducts()">Pending Only</button>
+        <div class="admin-stats">
+          <div class="admin-stat">
+            <div class="admin-stat-icon">👥</div>
+            <div class="admin-stat-value">1,248</div>
+            <div class="admin-stat-label">Total Users</div>
+          </div>
+          <div class="admin-stat">
+            <div class="admin-stat-icon">🏪</div>
+            <div class="admin-stat-value">86</div>
+            <div class="admin-stat-label">Businesses</div>
+          </div>
+          <div class="admin-stat">
+            <div class="admin-stat-icon">📦</div>
+            <div class="admin-stat-value">4,392</div>
+            <div class="admin-stat-label">Products</div>
+          </div>
+          <div class="admin-stat">
+            <div class="admin-stat-icon">🛒</div>
+            <div class="admin-stat-value">312</div>
+            <div class="admin-stat-label">Orders Today</div>
+          </div>
+          <div class="admin-stat">
+            <div class="admin-stat-icon">💰</div>
+            <div class="admin-stat-value">45.2M</div>
+            <div class="admin-stat-label">Revenue (TZS)</div>
+          </div>
+        </div>
 
-      <div id="admin-products-container"></div>
+        <div class="admin-actions-grid">
+          <div class="admin-action-card">
+            <div class="admin-action-icon">👥</div>
+            <div class="admin-action-title">Manage Users</div>
+            <div class="admin-action-desc">View, ban or verify users</div>
+          </div>
+          <div class="admin-action-card">
+            <div class="admin-action-icon">🏪</div>
+            <div class="admin-action-title">Manage Businesses</div>
+            <div class="admin-action-desc">Approve or reject listings</div>
+          </div>
+          <div class="admin-action-card">
+            <div class="admin-action-icon">📦</div>
+            <div class="admin-action-title">Manage Products</div>
+            <div class="admin-action-desc">Review pending products</div>
+          </div>
+          <div class="admin-action-card">
+            <div class="admin-action-icon">📊</div>
+            <div class="admin-action-title">Reports</div>
+            <div class="admin-action-desc">Sales, traffic, complaints</div>
+          </div>
+          <div class="admin-action-card">
+            <div class="admin-action-icon">📈</div>
+            <div class="admin-action-title">Statistics</div>
+            <div class="admin-action-desc">Platform analytics</div>
+          </div>
+          <div class="admin-action-card">
+            <div class="admin-action-icon">⚙️</div>
+            <div class="admin-action-title">Settings</div>
+            <div class="admin-action-desc">Platform configuration</div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ACCOUNT PANEL -->
+    <section class="panel" id="account-panel">
+      <div class="account-page">
+        <div class="account-card">
+          <div class="account-profile">
+            <div class="account-avatar">👤</div>
+            <div class="account-name" id="account-name">Guest User</div>
+            <div class="account-role" id="account-role">Not logged in</div>
+          </div>
+          <div class="account-menu">
+            <div class="account-menu-item" onclick="switchView('customer-dashboard')">
+              <span class="account-menu-icon">📦</span>
+              <span class="account-menu-label">My Orders</span>
+              <span class="account-menu-arrow">›</span>
+            </div>
+            <div class="account-menu-item" onclick="switchView('customer-dashboard')">
+              <span class="account-menu-icon">❤️</span>
+              <span class="account-menu-label">Saved Items</span>
+              <span class="account-menu-arrow">›</span>
+            </div>
+            <div class="account-menu-item" onclick="switchView('business-dashboard')">
+              <span class="account-menu-icon">🏪</span>
+              <span class="account-menu-label">My Business</span>
+              <span class="account-menu-arrow">›</span>
+            </div>
+            <div class="account-menu-item" onclick="switchView('messenger')">
+              <span class="account-menu-icon">💬</span>
+              <span class="account-menu-label">Messages</span>
+              <span class="account-menu-arrow">›</span>
+            </div>
+            <div class="account-menu-item" onclick="switchView('admin')">
+              <span class="account-menu-icon">🛡️</span>
+              <span class="account-menu-label">Admin Panel</span>
+              <span class="account-menu-arrow">›</span>
+            </div>
+            <div class="account-menu-item" style="color:var(--accent);">
+              <span class="account-menu-icon">🚪</span>
+              <span class="account-menu-label">Log Out</span>
+              <span class="account-menu-arrow">›</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- MESSENGER PANEL -->
+    <section class="panel" id="messenger-panel">
+      <div class="messenger-page">
+        <!-- Conversation list -->
+        <div class="messenger-list">
+          <div class="messenger-list-header">Messages</div>
+          <div class="convo-item active">
+            <div class="convo-avatar">🏪</div>
+            <div class="convo-info">
+              <div class="convo-name">TechHub Tanzania</div>
+              <div class="convo-preview">Asante! Tutapeleka kesho...</div>
+            </div>
+            <div class="convo-time">10:42</div>
+          </div>
+          <div class="convo-item">
+            <div class="convo-avatar">👗</div>
+            <div class="convo-info">
+              <div class="convo-name">Fashion Store Tz</div>
+              <div class="convo-preview">Bado ipo size 40</div>
+            </div>
+            <div class="convo-time">Yest</div>
+          </div>
+          <div class="convo-item">
+            <div class="convo-avatar">🔨</div>
+            <div class="convo-info">
+              <div class="convo-name">Fundi Juma</div>
+              <div class="convo-preview">Niko available Jumanne</div>
+            </div>
+            <div class="convo-time">Mon</div>
+          </div>
+        </div>
+
+        <!-- Chat window -->
+        <div class="messenger-chat">
+          <div class="chat-header">
+            <div class="convo-avatar" style="width:34px;height:34px;font-size:16px;">🏪</div>
+            <div>
+              <div style="font-size:14px;font-weight:600;">TechHub Tanzania</div>
+              <div style="font-size:11px;color:var(--brand);">● Online</div>
+            </div>
+          </div>
+          <div class="chat-messages">
+            <div class="msg-bubble msg-in">Habari, je Samsung Galaxy A15 bado ipo?</div>
+            <div class="msg-bubble msg-out">Ndiyo bado ipo! Rangi gani unataka?</div>
+            <div class="msg-bubble msg-in">Black please. Bei ni ngapi ukiwa cash?</div>
+            <div class="msg-bubble msg-out">TZS 445,000 cash. Tutapeleka kesho!</div>
+          </div>
+          <div class="chat-input-bar">
+            <input type="text" placeholder="Type a message..." id="chat-input" />
+            <button class="send-btn" onclick="sendMsg()">➤</button>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- CART PANEL -->
+    <section class="panel" id="cart-panel">
+      <div class="cart-page">
+        <h2 class="page-title">My Cart</h2>
+        <div id="cart-list">
+          <!-- filled by JS -->
+          <p style="color:var(--text-light);font-size:14px;text-align:center;margin-top:40px;">Your cart is empty. <button onclick="switchView('shop')" style="background:none;border:none;color:var(--brand);cursor:pointer;font-size:14px;">Browse products →</button></p>
+        </div>
+        <div class="cart-total-bar" id="cart-total-bar" style="display:none;">
+          <div class="cart-total-row"><span>Subtotal</span><span id="cart-subtotal">TZS 0</span></div>
+          <div class="cart-total-row"><span>Delivery</span><span>TZS 5,000</span></div>
+          <div class="cart-total-main"><span>Total</span><span id="cart-total">TZS 0</span></div>
+          <button class="btn-checkout" onclick="switchView('delivery')">Proceed to Checkout</button>
+        </div>
+      </div>
+    </section>
+
+    <!-- DELIVERY PANEL -->
+    <section class="panel" id="delivery-panel">
+      <div class="delivery-page">
+        <button style="margin-bottom:20px;background:none;border:none;font-size:14px;color:var(--brand);cursor:pointer;" onclick="switchView('cart')">← Back to Cart</button>
+        <h2 class="page-title">Delivery Details</h2>
+        <form id="delivery-form" onsubmit="placeOrder(event)">
+          <div class="form-group">
+            <label class="form-label">Full Name</label>
+            <input type="text" class="form-input" placeholder="e.g. Juma Ally" required />
+          </div>
+          <div class="form-group">
+            <label class="form-label">Phone Number</label>
+            <input type="tel" class="form-input" placeholder="e.g. 0754 000 000" required />
+          </div>
+          <div class="form-group">
+            <label class="form-label">Delivery Address</label>
+            <input type="text" class="form-input" placeholder="Street, Area, City" required />
+          </div>
+          <div class="form-group">
+            <label class="form-label">Nearest Landmark</label>
+            <input type="text" class="form-input" placeholder="e.g. Near Shoprite Kariakoo" />
+          </div>
+          <div class="form-group">
+            <label class="form-label">Payment Method</label>
+            <select class="form-input">
+              <option>M-Pesa</option>
+              <option>Tigo Pesa</option>
+              <option>Airtel Money</option>
+              <option>Cash on Delivery</option>
+            </select>
+          </div>
+          <button type="submit" class="btn-place-order">📦 Place Order</button>
+        </form>
+      </div>
     </section>
 
   </main>
 
-  <!-- MOBILE NAV -->
+  <!-- MOBILE BOTTOM NAV -->
   <nav class="mobile-bottom-nav">
-    <button onclick="switchView('home')">🏠 Home</button>
-    <button onclick="switchView('shop')">🛍️ Shop</button>
-    <button onclick="switchView('account')">👤 Account</button>
-    <button onclick="switchView('messenger')">💬 Chat</button>
+    <button class="mob-nav-btn active" onclick="switchView('home', this)" id="mob-home">
+      <span class="m-icon">🏠</span>
+      <span>Home</span>
+    </button>
+    <button class="mob-nav-btn" onclick="switchView('shop', this)" id="mob-shop">
+      <span class="m-icon">🛍️</span>
+      <span>Shop</span>
+    </button>
+    <button class="mob-nav-btn" onclick="switchView('services', this)" id="mob-services">
+      <span class="m-icon">🔧</span>
+      <span>Services</span>
+    </button>
+    <button class="mob-nav-btn" onclick="switchView('messenger', this)" id="mob-messenger">
+      <span class="m-icon">💬</span>
+      <span>Chat</span>
+    </button>
+    <button class="mob-nav-btn" onclick="switchView('account', this)" id="mob-account">
+      <span class="m-icon">👤</span>
+      <span>Account</span>
+    </button>
   </nav>
 
-  <footer class="site-footer">
-    <p>Built for businesses and customers</p>
-  </footer>
-
   <script src="app.js"></script>
+  <script>
+    // ===== VIEW SWITCHER =====
+    function switchView(view) {
+      // Map view names to panel IDs
+      const panelMap = {
+        home: 'home-panel',
+        shop: 'shop-panel',
+        product: 'product-panel',
+        businesses: 'businesses-panel',
+        services: 'services-panel',
+        'customer-dashboard': 'customer-dashboard-panel',
+        'business-dashboard': 'business-dashboard-panel',
+        admin: 'admin-panel',
+        account: 'account-panel',
+        messenger: 'messenger-panel',
+        cart: 'cart-panel',
+        delivery: 'delivery-panel',
+      };
+
+      // Hide all panels
+      document.querySelectorAll('.panel').forEach(p => p.classList.remove('active'));
+
+      // Show target
+      const panelId = panelMap[view];
+      if (panelId) {
+        const panel = document.getElementById(panelId);
+        if (panel) panel.classList.add('active');
+      }
+
+      // Update desktop nav buttons
+      document.querySelectorAll('.nav-btn').forEach(b => b.classList.remove('active'));
+
+      // Update mobile nav buttons
+      document.querySelectorAll('.mob-nav-btn').forEach(b => b.classList.remove('active'));
+      const mobMap = { home: 'mob-home', shop: 'mob-shop', services: 'mob-services', messenger: 'mob-messenger', account: 'mob-account' };
+      if (mobMap[view]) document.getElementById(mobMap[view]).classList.add('active');
+
+      // Scroll to top
+      window.scrollTo(0, 0);
+    }
+
+    // ===== SAMPLE DATA =====
+    const categories = [
+      { icon: '📱', name: 'Electronics', count: '320+' },
+      { icon: '👗', name: 'Fashion', count: '580+' },
+      { icon: '🍎', name: 'Groceries', count: '210+' },
+      { icon: '🏠', name: 'Home', count: '150+' },
+      { icon: '💄', name: 'Beauty', count: '95+' },
+      { icon: '⚽', name: 'Sports', count: '70+' },
+      { icon: '📚', name: 'Books', count: '40+' },
+      { icon: '🔧', name: 'Tools', count: '60+' },
+    ];
+
+    const products = [
+      { icon: '📱', name: 'Samsung Galaxy A15', price: 450000, seller: 'TechHub Tz' },
+      { icon: '👟', name: 'Nike Air Max', price: 120000, seller: 'Fashion Store' },
+      { icon: '🧴', name: 'Skincare Bundle', price: 45000, seller: 'Beauty World' },
+      { icon: '🎧', name: 'Bluetooth Earbuds', price: 55000, seller: 'TechHub Tz' },
+      { icon: '👗', name: 'Kanga Print Dress', price: 35000, seller: 'Mama Pita' },
+      { icon: '🔋', name: 'Power Bank 20000', price: 65000, seller: 'Tech Central' },
+      { icon: '🍯', name: 'Organic Honey 1kg', price: 18000, seller: 'Farm Fresh Tz' },
+      { icon: '🪑', name: 'Office Chair', price: 95000, seller: 'Furniture Hub' },
+    ];
+
+    const businesses = [
+      { icon: '📱', name: 'TechHub Tanzania', type: 'Electronics', rating: '4.8 ★★★★★' },
+      { icon: '👗', name: 'Fashion Store Tz', type: 'Clothing & Shoes', rating: '4.6 ★★★★☆' },
+      { icon: '🍎', name: 'Farm Fresh Tz', type: 'Food & Groceries', rating: '4.9 ★★★★★' },
+      { icon: '💄', name: 'Beauty World Tz', type: 'Beauty & Skincare', rating: '4.7 ★★★★☆' },
+    ];
+
+    const professionals = [
+      { icon: '⚡', name: 'Hassan Mwangi', title: 'Electrical Engineer', rate: 'TZS 30,000/hr' },
+      { icon: '🏗️', name: 'Salim Contractor', title: 'Building Contractor', rate: 'TZS 50,000/day' },
+      { icon: '🔨', name: 'Fundi Juma', title: 'General Fundi', rate: 'TZS 20,000/hr' },
+      { icon: '💻', name: 'Zawadi Tech', title: 'IT Support', rate: 'TZS 25,000/hr' },
+    ];
+
+    // ===== RENDER FUNCTIONS =====
+    function renderProductCard(p) {
+      return `
+        <div class="product-card" onclick="openProduct('${p.name}', ${p.price})">
+          <div class="product-img">${p.icon}</div>
+          <div class="product-info">
+            <div class="product-name">${p.name}</div>
+            <div class="product-price">TZS ${p.price.toLocaleString()}</div>
+            <div class="product-seller">${p.seller}</div>
+          </div>
+          <div class="product-actions">
+            <button class="btn-cart" onclick="event.stopPropagation(); addToCart('${p.name}', ${p.price})">Add to Cart</button>
+            <button class="btn-whatsapp" onclick="event.stopPropagation();">💬</button>
+          </div>
+        </div>`;
+    }
+
+    function renderBusinessCard(b) {
+      return `
+        <div class="business-card">
+          <div class="biz-header">
+            <div class="biz-logo">${b.icon}</div>
+            <div>
+              <div class="biz-name">${b.name}</div>
+              <div class="biz-type">${b.type}</div>
+            </div>
+          </div>
+          <span class="verified-badge">✅ Verified</span>
+          <div class="biz-rating">${b.rating}</div>
+        </div>`;
+    }
+
+    // ===== INIT =====
+    function init() {
+      // Categories
+      const cg = document.getElementById('categories-grid');
+      if (cg) cg.innerHTML = categories.map(c => `
+        <div class="category-card" onclick="switchView('shop')">
+          <span class="category-icon">${c.icon}</span>
+          <div class="category-name">${c.name}</div>
+          <div class="category-count">${c.count}</div>
+        </div>`).join('');
+
+      // Featured products
+      const fp = document.getElementById('featured-products');
+      if (fp) fp.innerHTML = products.map(renderProductCard).join('');
+
+      // Home businesses
+      const hb = document.getElementById('home-businesses');
+      if (hb) hb.innerHTML = businesses.map(renderBusinessCard).join('');
+
+      // Shop products
+      const sp = document.getElementById('shop-product-list');
+      if (sp) sp.innerHTML = products.map(renderProductCard).join('');
+
+      // All businesses
+      const ab = document.getElementById('all-businesses');
+      if (ab) ab.innerHTML = businesses.map(renderBusinessCard).join('');
+
+      // Professionals
+      const pl = document.getElementById('professionals-list');
+      if (pl) pl.innerHTML = professionals.map(p => `
+        <div class="professional-card">
+          <div class="pro-header">
+            <div class="pro-avatar">${p.icon}</div>
+            <div>
+              <div class="pro-name">${p.name}</div>
+              <div class="pro-title">${p.title}</div>
+            </div>
+          </div>
+          <div class="pro-rate">💰 ${p.rate}</div>
+          <a href="https://wa.me/255700000000" target="_blank">
+            <button class="btn-contact">💬 Contact via WhatsApp</button>
+          </a>
+        </div>`).join('');
+    }
+
+    // ===== CART =====
+    let cart = [];
+
+    function addToCart(name, price) {
+      cart.push({ name, price });
+      document.getElementById('cart-count').textContent = cart.length;
+      renderCart();
+      alert(`✅ "${name}" added to cart!`);
+    }
+
+    function renderCart() {
+      const cl = document.getElementById('cart-list');
+      const tb = document.getElementById('cart-total-bar');
+      if (!cart.length) {
+        cl.innerHTML = '<p style="color:var(--text-light);font-size:14px;text-align:center;margin-top:40px;">Your cart is empty. <button onclick="switchView(\'shop\')" style="background:none;border:none;color:var(--brand);cursor:pointer;font-size:14px;">Browse products →</button></p>';
+        if (tb) tb.style.display = 'none';
+        return;
+      }
+      if (tb) tb.style.display = 'block';
+      cl.innerHTML = cart.map((item, i) => `
+        <div class="cart-item">
+          <div class="cart-item-img">📦</div>
+          <div class="cart-item-info">
+            <div class="cart-item-name">${item.name}</div>
+            <div class="cart-item-price">TZS ${item.price.toLocaleString()}</div>
+          </div>
+          <button onclick="removeFromCart(${i})" style="background:none;border:none;font-size:18px;cursor:pointer;color:var(--text-light);">🗑️</button>
+        </div>`).join('');
+      const subtotal = cart.reduce((s, i) => s + i.price, 0);
+      const total = subtotal + 5000;
+      document.getElementById('cart-subtotal').textContent = 'TZS ' + subtotal.toLocaleString();
+      document.getElementById('cart-total').textContent = 'TZS ' + total.toLocaleString();
+    }
+
+    function removeFromCart(index) {
+      cart.splice(index, 1);
+      document.getElementById('cart-count').textContent = cart.length;
+      renderCart();
+    }
+
+    // ===== PRODUCT PAGE =====
+    function openProduct(name, price) {
+      document.getElementById('product-page-name').textContent = name;
+      document.getElementById('product-page-price').textContent = 'TZS ' + price.toLocaleString();
+      switchView('product');
+    }
+
+    // ===== ORDER =====
+    function placeOrder(e) {
+      e.preventDefault();
+      alert('🎉 Order placed successfully! You will receive a confirmation via SMS.');
+      cart = [];
+      document.getElementById('cart-count').textContent = 0;
+      renderCart();
+      switchView('home');
+    }
+
+    // ===== MESSENGER =====
+    function sendMsg() {
+      const input = document.getElementById('chat-input');
+      const msgs = document.querySelector('.chat-messages');
+      if (!input.value.trim()) return;
+      const bubble = document.createElement('div');
+      bubble.className = 'msg-bubble msg-out';
+      bubble.textContent = input.value;
+      msgs.appendChild(bubble);
+      msgs.scrollTop = msgs.scrollHeight;
+      input.value = '';
+    }
+    document.addEventListener('DOMContentLoaded', () => {
+      const ci = document.getElementById('chat-input');
+      if (ci) ci.addEventListener('keydown', e => { if (e.key === 'Enter') sendMsg(); });
+    });
+
+    // ===== DASHBOARD TABS =====
+    function showDashTab(tab, btn) {
+      document.querySelectorAll('.dash-tab-content').forEach(t => t.style.display = 'none');
+      document.querySelectorAll('.dash-tab').forEach(b => b.classList.remove('active'));
+      document.getElementById('dash-' + tab).style.display = 'block';
+      btn.classList.add('active');
+    }
+
+    // ===== PRICE SLIDER =====
+    document.addEventListener('DOMContentLoaded', () => {
+      const slider = document.getElementById('price-slider');
+      const val = document.getElementById('price-val');
+      if (slider) slider.addEventListener('input', () => {
+        val.textContent = Number(slider.value).toLocaleString();
+      });
+    });
+
+    // ===== BOOT =====
+    init();
+  </script>
 </body>
 </html>
