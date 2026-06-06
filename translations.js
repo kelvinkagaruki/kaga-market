@@ -1,6 +1,3 @@
-bash
-
-cat > /mnt/user-data/outputs/i18n.js << 'ENDOFFILE'
 // ===============================
 // KAGA'S MARKET — i18n.js
 // Full Translation System
@@ -646,8 +643,3 @@ document.addEventListener('DOMContentLoaded', () => {
   applyTranslations(currentLanguage);
   updateLangSwitcherUI(currentLanguage);
 });
-ENDOFFILE
-Output
-
-exit code 0
-Do

@@ -1,624 +1,1020 @@
 // ===============================
-// KAGA'S MARKET — APP.JS
-// Matches the new index.html
+// KAGA'S MARKET — APP.JS (CLEAN)
+// No fake hardcoded products
+// Real data from localStorage only
 // ===============================
 
-// ===============================
-// SAFE DOM HELPER
-// ===============================
-function $(id) {
-  return document.getElementById(id);
-}
+function $(id) { return document.getElementById(id); }
 
 // ===============================
-// SAMPLE DATA
+// CATEGORIES (static — no fake products)
 // ===============================
 const categories = [
-  { icon: "📱", name: "Electronics", count: "320+" },
-  { icon: "👗", name: "Fashion",     count: "580+" },
-  { icon: "🍎", name: "Groceries",   count: "210+" },
-  { icon: "🏠", name: "Home",        count: "150+" },
-  { icon: "💄", name: "Beauty",      count: "95+"  },
-  { icon: "⚽", name: "Sports",      count: "70+"  },
-  { icon: "📚", name: "Books",       count: "40+"  },
-  { icon: "🔧", name: "Tools",       count: "60+"  },
+  { icon: '📱', name: 'Electronics',  count: '' },
+  { icon: '👗', name: 'Fashion',      count: '' },
+  { icon: '🍎', name: 'Groceries',    count: '' },
+  { icon: '🏠', name: 'Home',         count: '' },
+  { icon: '💄', name: 'Beauty',       count: '' },
+  { icon: '⚽', name: 'Sports',       count: '' },
+  { icon: '📚', name: 'Books',        count: '' },
+  { icon: '🔧', name: 'Tools',        count: '' },
 ];
 
-const products = [
-  { id: 1, icon: "📱", name: "Samsung Galaxy A15",  price: 450000, seller: "TechHub Tz",    category: "Electronics" },
-  { id: 2, icon: "👟", name: "Nike Air Max",         price: 120000, seller: "Fashion Store", category: "Fashion"     },
-  { id: 3, icon: "🧴", name: "Skincare Bundle",      price: 45000,  seller: "Beauty World",  category: "Beauty"      },
-  { id: 4, icon: "🎧", name: "Bluetooth Earbuds",    price: 55000,  seller: "TechHub Tz",    category: "Electronics" },
-  { id: 5, icon: "👗", name: "Kanga Print Dress",    price: 35000,  seller: "Mama Pita",     category: "Fashion"     },
-  { id: 6, icon: "🔋", name: "Power Bank 20000mAh", price: 65000,  seller: "Tech Central",  category: "Electronics" },
-  { id: 7, icon: "🍯", name: "Organic Honey 1kg",   price: 18000,  seller: "Farm Fresh Tz", category: "Groceries"   },
-  { id: 8, icon: "🪑", name: "Office Chair",         price: 95000,  seller: "Furniture Hub", category: "Home"        },
-];
-
-const businesses = [
-  { icon: "📱", name: "TechHub Tanzania",  type: "Electronics",       rating: "4.8", reviews: 128 },
-  { icon: "👗", name: "Fashion Store Tz",  type: "Clothing & Shoes",  rating: "4.6", reviews: 84  },
-  { icon: "🍎", name: "Farm Fresh Tz",     type: "Food & Groceries",  rating: "4.9", reviews: 210 },
-  { icon: "💄", name: "Beauty World Tz",   type: "Beauty & Skincare", rating: "4.7", reviews: 67  },
-];
-
-const professionals = [
-  { icon: "⚡", name: "Hassan Mwangi",    title: "Electrical Engineer", rate: "TZS 30,000/hr",  phone: "255700000001" },
-  { icon: "🏗️", name: "Salim Contractor", title: "Building Contractor", rate: "TZS 50,000/day", phone: "255700000002" },
-  { icon: "🔨", name: "Fundi Juma",       title: "General Fundi",       rate: "TZS 20,000/hr",  phone: "255700000003" },
-  { icon: "💻", name: "Zawadi Tech",      title: "IT Support",          rate: "TZS 25,000/hr",  phone: "255700000004" },
-];
+// ===============================
+// STORAGE HELPERS
+// ===============================
+function getProducts()  { return JSON.parse(localStorage.getItem('kagaProducts') || '[]'); }
+function saveProducts(p){ localStorage.setItem('kagaProducts', JSON.stringify(p)); }
+function getUsers()     { return JSON.parse(localStorage.getItem('kagaUsers') || '[]'); }
+function saveUsers(u)   { localStorage.setItem('kagaUsers', JSON.stringify(u)); }
+function getCurrentUser(){ const r = localStorage.getItem('kagaCurrentUser'); return r ? JSON.parse(r) : null; }
 
 // ===============================
 // VIEW SWITCHER
 // ===============================
 const panelMap = {
-  home:                 "home-panel",
-  shop:                 "shop-panel",
-  product:              "product-panel",
-  businesses:           "businesses-panel",
-  services:             "services-panel",
-  "customer-dashboard": "customer-dashboard-panel",
-  "business-dashboard": "business-dashboard-panel",
-  admin:                "admin-panel",
-  account:              "account-panel",
-  messenger:            "messenger-panel",
-  cart:                 "cart-panel",
-  delivery:             "delivery-panel",
-  settings:             "settings-panel",
+  home:                 'home-panel',
+  shop:                 'shop-panel',
+  product:              'product-panel',
+  businesses:           'businesses-panel',
+  'add-product':        'add-product-panel',
+  'customer-dashboard': 'customer-dashboard-panel',
+  'business-dashboard': 'business-dashboard-panel',
+  admin:                'admin-panel',
+  account:              'account-panel',
+  messenger:            'messenger-panel',
+  cart:                 'cart-panel',
+  delivery:             'delivery-panel',
 };
 
 const mobNavMap = {
-  home:      "mob-home",
-  shop:      "mob-shop",
-  services:  "mob-services",
-  messenger: "mob-messenger",
-  account:   "mob-account",
+  home:         'mob-home',
+  shop:         'mob-shop',
+  'add-product':'mob-sell',
+  messenger:    'mob-messenger',
+  account:      'mob-account',
 };
 
-window.switchView = function (view) {
-  document.querySelectorAll(".panel").forEach(p => p.classList.remove("active"));
+const protectedViews = ['customer-dashboard', 'business-dashboard', 'admin', 'delivery'];
 
-  const panelId = panelMap[view];
-  if (panelId) {
-    const panel = $(panelId);
-    if (panel) panel.classList.add("active");
-    else console.warn("Panel element not found for:", view);
-  } else {
-    console.warn("Unknown view:", view);
+window.switchView = function(view) {
+  const user = getCurrentUser();
+
+  // Auth guard
+  if (protectedViews.includes(view) && !user) {
+    showToast('🔒 ' + t('toast-login-first'));
+    setTimeout(() => window.location.href = 'login.html', 900);
+    return;
   }
-
-  document.querySelectorAll(".nav-btn").forEach(b => b.classList.remove("active"));
-  const desktopBtn = document.querySelector(`.nav-btn[onclick*="'${view}'"]`);
-  if (desktopBtn) desktopBtn.classList.add("active");
-
-  document.querySelectorAll(".mob-nav-btn").forEach(b => b.classList.remove("active"));
-  if (mobNavMap[view]) {
-    const mobBtn = $(mobNavMap[view]);
-    if (mobBtn) mobBtn.classList.add("active");
+  if (view === 'admin' && user && user.role !== 'admin') {
+    showToast(t('toast-admin-only'));
+    return;
   }
-
-  window.scrollTo({ top: 0, behavior: "smooth" });
-};
-
-// ===============================
-// CART SYSTEM
-// ===============================
-let cart = [];
-
-window.addToCart = function (name, price) {
-  cart.push({ name, price });
-  updateCartBadge();
-  renderCart();
-  showToast('✅ "' + name + '" added to cart!');
-};
-
-window.removeFromCart = function (index) {
-  cart.splice(index, 1);
-  updateCartBadge();
-  renderCart();
-};
-
-function updateCartBadge() {
-  const badge = $("cart-count");
-  if (badge) badge.textContent = cart.length;
-}
-
-function renderCart() {
-  const cartList = $("cart-list");
-  const totalBar = $("cart-total-bar");
-  if (!cartList) return;
-
-  if (cart.length === 0) {
-    cartList.innerHTML =
-      '<p style="color:var(--text-light);font-size:14px;text-align:center;margin-top:40px;">' +
-      'Your cart is empty. ' +
-      '<button onclick="switchView(\'shop\')" style="background:none;border:none;color:var(--brand);cursor:pointer;font-size:14px;">Browse products →</button>' +
-      '</p>';
-    if (totalBar) totalBar.style.display = "none";
+  if (view === 'business-dashboard' && user && user.role === 'buyer') {
+    showToast(t('toast-seller-only'));
     return;
   }
 
-  if (totalBar) totalBar.style.display = "block";
+  // Switch panels
+  document.querySelectorAll('.panel').forEach(p => p.classList.remove('active'));
+  const panelId = panelMap[view];
+  if (panelId) {
+    const panel = $(panelId);
+    if (panel) panel.classList.add('active');
+  }
 
-  cartList.innerHTML = cart.map(function(item, i) {
-    return '<div class="cart-item">' +
-      '<div class="cart-item-img">📦</div>' +
-      '<div class="cart-item-info">' +
-        '<div class="cart-item-name">' + item.name + '</div>' +
-        '<div class="cart-item-price">TZS ' + item.price.toLocaleString() + '</div>' +
-      '</div>' +
-      '<button onclick="removeFromCart(' + i + ')" style="background:none;border:none;font-size:18px;cursor:pointer;color:var(--text-light);" title="Remove">🗑️</button>' +
-    '</div>';
-  }).join("");
+  // Nav highlights
+  document.querySelectorAll('.nav-btn').forEach(b => b.classList.remove('active'));
+  document.querySelectorAll('.mob-nav-btn').forEach(b => b.classList.remove('active'));
+  if (mobNavMap[view]) {
+    const mb = $(mobNavMap[view]);
+    if (mb) mb.classList.add('active');
+  }
 
-  var subtotal = cart.reduce(function(sum, item) { return sum + item.price; }, 0);
-  var delivery = 5000;
-  var total = subtotal + delivery;
+  // On-open hooks
+  if (view === 'shop')               renderShopProducts();
+  if (view === 'businesses')         renderAllBusinesses();
+  if (view === 'add-product')        setupAddProductPanel();
+  if (view === 'admin')              loadAdminStats();
+  if (view === 'business-dashboard') loadBizDashboard();
+  if (view === 'customer-dashboard') loadCustomerOrders();
 
-  var subtotalEl = $("cart-subtotal");
-  var totalEl    = $("cart-total");
-  if (subtotalEl) subtotalEl.textContent = "TZS " + subtotal.toLocaleString();
-  if (totalEl)    totalEl.textContent    = "TZS " + total.toLocaleString();
-}
-
-// ===============================
-// PRODUCT PAGE
-// ===============================
-window.openProduct = function (name, price, icon, desc, seller) {
-  icon   = icon   || "📦";
-  desc   = desc   || "";
-  seller = seller || "";
-
-  var nameEl  = $("product-page-name");
-  var priceEl = $("product-page-price");
-  var mainImg = $("main-product-img");
-  var descEl  = $("product-page-desc");
-
-  if (nameEl)        nameEl.textContent  = name;
-  if (priceEl)       priceEl.textContent = "TZS " + price.toLocaleString();
-  if (mainImg)       mainImg.textContent = icon;
-  if (descEl && desc) descEl.textContent = desc;
-
-  switchView("product");
+  window.scrollTo({ top: 0, behavior: 'smooth' });
 };
 
 // ===============================
 // RENDER: CATEGORIES
 // ===============================
 function renderCategories() {
-  var grid = $("categories-grid");
+  const grid = $('categories-grid');
   if (!grid) return;
 
-  grid.innerHTML = categories.map(function(c) {
+  const products = getProducts().filter(p => p.status === 'approved');
+
+  grid.innerHTML = categories.map(c => {
+    const count = products.filter(p => p.category && p.category.includes(c.name)).length;
     return '<div class="category-card" onclick="filterShopByCategory(\'' + c.name + '\')">' +
       '<span class="category-icon">' + c.icon + '</span>' +
       '<div class="category-name">' + c.name + '</div>' +
-      '<div class="category-count">' + c.count + '</div>' +
+      '<div class="category-count">' + (count > 0 ? count + ' items' : '') + '</div>' +
     '</div>';
-  }).join("");
+  }).join('');
 }
 
 // ===============================
 // RENDER: PRODUCT CARD
 // ===============================
 function renderProductCard(p) {
-  return '<div class="product-card" onclick="openProduct(\'' + p.name.replace(/'/g, "\\'") + '\', ' + p.price + ', \'' + p.icon + '\', \'\', \'' + p.seller + '\')">' +
-    '<div class="product-img">' + p.icon + '</div>' +
+  const imgContent = p.images && p.images[0]
+    ? '<img src="' + p.images[0] + '" alt="' + p.name + '" />'
+    : '<span style="font-size:40px;">' + (p.icon || '📦') + '</span>';
+
+  return '<div class="product-card" onclick="openProduct(' + p.id + ')">' +
+    '<div class="product-img-wrap"><div class="product-img">' + imgContent + '</div></div>' +
     '<div class="product-info">' +
       '<div class="product-name">' + p.name + '</div>' +
-      '<div class="product-price">TZS ' + p.price.toLocaleString() + '</div>' +
-      '<div class="product-seller">' + p.seller + '</div>' +
+      '<div class="product-price">TZS ' + Number(p.price).toLocaleString() + '</div>' +
+      '<div class="product-seller">' + (p.sellerName || 'Seller') + ' · ' + (p.location || '') + '</div>' +
     '</div>' +
     '<div class="product-actions">' +
-      '<button class="btn-cart" onclick="event.stopPropagation(); addToCart(\'' + p.name.replace(/'/g, "\\'") + '\', ' + p.price + ')">Add to Cart</button>' +
-      '<a href="https://wa.me/255700000000?text=Hi! I am interested in ' + encodeURIComponent(p.name) + '" target="_blank">' +
-        '<button class="btn-whatsapp" onclick="event.stopPropagation();" title="WhatsApp seller">💬</button>' +
+      '<button class="btn-cart" onclick="event.stopPropagation(); addToCart(' + p.id + ')">' + t('btn-add-cart') + '</button>' +
+      '<a href="https://wa.me/' + formatWA(p.whatsapp) + '?text=' + encodeURIComponent('Hi! I am interested in ' + p.name) + '" target="_blank" onclick="event.stopPropagation();">' +
+        '<button class="btn-wa-small">💬</button>' +
       '</a>' +
     '</div>' +
   '</div>';
 }
 
+function formatWA(num) {
+  if (!num) return '255700000000';
+  num = num.replace(/\D/g, '');
+  if (num.startsWith('0')) num = '255' + num.slice(1);
+  return num;
+}
+
 // ===============================
-// RENDER: FEATURED PRODUCTS
+// RENDER: HOME PRODUCTS
 // ===============================
-function renderFeaturedProducts() {
-  var el = $("featured-products");
+function renderHomeProducts() {
+  const el = $('home-products-container');
   if (!el) return;
-  el.innerHTML = products.map(renderProductCard).join("");
+
+  const products = getProducts().filter(p => p.status === 'approved');
+
+  if (products.length === 0) {
+    el.innerHTML = '<div class="empty-state">' +
+      '<span class="empty-icon">🛍️</span>' +
+      '<div class="empty-title">No products yet</div>' +
+      '<div class="empty-desc">Be the first to post a product on Kaga\'s Market!</div>' +
+      '<button class="btn-empty" onclick="switchView(\'add-product\')">Post a Product</button>' +
+    '</div>';
+    return;
+  }
+
+  el.innerHTML = '<div class="products-grid">' + products.slice(0, 8).map(renderProductCard).join('') + '</div>';
 }
 
 // ===============================
 // RENDER: SHOP PRODUCTS
 // ===============================
-var currentCategory = "All";
-var currentSearch   = "";
+let shopFilter   = { category: 'All', search: '', maxPrice: 2000000, condition: 'All' };
 
 function renderShopProducts() {
-  var el = $("shop-product-list");
+  const el = $('shop-products-container');
   if (!el) return;
 
-  var filtered = products.filter(function(p) {
-    var matchCat    = currentCategory === "All" || p.category === currentCategory;
-    var matchSearch = p.name.toLowerCase().indexOf(currentSearch.toLowerCase()) !== -1 ||
-                      p.seller.toLowerCase().indexOf(currentSearch.toLowerCase()) !== -1;
-    return matchCat && matchSearch;
-  });
+  let products = getProducts().filter(p => p.status === 'approved');
 
-  var countEl = $("results-count");
-  if (countEl) countEl.textContent = filtered.length + " product" + (filtered.length !== 1 ? "s" : "");
+  // Apply filters
+  if (shopFilter.category !== 'All') {
+    products = products.filter(p => p.category && p.category.includes(shopFilter.category));
+  }
+  if (shopFilter.condition !== 'All') {
+    products = products.filter(p => p.condition && p.condition.includes(shopFilter.condition));
+  }
+  if (shopFilter.search) {
+    const q = shopFilter.search.toLowerCase();
+    products = products.filter(p =>
+      p.name.toLowerCase().includes(q) ||
+      (p.sellerName && p.sellerName.toLowerCase().includes(q)) ||
+      (p.description && p.description.toLowerCase().includes(q))
+    );
+  }
+  products = products.filter(p => Number(p.price) <= shopFilter.maxPrice);
 
-  if (filtered.length === 0) {
-    el.innerHTML = '<p style="color:var(--text-light);font-size:14px;grid-column:1/-1;text-align:center;padding:40px 0;">No products found.</p>';
+  const countEl = $('results-count');
+  if (countEl) countEl.textContent = products.length + ' ' + t('results-count');
+
+  if (products.length === 0) {
+    el.innerHTML = '<div class="empty-state">' +
+      '<span class="empty-icon">🔍</span>' +
+      '<div class="empty-title">No products found</div>' +
+      '<div class="empty-desc">Try a different search or be the first to sell in this category!</div>' +
+      '<button class="btn-empty" onclick="switchView(\'add-product\')">Post a Product</button>' +
+    '</div>';
     return;
   }
 
-  el.innerHTML = filtered.map(renderProductCard).join("");
+  el.innerHTML = '<div class="products-grid">' + products.map(renderProductCard).join('') + '</div>';
 }
 
-window.filterShopByCategory = function (cat) {
-  currentCategory = cat;
-  switchView("shop");
-  renderShopProducts();
+window.filterShopByCategory = function(cat) {
+  shopFilter.category = cat;
+  switchView('shop');
+};
 
-  document.querySelectorAll(".filter-option").forEach(function(opt) {
-    opt.classList.remove("active");
-    if (opt.textContent.trim().indexOf(cat) !== -1) opt.classList.add("active");
-  });
+window.filterCat = function(cat, el) {
+  shopFilter.category = cat;
+  document.querySelectorAll('.shop-filters .filter-option').forEach(o => o.classList.remove('active'));
+  el.classList.add('active');
+  renderShopProducts();
+};
+
+window.filterCondition = function(cond, el) {
+  shopFilter.condition = cond;
+  const group = el.closest('.filter-group');
+  if (group) group.querySelectorAll('.filter-option').forEach(o => o.classList.remove('active'));
+  el.classList.add('active');
+  renderShopProducts();
+};
+
+// ===============================
+// OPEN PRODUCT PAGE
+// ===============================
+window.openProduct = function(id) {
+  const products = getProducts();
+  const p = products.find(pr => pr.id === id);
+  if (!p) return;
+
+  const nameEl   = $('product-page-name');
+  const priceEl  = $('product-page-price');
+  const descEl   = $('product-page-desc');
+  const waLink   = $('product-wa-link');
+  const sellerNm = $('product-seller-name');
+  const addBtn   = $('product-add-cart-btn');
+
+  if (nameEl)   nameEl.textContent   = p.name;
+  if (priceEl)  priceEl.textContent  = 'TZS ' + Number(p.price).toLocaleString();
+  if (descEl)   descEl.textContent   = p.description || '';
+  if (sellerNm) sellerNm.textContent = p.sellerName || 'Seller';
+  if (waLink)   waLink.href          = 'https://wa.me/' + formatWA(p.whatsapp) + '?text=' + encodeURIComponent('Hi! I am interested in ' + p.name);
+  if (addBtn)   addBtn.onclick       = () => addToCart(p.id);
+
+  // Main image
+  const mainImg = $('main-product-img');
+  if (mainImg) {
+    if (p.images && p.images[0]) {
+      mainImg.innerHTML = '<img src="' + p.images[0] + '" alt="' + p.name + '" />';
+    } else {
+      mainImg.innerHTML = '<span id="main-img-icon" style="font-size:80px;">📦</span>';
+    }
+  }
+
+  // Thumbs
+  const thumbs = $('product-thumbs');
+  if (thumbs && p.images && p.images.length > 0) {
+    thumbs.innerHTML = p.images.map((img, i) =>
+      '<div class="img-thumb ' + (i === 0 ? 'active' : '') + '" onclick="setMainImg(\'' + img + '\', this)">' +
+        '<img src="' + img + '" alt="" />' +
+      '</div>'
+    ).join('');
+  }
+
+  switchView('product');
+};
+
+window.setMainImg = function(src, el) {
+  const mainImg = $('main-product-img');
+  if (mainImg) mainImg.innerHTML = '<img src="' + src + '" alt="" />';
+  document.querySelectorAll('.img-thumb').forEach(t => t.classList.remove('active'));
+  el.classList.add('active');
 };
 
 // ===============================
 // RENDER: BUSINESSES
 // ===============================
 function renderBusinessCard(b) {
-  var stars    = Math.round(parseFloat(b.rating));
-  var starStr  = "★".repeat(stars) + "☆".repeat(5 - stars);
+  const logoContent = b.logo
+    ? '<img src="' + b.logo + '" alt="' + b.name + '" />'
+    : '🏪';
   return '<div class="business-card">' +
     '<div class="biz-header">' +
-      '<div class="biz-logo">' + b.icon + '</div>' +
-      '<div>' +
-        '<div class="biz-name">' + b.name + '</div>' +
-        '<div class="biz-type">' + b.type + '</div>' +
-      '</div>' +
+      '<div class="biz-logo">' + logoContent + '</div>' +
+      '<div><div class="biz-name">' + b.name + '</div><div class="biz-type">' + (b.category || '') + '</div></div>' +
     '</div>' +
-    '<span class="verified-badge">✅ Verified</span>' +
-    '<div class="biz-rating">' + b.rating + ' ' + starStr + ' <span style="font-size:11px;color:var(--text-light);">(' + b.reviews + ')</span></div>' +
+    '<span class="verified-badge" data-i18n="verified-badge">✅ Verified</span>' +
+    '<div class="biz-rating">⭐ ' + (b.rating || 'New') + '</div>' +
   '</div>';
 }
 
 function renderHomeBusinesses() {
-  var el = $("home-businesses");
+  const el = $('home-businesses-container');
   if (!el) return;
-  el.innerHTML = businesses.slice(0, 4).map(renderBusinessCard).join("");
+
+  const users = getUsers().filter(u => u.role === 'seller' && u.status === 'active');
+
+  if (users.length === 0) {
+    el.innerHTML = '<div class="empty-state">' +
+      '<span class="empty-icon">🏪</span>' +
+      '<div class="empty-title">No businesses yet</div>' +
+      '<div class="empty-desc">Be the first business to join Kaga\'s Market!</div>' +
+      '<button class="btn-empty" onclick="window.location.href=\'login.html\'">Register Business</button>' +
+    '</div>';
+    return;
+  }
+
+  el.innerHTML = '<div class="businesses-grid">' +
+    users.slice(0, 4).map(u => renderBusinessCard({
+      name: u.businessName || u.name,
+      category: u.businessCat || '',
+      logo: u.logo || '',
+      rating: '5.0 ★★★★★',
+    })).join('') +
+  '</div>';
 }
 
 function renderAllBusinesses() {
-  var el = $("all-businesses");
-  if (!el) return;
-  el.innerHTML = businesses.map(renderBusinessCard).join("");
-}
-
-// ===============================
-// RENDER: PROFESSIONALS
-// ===============================
-function renderProfessionals() {
-  var el = $("professionals-list");
+  const el = $('all-businesses-container');
   if (!el) return;
 
-  el.innerHTML = professionals.map(function(p) {
-    return '<div class="professional-card">' +
-      '<div class="pro-header">' +
-        '<div class="pro-avatar">' + p.icon + '</div>' +
-        '<div>' +
-          '<div class="pro-name">' + p.name + '</div>' +
-          '<div class="pro-title">' + p.title + '</div>' +
-        '</div>' +
-      '</div>' +
-      '<div class="pro-rate">💰 ' + p.rate + '</div>' +
-      '<a href="https://wa.me/' + p.phone + '?text=Hi ' + encodeURIComponent(p.name) + ', I need your services." target="_blank">' +
-        '<button class="btn-contact">💬 Contact via WhatsApp</button>' +
-      '</a>' +
+  const users = getUsers().filter(u => u.role === 'seller' && u.status === 'active');
+
+  if (users.length === 0) {
+    el.innerHTML = '<div class="empty-state" style="max-width:400px;margin:40px auto;">' +
+      '<span class="empty-icon">🏪</span>' +
+      '<div class="empty-title">No businesses yet</div>' +
+      '<div class="empty-desc">Verified businesses will appear here once they register.</div>' +
+      '<button class="btn-empty" onclick="window.location.href=\'login.html\'">Register as Seller</button>' +
     '</div>';
-  }).join("");
+    return;
+  }
+
+  el.innerHTML = '<div class="businesses-grid">' +
+    users.map(u => renderBusinessCard({
+      name: u.businessName || u.name,
+      category: u.businessCat || '',
+      logo: u.logo || '',
+      rating: '5.0 ★★★★★',
+    })).join('') +
+  '</div>';
 }
 
 // ===============================
-// SEARCH — GLOBAL (HEADER)
+// ADD PRODUCT
 // ===============================
-function setupGlobalSearch() {
-  var input = $("global-search-input");
-  if (!input) return;
+let uploadedImages = [];
 
-  input.addEventListener("input", function() {
-    if (input.value.trim().length > 1) {
-      currentSearch = input.value.trim();
-      switchView("shop");
-      renderShopProducts();
+function setupAddProductPanel() {
+  const user = getCurrentUser();
+  const notice = $('seller-notice');
+  const formCard = $('add-product-form-card');
+
+  if (!user || (user.role !== 'seller' && user.role !== 'admin')) {
+    if (notice)   notice.style.display   = 'flex';
+    if (formCard) formCard.style.opacity  = '0.4';
+    if (formCard) formCard.style.pointerEvents = 'none';
+  } else {
+    if (notice)   notice.style.display   = 'none';
+    if (formCard) formCard.style.opacity  = '1';
+    if (formCard) formCard.style.pointerEvents = 'auto';
+
+    // Pre-fill WhatsApp from user profile
+    const waInput = $('prod-whatsapp');
+    if (waInput && user.phone && !waInput.value) waInput.value = user.phone;
+
+    // Pre-fill location
+    const locSelect = $('prod-location');
+    if (locSelect && user.location && !locSelect.value) {
+      for (let i = 0; i < locSelect.options.length; i++) {
+        if (locSelect.options[i].text === user.location) {
+          locSelect.selectedIndex = i;
+          break;
+        }
+      }
     }
-  });
-
-  input.addEventListener("keydown", function(e) {
-    if (e.key === "Enter" && input.value.trim()) {
-      currentSearch = input.value.trim();
-      switchView("shop");
-      renderShopProducts();
-    }
-  });
+  }
 }
 
-// ===============================
-// SEARCH — SHOP PANEL
-// ===============================
-function setupShopSearch() {
-  var input = $("shop-search-input");
-  if (!input) return;
+window.handleImageUpload = function(input) {
+  const files = Array.from(input.files);
+  const previews = $('img-previews');
+  const area = $('img-upload-area');
 
-  input.addEventListener("input", function() {
-    currentSearch = input.value.trim();
-    renderShopProducts();
+  files.forEach(file => {
+    if (uploadedImages.length >= 4) return;
+    const reader = new FileReader();
+    reader.onload = function(e) {
+      uploadedImages.push(e.target.result);
+      renderImagePreviews();
+    };
+    reader.readAsDataURL(file);
   });
-}
-
-// ===============================
-// SORT — SHOP
-// ===============================
-function setupSortSelect() {
-  var select = document.querySelector(".sort-select");
-  if (!select) return;
-
-  select.addEventListener("change", function() {
-    var val = select.value;
-    if (val.indexOf("Low") !== -1) {
-      products.sort(function(a, b) { return a.price - b.price; });
-    } else if (val.indexOf("High") !== -1) {
-      products.sort(function(a, b) { return b.price - a.price; });
-    } else if (val.indexOf("Popular") !== -1) {
-      products.sort(function() { return Math.random() - 0.5; });
-    } else {
-      products.sort(function(a, b) { return a.id - b.id; });
-    }
-    renderShopProducts();
-    renderFeaturedProducts();
-  });
-}
-
-// ===============================
-// PRICE RANGE SLIDER
-// ===============================
-function setupPriceSlider() {
-  var slider = $("price-slider");
-  var label  = $("price-val");
-  if (!slider || !label) return;
-
-  slider.addEventListener("input", function() {
-    var max = Number(slider.value);
-    label.textContent = max.toLocaleString();
-
-    var filtered = products.filter(function(p) { return p.price <= max; });
-    var el = $("shop-product-list");
-    if (el) {
-      var countEl = $("results-count");
-      if (countEl) countEl.textContent = filtered.length + " product" + (filtered.length !== 1 ? "s" : "");
-      el.innerHTML = filtered.map(renderProductCard).join("");
-    }
-  });
-}
-
-// ===============================
-// FILTER OPTIONS (click)
-// ===============================
-function setupFilterOptions() {
-  document.querySelectorAll(".filter-option").forEach(function(opt) {
-    if (opt.querySelector("input")) return;
-
-    opt.addEventListener("click", function() {
-      var group = opt.closest(".filter-group");
-      if (group) group.querySelectorAll(".filter-option").forEach(function(o) { o.classList.remove("active"); });
-      opt.classList.add("active");
-
-      var text     = opt.textContent.trim().replace(/^[^\w]+/, "").trim();
-      var catMatch = categories.find(function(c) { return text.indexOf(c.name) !== -1; });
-      currentCategory = catMatch ? catMatch.name : "All";
-      renderShopProducts();
-    });
-  });
-}
-
-// ===============================
-// LANGUAGE SWITCHER
-// ===============================
-var translations = {
-  en: {
-    "brand-title":    "Kaga's Market",
-    "brand-subtitle": "Marketplace & Delivery",
-    "nav-home":       "Home",
-    "nav-shop":       "Shop",
-    "nav-businesses": "Businesses",
-    "nav-services":   "Services",
-  },
-  sw: {
-    "brand-title":    "Soko la Kaga",
-    "brand-subtitle": "Soko & Uwasilishaji",
-    "nav-home":       "Nyumbani",
-    "nav-shop":       "Duka",
-    "nav-businesses": "Biashara",
-    "nav-services":   "Huduma",
-  },
 };
 
-function setupLanguageSwitcher() {
-  var switcher = $("language-switcher");
-  if (!switcher) return;
+function renderImagePreviews() {
+  const previews = $('img-previews');
+  if (!previews) return;
+  previews.innerHTML = uploadedImages.map((img, i) =>
+    '<div style="position:relative;display:inline-block;">' +
+      '<img class="img-preview-thumb" src="' + img + '" alt="preview ' + i + '" />' +
+      '<button class="btn-remove-img" onclick="removeUploadedImg(' + i + ')">✕</button>' +
+    '</div>'
+  ).join('');
+}
 
-  switcher.addEventListener("change", function() {
-    var lang = switcher.value;
-    var t    = translations[lang] || translations.en;
-    document.querySelectorAll("[data-i18n]").forEach(function(el) {
-      var key = el.getAttribute("data-i18n");
-      if (t[key]) el.textContent = t[key];
-    });
+window.removeUploadedImg = function(index) {
+  uploadedImages.splice(index, 1);
+  renderImagePreviews();
+};
+
+window.updateCharCount = function(el, countId, max) {
+  const counter = $(countId);
+  if (counter) counter.textContent = el.value.length;
+};
+
+window.submitProduct = function() {
+  const user = getCurrentUser();
+  if (!user || (user.role !== 'seller' && user.role !== 'admin')) {
+    showToast('🔒 Please login as a seller first');
+    return;
+  }
+
+  const name      = $('prod-name')     ? $('prod-name').value.trim()     : '';
+  const category  = $('prod-category') ? $('prod-category').value        : '';
+  const condition = $('prod-condition')? $('prod-condition').value        : '';
+  const price     = $('prod-price')    ? $('prod-price').value            : '';
+  const stock     = $('prod-stock')    ? $('prod-stock').value            : '1';
+  const desc      = $('prod-desc')     ? $('prod-desc').value.trim()      : '';
+  const location  = $('prod-location') ? $('prod-location').value         : '';
+  const whatsapp  = $('prod-whatsapp') ? $('prod-whatsapp').value.trim()  : '';
+  const delivery  = $('prod-delivery') ? $('prod-delivery').value         : '';
+
+  // Validation
+  if (!name)      { showToast('⚠️ Please enter a product name'); return; }
+  if (!category)  { showToast('⚠️ Please select a category');    return; }
+  if (!condition) { showToast('⚠️ Please select condition');      return; }
+  if (!price || isNaN(price) || Number(price) <= 0) { showToast('⚠️ Please enter a valid price'); return; }
+  if (!desc)      { showToast('⚠️ Please add a description');     return; }
+  if (!location)  { showToast('⚠️ Please select your location');  return; }
+  if (!whatsapp)  { showToast('⚠️ Please add your WhatsApp number'); return; }
+
+  const products = getProducts();
+  const newProduct = {
+    id:          Date.now(),
+    name:        name,
+    category:    category,
+    condition:   condition,
+    price:       Number(price),
+    stock:       Number(stock),
+    description: desc,
+    location:    location,
+    whatsapp:    whatsapp,
+    delivery:    delivery,
+    images:      uploadedImages.slice(),
+    sellerId:    user.id,
+    sellerName:  user.businessName || user.name,
+    sellerRole:  user.role,
+    status:      user.role === 'admin' ? 'approved' : 'pending',
+    datePosted:  new Date().toLocaleDateString(),
+    views:       0,
+  };
+
+  products.push(newProduct);
+  saveProducts(products);
+
+  showToast(user.role === 'admin'
+    ? '✅ Product posted and live!'
+    : '✅ Product submitted! It will go live after review.');
+
+  // Reset form
+  uploadedImages = [];
+  renderImagePreviews();
+  ['prod-name','prod-price','prod-desc','prod-whatsapp'].forEach(id => {
+    if ($(id)) $(id).value = '';
   });
+  ['prod-category','prod-condition','prod-location','prod-delivery'].forEach(id => {
+    if ($(id)) $(id).selectedIndex = 0;
+  });
+  ['name-count','desc-count'].forEach(id => {
+    if ($(id)) $(id).textContent = '0';
+  });
+
+  setTimeout(() => switchView(user.role === 'admin' ? 'admin' : 'business-dashboard'), 1500);
+};
+
+// ===============================
+// CART
+// ===============================
+let cart = JSON.parse(localStorage.getItem('kagaCart') || '[]');
+
+function saveCart() { localStorage.setItem('kagaCart', JSON.stringify(cart)); }
+
+window.addToCart = function(productId) {
+  const products = getProducts();
+  const p = products.find(pr => pr.id === productId);
+  if (!p) return;
+
+  const existing = cart.find(c => c.id === productId);
+  if (existing) {
+    existing.qty = (existing.qty || 1) + 1;
+  } else {
+    cart.push({ id: productId, name: p.name, price: p.price, qty: 1, image: p.images && p.images[0] ? p.images[0] : '' });
+  }
+  saveCart();
+  updateCartBadge();
+  renderCart();
+  showToast('✅ "' + p.name + '" ' + t('toast-added-cart'));
+};
+
+window.removeFromCart = function(index) {
+  cart.splice(index, 1);
+  saveCart();
+  updateCartBadge();
+  renderCart();
+};
+
+function updateCartBadge() {
+  const badge = $('cart-count');
+  const total = cart.reduce((s, i) => s + i.qty, 0);
+  if (badge) badge.textContent = total;
+}
+
+function renderCart() {
+  const cartList = $('cart-list');
+  const totalBar = $('cart-total-bar');
+  if (!cartList) return;
+
+  if (cart.length === 0) {
+    cartList.innerHTML = '<div class="empty-state" style="margin-top:20px;">' +
+      '<span class="empty-icon">🛒</span>' +
+      '<div class="empty-title">' + t('cart-empty') + '</div>' +
+      '<button class="btn-empty" onclick="switchView(\'shop\')">' + t('cart-browse') + '</button>' +
+    '</div>';
+    if (totalBar) totalBar.style.display = 'none';
+    return;
+  }
+
+  if (totalBar) totalBar.style.display = 'block';
+
+  cartList.innerHTML = cart.map((item, i) => {
+    const imgContent = item.image
+      ? '<img src="' + item.image + '" alt="" />'
+      : '📦';
+    return '<div class="cart-item">' +
+      '<div class="cart-item-img">' + imgContent + '</div>' +
+      '<div class="cart-item-info">' +
+        '<div class="cart-item-name">' + item.name + '</div>' +
+        '<div class="cart-item-price">TZS ' + Number(item.price).toLocaleString() + '</div>' +
+        '<div class="qty-control">' +
+          '<button class="qty-btn" onclick="changeQty(' + i + ', -1)">−</button>' +
+          '<span class="qty-num">' + item.qty + '</span>' +
+          '<button class="qty-btn" onclick="changeQty(' + i + ', 1)">+</button>' +
+        '</div>' +
+      '</div>' +
+      '<button onclick="removeFromCart(' + i + ')" style="background:none;border:none;font-size:18px;cursor:pointer;color:var(--text-light);">🗑️</button>' +
+    '</div>';
+  }).join('');
+
+  const subtotal = cart.reduce((s, i) => s + (i.price * i.qty), 0);
+  const total    = subtotal + 5000;
+  const subEl    = $('cart-subtotal');
+  const totEl    = $('cart-grand-total');
+  if (subEl) subEl.textContent = 'TZS ' + subtotal.toLocaleString();
+  if (totEl) totEl.textContent = 'TZS ' + total.toLocaleString();
+}
+
+window.changeQty = function(index, delta) {
+  cart[index].qty = Math.max(1, (cart[index].qty || 1) + delta);
+  saveCart();
+  updateCartBadge();
+  renderCart();
+};
+
+// ===============================
+// DELIVERY
+// ===============================
+function setupDelivery() {
+  const form = $('delivery-form');
+  if (!form) return;
+  form.addEventListener('submit', function(e) {
+    e.preventDefault();
+    // Save order to localStorage
+    const orders = JSON.parse(localStorage.getItem('kagaOrders') || '[]');
+    const user   = getCurrentUser();
+    const order  = {
+      id:       Date.now(),
+      userId:   user ? user.id : null,
+      items:    cart.slice(),
+      name:     $('del-name')    ? $('del-name').value    : '',
+      phone:    $('del-phone')   ? $('del-phone').value   : '',
+      address:  $('del-address') ? $('del-address').value : '',
+      landmark: $('del-landmark')? $('del-landmark').value: '',
+      payment:  $('del-payment') ? $('del-payment').value : '',
+      status:   'Processing',
+      date:     new Date().toLocaleDateString(),
+      total:    cart.reduce((s, i) => s + (i.price * i.qty), 0) + 5000,
+    };
+    orders.push(order);
+    localStorage.setItem('kagaOrders', JSON.stringify(orders));
+
+    cart = [];
+    saveCart();
+    updateCartBadge();
+    renderCart();
+
+    showToast(t('toast-order-placed'));
+    setTimeout(() => switchView('customer-dashboard'), 1500);
+  });
+}
+
+// ===============================
+// CUSTOMER DASHBOARD
+// ===============================
+function loadCustomerOrders() {
+  const el = $('customer-orders-list');
+  if (!el) return;
+
+  const user   = getCurrentUser();
+  const orders = JSON.parse(localStorage.getItem('kagaOrders') || '[]')
+    .filter(o => user && o.userId === user.id);
+
+  if (orders.length === 0) {
+    el.innerHTML = '<div class="empty-state">' +
+      '<span class="empty-icon">📦</span>' +
+      '<div class="empty-title">No orders yet</div>' +
+      '<div class="empty-desc">Your orders will appear here once you make a purchase.</div>' +
+      '<button class="btn-empty" onclick="switchView(\'shop\')">Browse Products</button>' +
+    '</div>';
+    return;
+  }
+
+  el.innerHTML = orders.reverse().map(o =>
+    '<div class="order-card">' +
+      '<div class="order-emoji">📦</div>' +
+      '<div class="order-info">' +
+        '<div class="order-name">' + o.items.map(i => i.name).join(', ') + '</div>' +
+        '<div class="order-meta">Order #' + o.id + ' · ' + o.date + '</div>' +
+      '</div>' +
+      '<span class="order-status status-processing">' + o.status + '</span>' +
+      '<div class="order-price">TZS ' + Number(o.total).toLocaleString() + '</div>' +
+    '</div>'
+  ).join('');
+}
+
+window.showDashTab = function(tab, btn) {
+  document.querySelectorAll('.dash-tab-content, #dash-orders, #dash-saved, #dash-messages')
+    .forEach(t => t.style.display = 'none');
+  document.querySelectorAll('.dash-tab').forEach(b => b.classList.remove('active'));
+  const el = $('dash-' + tab);
+  if (el) el.style.display = 'block';
+  if (btn) btn.classList.add('active');
+};
+
+// ===============================
+// BUSINESS DASHBOARD
+// ===============================
+function loadBizDashboard() {
+  const user = getCurrentUser();
+  if (!user) return;
+
+  const allProducts = getProducts().filter(p => p.sellerId === user.id);
+  const approved    = allProducts.filter(p => p.status === 'approved');
+  const orders      = JSON.parse(localStorage.getItem('kagaOrders') || '[]');
+
+  const salesEl    = $('biz-stat-sales');
+  const ordersEl   = $('biz-stat-orders');
+  const productsEl = $('biz-stat-products');
+
+  if (productsEl) productsEl.textContent = approved.length;
+  if (ordersEl)   ordersEl.textContent   = orders.length;
+  if (salesEl)    salesEl.textContent    = 'TZS ' + orders.reduce((s, o) => s + (o.total || 0), 0).toLocaleString();
+
+  const listEl = $('biz-products-list');
+  if (!listEl) return;
+
+  if (allProducts.length === 0) {
+    listEl.innerHTML = '<div class="empty-state">' +
+      '<span class="empty-icon">🏪</span>' +
+      '<div class="empty-title">No products yet</div>' +
+      '<div class="empty-desc">Post your first product and start selling!</div>' +
+      '<button class="btn-empty" onclick="switchView(\'add-product\')">Post a Product</button>' +
+    '</div>';
+    return;
+  }
+
+  listEl.innerHTML = '<table class="biz-products-table"><thead><tr>' +
+    '<th>Product</th><th>Price</th><th>Stock</th><th>Status</th><th>Actions</th>' +
+    '</tr></thead><tbody>' +
+    allProducts.map(p =>
+      '<tr>' +
+        '<td>' + (p.images && p.images[0] ? '<img src="' + p.images[0] + '" style="width:32px;height:32px;object-fit:cover;border-radius:4px;margin-right:8px;vertical-align:middle;" />' : '📦 ') + p.name + '</td>' +
+        '<td>TZS ' + Number(p.price).toLocaleString() + '</td>' +
+        '<td>' + (p.stock || 1) + '</td>' +
+        '<td><span class="order-status ' + (p.status === 'approved' ? 'status-delivered' : 'status-processing') + '">' + (p.status === 'approved' ? 'Active' : 'Pending') + '</span></td>' +
+        '<td><button onclick="deleteMyProduct(' + p.id + ')" style="background:none;border:none;color:var(--accent);font-size:13px;cursor:pointer;">Delete</button></td>' +
+      '</tr>'
+    ).join('') +
+    '</tbody></table>';
+}
+
+window.deleteMyProduct = function(id) {
+  if (!confirm('Delete this product?')) return;
+  const products = getProducts().filter(p => p.id !== id);
+  saveProducts(products);
+  loadBizDashboard();
+  showToast('🗑️ Product deleted');
+};
+
+// ===============================
+// ADMIN
+// ===============================
+function loadAdminStats() {
+  const users    = getUsers();
+  const products = getProducts();
+  const pending  = products.filter(p => p.status === 'pending');
+  const sellers  = users.filter(u => u.role === 'seller');
+
+  const uEl = $('admin-stat-users');
+  const bEl = $('admin-stat-biz');
+  const pEl = $('admin-stat-products');
+  const peEl= $('admin-stat-pending');
+
+  if (uEl)  uEl.textContent  = users.length;
+  if (bEl)  bEl.textContent  = sellers.length;
+  if (pEl)  pEl.textContent  = products.filter(p => p.status === 'approved').length;
+  if (peEl) peEl.textContent = pending.length;
+}
+
+window.adminShowSection = function(section) {
+  const area = $('admin-content-area');
+  if (!area) return;
+
+  const users    = getUsers();
+  const products = getProducts();
+
+  if (section === 'users') {
+    area.innerHTML = '<div class="dash-section-title" style="margin-top:20px;">👥 All Users</div>' +
+      (users.length === 0
+        ? '<p style="color:var(--text-light);font-size:14px;">No users registered yet.</p>'
+        : users.map(u =>
+            '<div style="padding:12px 14px;border:1px solid var(--border);border-radius:10px;margin-bottom:8px;background:var(--surface);display:flex;align-items:center;gap:12px;">' +
+              '<span style="font-size:22px;">' + (u.role === 'admin' ? '🛡️' : u.role === 'seller' ? '🏪' : '🛍️') + '</span>' +
+              '<div style="flex:1;">' +
+                '<div style="font-weight:600;font-size:13px;">' + u.name + '</div>' +
+                '<div style="font-size:12px;color:var(--text-light);">' + u.email + ' · ' + u.role + ' · Joined ' + (u.joinDate || '—') + '</div>' +
+              '</div>' +
+              '<span style="font-size:11px;background:' + (u.status === 'pending' ? 'var(--gold-light)' : 'var(--brand-light)') + ';color:' + (u.status === 'pending' ? 'var(--gold)' : 'var(--brand-dark)') + ';padding:3px 10px;border-radius:999px;font-weight:600;">' + (u.status || 'active') + '</span>' +
+              (u.status === 'pending' ? '<button onclick="adminApproveUser(' + u.id + ')" style="background:var(--brand);color:#fff;border:none;border-radius:6px;padding:5px 12px;font-size:12px;cursor:pointer;">Approve</button>' : '') +
+            '</div>'
+          ).join(''));
+  }
+
+  else if (section === 'pending-products') {
+    const pending = products.filter(p => p.status === 'pending');
+    area.innerHTML = '<div class="dash-section-title" style="margin-top:20px;">⏳ Pending Products (' + pending.length + ')</div>' +
+      (pending.length === 0
+        ? '<p style="color:var(--text-light);font-size:14px;">No pending products. 🎉</p>'
+        : pending.map(p =>
+            '<div style="padding:14px;border:1px solid var(--border);border-radius:10px;margin-bottom:10px;background:var(--surface);display:flex;align-items:center;gap:14px;">' +
+              (p.images && p.images[0] ? '<img src="' + p.images[0] + '" style="width:56px;height:56px;object-fit:cover;border-radius:8px;flex-shrink:0;" />' : '<span style="font-size:36px;">📦</span>') +
+              '<div style="flex:1;">' +
+                '<div style="font-weight:600;font-size:14px;">' + p.name + '</div>' +
+                '<div style="font-size:12px;color:var(--text-light);">By ' + p.sellerName + ' · TZS ' + Number(p.price).toLocaleString() + ' · ' + p.location + '</div>' +
+                '<div style="font-size:12px;color:var(--text-muted);margin-top:4px;">' + (p.description || '').slice(0, 80) + '...</div>' +
+              '</div>' +
+              '<div style="display:flex;flex-direction:column;gap:6px;">' +
+                '<button onclick="adminApproveProduct(' + p.id + ')" style="background:var(--brand);color:#fff;border:none;border-radius:6px;padding:7px 14px;font-size:12px;cursor:pointer;font-weight:600;">✅ Approve</button>' +
+                '<button onclick="adminRejectProduct(' + p.id + ')" style="background:var(--accent-light);color:var(--accent);border:1px solid var(--accent);border-radius:6px;padding:7px 14px;font-size:12px;cursor:pointer;font-weight:600;">❌ Reject</button>' +
+              '</div>' +
+            '</div>'
+          ).join(''));
+  }
+
+  else if (section === 'all-products') {
+    const approved = products.filter(p => p.status === 'approved');
+    area.innerHTML = '<div class="dash-section-title" style="margin-top:20px;">📦 All Live Products (' + approved.length + ')</div>' +
+      (approved.length === 0
+        ? '<p style="color:var(--text-light);font-size:14px;">No approved products yet.</p>'
+        : approved.map(p =>
+            '<div style="padding:12px 14px;border:1px solid var(--border);border-radius:10px;margin-bottom:8px;background:var(--surface);display:flex;align-items:center;gap:12px;">' +
+              (p.images && p.images[0] ? '<img src="' + p.images[0] + '" style="width:44px;height:44px;object-fit:cover;border-radius:6px;" />' : '<span style="font-size:28px;">📦</span>') +
+              '<div style="flex:1;"><div style="font-weight:600;font-size:13px;">' + p.name + '</div><div style="font-size:12px;color:var(--text-light);">' + p.sellerName + ' · TZS ' + Number(p.price).toLocaleString() + '</div></div>' +
+              '<button onclick="adminRejectProduct(' + p.id + ')" style="background:none;border:none;color:var(--accent);font-size:13px;cursor:pointer;">Remove</button>' +
+            '</div>'
+          ).join(''));
+  }
+
+  else if (section === 'businesses') {
+    const sellers = users.filter(u => u.role === 'seller');
+    area.innerHTML = '<div class="dash-section-title" style="margin-top:20px;">🏪 Registered Sellers (' + sellers.length + ')</div>' +
+      (sellers.length === 0
+        ? '<p style="color:var(--text-light);font-size:14px;">No sellers registered yet.</p>'
+        : sellers.map(u =>
+            '<div style="padding:12px 14px;border:1px solid var(--border);border-radius:10px;margin-bottom:8px;background:var(--surface);display:flex;align-items:center;gap:12px;">' +
+              '<span style="font-size:24px;">🏪</span>' +
+              '<div style="flex:1;"><div style="font-weight:600;font-size:13px;">' + (u.businessName || u.name) + '</div><div style="font-size:12px;color:var(--text-light);">' + u.email + ' · ' + (u.businessCat || '') + '</div></div>' +
+              '<span style="font-size:11px;background:' + (u.status === 'pending' ? 'var(--gold-light)' : 'var(--brand-light)') + ';color:' + (u.status === 'pending' ? 'var(--gold)' : 'var(--brand-dark)') + ';padding:3px 10px;border-radius:999px;">' + (u.status || 'active') + '</span>' +
+              (u.status === 'pending' ? '<button onclick="adminApproveUser(' + u.id + ')" style="background:var(--brand);color:#fff;border:none;border-radius:6px;padding:5px 12px;font-size:12px;cursor:pointer;">Approve</button>' : '') +
+            '</div>'
+          ).join(''));
+  }
+
+  area.scrollIntoView({ behavior: 'smooth', block: 'start' });
+};
+
+window.adminApproveProduct = function(id) {
+  const products = getProducts();
+  const idx = products.findIndex(p => p.id === id);
+  if (idx !== -1) {
+    products[idx].status = 'approved';
+    saveProducts(products);
+    showToast('✅ Product approved and live!');
+    loadAdminStats();
+    adminShowSection('pending-products');
+    renderHomeProducts();
+  }
+};
+
+window.adminRejectProduct = function(id) {
+  if (!confirm('Remove this product?')) return;
+  saveProducts(getProducts().filter(p => p.id !== id));
+  showToast('🗑️ Product removed');
+  loadAdminStats();
+  adminShowSection('pending-products');
+};
+
+window.adminApproveUser = function(id) {
+  const users = getUsers();
+  const idx   = users.findIndex(u => u.id === id);
+  if (idx !== -1) {
+    users[idx].status = 'active';
+    saveUsers(users);
+    showToast('✅ User approved!');
+    loadAdminStats();
+    adminShowSection('users');
+  }
+};
+
+// ===============================
+// AUTH SYSTEM
+// ===============================
+function checkAuth() {
+  const user      = getCurrentUser();
+  const nameEl    = $('account-name');
+  const roleEl    = $('account-role');
+  const loginBtn  = $('header-login-btn');
+  const adminItem = $('admin-menu-item');
+  const bizItem   = $('biz-menu-item');
+
+  if (user) {
+    if (nameEl)   nameEl.textContent  = user.name;
+    if (roleEl)   roleEl.textContent  = user.role === 'admin' ? '🛡️ Administrator' : user.role === 'seller' ? '🏪 Seller' : '🛍️ Buyer';
+    if (loginBtn) loginBtn.innerHTML  = '👤 ' + user.name.split(' ')[0];
+    if (adminItem) adminItem.style.display = user.role === 'admin'  ? 'flex' : 'none';
+    if (bizItem)   bizItem.style.display   = (user.role === 'seller' || user.role === 'admin') ? 'flex' : 'none';
+  } else {
+    if (nameEl)   nameEl.textContent  = t('account-guest');
+    if (roleEl)   roleEl.textContent  = t('account-not-logged');
+    if (adminItem) adminItem.style.display = 'none';
+    if (bizItem)   bizItem.style.display   = 'none';
+  }
+
+  // Header login button
+  if (loginBtn) {
+    loginBtn.onclick = () => user ? switchView('account') : window.location.href = 'login.html';
+  }
+
+  // Logout
+  const logoutItem = $('logout-menu-item');
+  if (logoutItem) {
+    logoutItem.onclick = () => {
+      localStorage.removeItem('kagaCurrentUser');
+      showToast(t('toast-logged-out'));
+      setTimeout(() => window.location.href = 'login.html', 900);
+    };
+  }
 }
 
 // ===============================
 // MESSENGER
 // ===============================
 function setupMessenger() {
-  var input   = $("chat-input");
-  var sendBtn = document.querySelector(".send-btn");
-  var msgs    = document.querySelector(".chat-messages");
+  const input   = $('chat-input');
+  const sendBtn = $('send-btn');
+  const msgs    = $('chat-messages');
   if (!input || !msgs) return;
 
   function sendMsg() {
-    var text = input.value.trim();
+    const text = input.value.trim();
     if (!text) return;
-
-    var bubble = document.createElement("div");
-    bubble.className = "msg-bubble msg-out";
+    const bubble = document.createElement('div');
+    bubble.className = 'msg-bubble msg-out';
     bubble.textContent = text;
     msgs.appendChild(bubble);
     msgs.scrollTop = msgs.scrollHeight;
-    input.value = "";
-
-    setTimeout(function() {
-      var reply = document.createElement("div");
-      reply.className = "msg-bubble msg-in";
-      reply.textContent = "Asante! Tutawasiliana nawe hivi karibuni.";
+    input.value = '';
+    setTimeout(() => {
+      const reply = document.createElement('div');
+      reply.className = 'msg-bubble msg-in';
+      reply.textContent = 'Asante! Tutawasiliana nawe hivi karibuni.';
       msgs.appendChild(reply);
       msgs.scrollTop = msgs.scrollHeight;
     }, 1000);
   }
 
-  input.addEventListener("keydown", function(e) { if (e.key === "Enter") sendMsg(); });
-  if (sendBtn) sendBtn.addEventListener("click", sendMsg);
+  input.addEventListener('keydown', e => { if (e.key === 'Enter') sendMsg(); });
+  if (sendBtn) sendBtn.addEventListener('click', sendMsg);
+}
 
-  document.querySelectorAll(".convo-item").forEach(function(item) {
-    item.addEventListener("click", function() {
-      document.querySelectorAll(".convo-item").forEach(function(i) { i.classList.remove("active"); });
-      item.classList.add("active");
+// ===============================
+// SEARCH
+// ===============================
+function setupSearch() {
+  const global = $('global-search-input');
+  const shop   = $('shop-search-input');
+  const hero   = $('hero-search-input');
+
+  if (global) {
+    global.addEventListener('keydown', e => {
+      if (e.key === 'Enter' && global.value.trim()) {
+        shopFilter.search = global.value.trim();
+        switchView('shop');
+      }
     });
+  }
+  if (shop) {
+    shop.addEventListener('input', () => {
+      shopFilter.search = shop.value.trim();
+      renderShopProducts();
+    });
+  }
+  if (hero) {
+    hero.addEventListener('keydown', e => {
+      if (e.key === 'Enter') doHeroSearch();
+    });
+  }
+}
+
+window.doHeroSearch = function() {
+  const heroInput = $('hero-search-input');
+  if (heroInput && heroInput.value.trim()) {
+    shopFilter.search = heroInput.value.trim();
+    switchView('shop');
+  }
+};
+
+// Price slider
+function setupPriceSlider() {
+  const slider = $('price-slider');
+  const label  = $('price-val');
+  if (!slider) return;
+  slider.addEventListener('input', () => {
+    shopFilter.maxPrice = Number(slider.value);
+    if (label) label.textContent = Number(slider.value).toLocaleString();
+    renderShopProducts();
   });
 }
 
-// ===============================
-// DASHBOARD TABS
-// ===============================
-window.showDashTab = function (tab, btn) {
-  document.querySelectorAll(".dash-tab-content").forEach(function(t) { t.style.display = "none"; });
-  document.querySelectorAll(".dash-tab").forEach(function(b) { b.classList.remove("active"); });
-  var tabEl = $("dash-" + tab);
-  if (tabEl) tabEl.style.display = "block";
-  if (btn)   btn.classList.add("active");
-};
-
-// ===============================
-// DELIVERY FORM
-// ===============================
-function setupDeliveryForm() {
-  var form = $("delivery-form");
-  if (!form) return;
-
-  form.addEventListener("submit", function(e) {
-    e.preventDefault();
-    showToast("🎉 Order placed! You'll get an SMS confirmation shortly.");
-    cart = [];
-    updateCartBadge();
-    renderCart();
-    switchView("home");
-  });
+// Sort
+function setupSort() {
+  const select = $('sort-select');
+  if (!select) return;
+  select.addEventListener('change', () => renderShopProducts());
 }
 
 // ===============================
-// ADMIN FUNCTIONS
+// TOAST
 // ===============================
-window.loadAdminProducts = function () {
-  var box = $("admin-products-container");
-  if (!box) return;
-  box.innerHTML = products.map(function(p) {
-    return '<div style="padding:10px;border:1px solid var(--border);border-radius:8px;margin-bottom:8px;background:var(--surface);display:flex;align-items:center;gap:12px;">' +
-      '<span style="font-size:24px;">' + p.icon + '</span>' +
-      '<div style="flex:1;">' +
-        '<div style="font-weight:600;font-size:13px;">' + p.name + '</div>' +
-        '<div style="font-size:12px;color:var(--text-light);">' + p.seller + ' · TZS ' + p.price.toLocaleString() + '</div>' +
-      '</div>' +
-      '<span style="font-size:11px;background:var(--brand-light);color:var(--brand-dark);padding:3px 8px;border-radius:999px;">Active</span>' +
-    '</div>';
-  }).join("");
-};
-
-window.loadPendingProducts = function () {
-  var box = $("admin-products-container");
-  if (!box) return;
-  box.innerHTML =
-    '<div style="padding:10px;border:1px solid var(--border);border-radius:8px;margin-bottom:8px;background:var(--surface);display:flex;align-items:center;gap:12px;">' +
-      '<span style="font-size:24px;">🧪</span>' +
-      '<div style="flex:1;"><div style="font-weight:600;font-size:13px;">Lab Equipment Set</div>' +
-      '<div style="font-size:12px;color:var(--text-light);">SciStore Tz · TZS 320,000</div></div>' +
-      '<span style="font-size:11px;background:var(--gold-light);color:var(--gold);padding:3px 8px;border-radius:999px;">Pending</span>' +
-    '</div>' +
-    '<div style="padding:10px;border:1px solid var(--border);border-radius:8px;background:var(--surface);display:flex;align-items:center;gap:12px;">' +
-      '<span style="font-size:24px;">🪴</span>' +
-      '<div style="flex:1;"><div style="font-weight:600;font-size:13px;">Indoor Plant Bundle</div>' +
-      '<div style="font-size:12px;color:var(--text-light);">Green Thumb Tz · TZS 45,000</div></div>' +
-      '<span style="font-size:11px;background:var(--gold-light);color:var(--gold);padding:3px 8px;border-radius:999px;">Pending</span>' +
-    '</div>';
-};
-
-// ===============================
-// TOAST NOTIFICATION
-// ===============================
-function showToast(message) {
-  var existing = document.querySelector(".toast");
+function showToast(msg) {
+  const existing = document.querySelector('.toast-msg');
   if (existing) existing.remove();
-
-  var toast = document.createElement("div");
-  toast.className = "toast";
-  toast.textContent = message;
+  const toast = document.createElement('div');
+  toast.className = 'toast-msg';
+  toast.textContent = msg;
   toast.style.cssText =
-    "position:fixed;bottom:80px;left:50%;transform:translateX(-50%);" +
-    "background:var(--brand-dark);color:#fff;padding:12px 20px;" +
-    "border-radius:999px;font-size:13px;font-weight:500;z-index:9999;" +
-    "white-space:nowrap;box-shadow:0 4px 20px rgba(0,0,0,0.2);";
+    'position:fixed;bottom:80px;left:50%;transform:translateX(-50%);' +
+    'background:var(--brand-dark);color:#fff;padding:12px 20px;border-radius:999px;' +
+    'font-size:13px;font-weight:500;z-index:9999;white-space:nowrap;' +
+    'box-shadow:0 4px 20px rgba(0,0,0,0.2);';
   document.body.appendChild(toast);
-
-  setTimeout(function() {
-    toast.style.opacity = "0";
-    toast.style.transition = "opacity 0.3s";
-    setTimeout(function() { toast.remove(); }, 300);
-  }, 2500);
+  setTimeout(() => { toast.style.opacity = '0'; toast.style.transition = 'opacity 0.3s'; setTimeout(() => toast.remove(), 300); }, 2500);
 }
-
-// ===============================
-// SETTINGS PLACEHOLDER
-// ===============================
-window.openSettings = function () {
-  switchView("settings");
-};
 
 // ===============================
 // BOOT
 // ===============================
-document.addEventListener("DOMContentLoaded", function() {
+document.addEventListener('DOMContentLoaded', function() {
+  checkAuth();
   renderCategories();
-  renderFeaturedProducts();
-  renderShopProducts();
+  renderHomeProducts();
   renderHomeBusinesses();
-  renderAllBusinesses();
-  renderProfessionals();
-
-  switchView("home");
-
-  setupGlobalSearch();
-  setupShopSearch();
-  setupSortSelect();
+  setupSearch();
   setupPriceSlider();
-  setupFilterOptions();
-  setupLanguageSwitcher();
+  setupSort();
   setupMessenger();
-  setupDeliveryForm();
-
+  setupDelivery();
   updateCartBadge();
   renderCart();
-
-  console.log("Kaga's Market app.js loaded successfully");
+  switchView('home');
+  console.log("✅ Kaga's Market loaded — clean, no fake data");
 });
