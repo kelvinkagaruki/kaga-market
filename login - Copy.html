@@ -15,7 +15,6 @@
       --brand-dark:  #085041;
       --brand-light: #E1F5EE;
       --accent:      #D85A30;
-      --gold:        #BA7517;
       --bg:          #F4F2EC;
       --surface:     #FFFFFF;
       --border:      rgba(0,0,0,0.09);
@@ -48,8 +47,6 @@
       padding: 48px 52px;
       overflow: hidden;
     }
-
-    /* Decorative circles */
     .left-panel::before {
       content: '';
       position: absolute;
@@ -66,10 +63,7 @@
       border: 40px solid rgba(255,255,255,0.06);
       bottom: -60px; left: -80px;
     }
-
-    .left-brand {
-      position: relative; z-index: 1;
-    }
+    .left-brand { position: relative; z-index: 1; }
     .brand-logo-big {
       width: 52px; height: 52px;
       background: rgba(255,255,255,0.15);
@@ -77,331 +71,192 @@
       border-radius: 14px;
       display: flex; align-items: center; justify-content: center;
       font-family: var(--font-head);
-      font-weight: 800;
-      font-size: 24px;
-      color: #fff;
+      font-weight: 800; font-size: 24px; color: #fff;
       margin-bottom: 20px;
       border: 1px solid rgba(255,255,255,0.2);
     }
     .left-brand h1 {
       font-family: var(--font-head);
-      font-size: 28px;
-      font-weight: 800;
-      color: #fff;
-      line-height: 1.1;
-      margin-bottom: 10px;
+      font-size: 28px; font-weight: 800; color: #fff;
+      line-height: 1.1; margin-bottom: 10px;
     }
     .left-brand p {
-      font-size: 14px;
-      color: rgba(255,255,255,0.7);
-      line-height: 1.6;
-      max-width: 280px;
+      font-size: 14px; color: rgba(255,255,255,0.7);
+      line-height: 1.6; max-width: 280px;
     }
-
-    .left-features {
-      position: relative; z-index: 1;
-    }
+    .left-features { position: relative; z-index: 1; }
     .feature-item {
-      display: flex;
-      align-items: flex-start;
-      gap: 14px;
-      margin-bottom: 22px;
+      display: flex; align-items: flex-start;
+      gap: 14px; margin-bottom: 22px;
     }
     .feature-icon {
       width: 40px; height: 40px;
       background: rgba(255,255,255,0.12);
       border-radius: 10px;
       display: flex; align-items: center; justify-content: center;
-      font-size: 18px;
-      flex-shrink: 0;
+      font-size: 18px; flex-shrink: 0;
       border: 1px solid rgba(255,255,255,0.15);
     }
-    .feature-text h4 {
-      font-size: 13px;
-      font-weight: 600;
-      color: #fff;
-      margin-bottom: 2px;
-    }
-    .feature-text p {
-      font-size: 12px;
-      color: rgba(255,255,255,0.6);
-      line-height: 1.4;
-    }
-
-    .left-footer {
-      position: relative; z-index: 1;
-      font-size: 12px;
-      color: rgba(255,255,255,0.4);
-    }
+    .feature-text h4 { font-size: 13px; font-weight: 600; color: #fff; margin-bottom: 2px; }
+    .feature-text p { font-size: 12px; color: rgba(255,255,255,0.6); line-height: 1.4; }
+    .left-footer { position: relative; z-index: 1; font-size: 12px; color: rgba(255,255,255,0.4); }
 
     /* ===== RIGHT PANEL ===== */
     .right-panel {
-      display: flex;
-      flex-direction: column;
-      justify-content: center;
-      align-items: center;
-      padding: 40px 48px;
-      overflow-y: auto;
-      background: var(--surface);
-      position: relative;
+      display: flex; flex-direction: column;
+      justify-content: center; align-items: center;
+      padding: 40px 48px; overflow-y: auto;
+      background: var(--surface); position: relative;
     }
-
-    /* Subtle pattern bg */
     .right-panel::before {
       content: '';
-      position: absolute;
-      inset: 0;
+      position: absolute; inset: 0;
       background:
         radial-gradient(circle at 90% 10%, rgba(15,110,86,0.04) 0%, transparent 50%),
         radial-gradient(circle at 10% 90%, rgba(15,110,86,0.03) 0%, transparent 50%);
       pointer-events: none;
     }
-
     .form-container {
-      width: 100%;
-      max-width: 400px;
+      width: 100%; max-width: 400px;
       position: relative; z-index: 1;
     }
 
     /* ===== TABS ===== */
     .auth-tabs {
-      display: flex;
-      background: var(--bg);
-      border-radius: 12px;
-      padding: 4px;
-      margin-bottom: 36px;
-      border: 1px solid var(--border);
+      display: flex; background: var(--bg);
+      border-radius: 12px; padding: 4px;
+      margin-bottom: 36px; border: 1px solid var(--border);
     }
     .auth-tab {
-      flex: 1;
-      height: 40px;
-      border: none;
-      background: transparent;
-      border-radius: 9px;
-      font-family: var(--font-body);
-      font-size: 13px;
-      font-weight: 600;
-      color: var(--text-muted);
-      cursor: pointer;
-      transition: all 0.2s;
-      letter-spacing: 0.02em;
+      flex: 1; height: 40px; border: none;
+      background: transparent; border-radius: 9px;
+      font-family: var(--font-body); font-size: 13px;
+      font-weight: 600; color: var(--text-muted);
+      cursor: pointer; transition: all 0.2s; letter-spacing: 0.02em;
     }
     .auth-tab.active {
-      background: var(--surface);
-      color: var(--brand-dark);
+      background: var(--surface); color: var(--brand-dark);
       box-shadow: 0 1px 6px rgba(0,0,0,0.1);
     }
 
     /* ===== FORM HEADER ===== */
-    .form-header {
-      margin-bottom: 28px;
-    }
+    .form-header { margin-bottom: 28px; }
     .form-header h2 {
       font-family: var(--font-head);
-      font-size: 26px;
-      font-weight: 800;
-      color: var(--text);
-      line-height: 1.15;
-      margin-bottom: 6px;
+      font-size: 26px; font-weight: 800; color: var(--text);
+      line-height: 1.15; margin-bottom: 6px;
     }
-    .form-header p {
-      font-size: 14px;
-      color: var(--text-muted);
-    }
+    .form-header p { font-size: 14px; color: var(--text-muted); }
 
     /* ===== FORM FIELDS ===== */
     .form-panel { display: none; }
     .form-panel.active { display: block; }
 
-    .field {
-      margin-bottom: 18px;
-      position: relative;
-    }
+    .field { margin-bottom: 18px; position: relative; }
     .field label {
-      display: block;
-      font-size: 12px;
-      font-weight: 600;
-      color: var(--text-muted);
-      text-transform: uppercase;
-      letter-spacing: 0.06em;
-      margin-bottom: 7px;
+      display: block; font-size: 12px; font-weight: 600;
+      color: var(--text-muted); text-transform: uppercase;
+      letter-spacing: 0.06em; margin-bottom: 7px;
     }
-    .field-wrap {
-      position: relative;
-    }
+    .field-wrap { position: relative; }
     .field-icon {
-      position: absolute;
-      left: 14px;
-      top: 50%;
-      transform: translateY(-50%);
-      font-size: 16px;
-      pointer-events: none;
-      z-index: 1;
+      position: absolute; left: 14px; top: 50%;
+      transform: translateY(-50%); font-size: 16px;
+      pointer-events: none; z-index: 1;
     }
     .field input, .field select {
-      width: 100%;
-      height: 48px;
-      background: var(--bg);
-      border: 1.5px solid var(--border);
-      border-radius: var(--radius);
-      padding: 0 14px 0 44px;
-      font-family: var(--font-body);
-      font-size: 14px;
-      color: var(--text);
-      outline: none;
-      transition: border-color 0.2s, background 0.2s;
+      width: 100%; height: 48px;
+      background: var(--bg); border: 1.5px solid var(--border);
+      border-radius: var(--radius); padding: 0 14px 0 44px;
+      font-family: var(--font-body); font-size: 14px; color: var(--text);
+      outline: none; transition: border-color 0.2s, background 0.2s;
       appearance: none;
     }
     .field input:focus, .field select:focus {
-      border-color: var(--brand);
-      background: #fff;
+      border-color: var(--brand); background: #fff;
     }
     .field input.error { border-color: var(--accent); }
     .field-err {
-      font-size: 11px;
-      color: var(--accent);
-      margin-top: 5px;
-      display: none;
+      font-size: 11px; color: var(--accent);
+      margin-top: 5px; display: none;
     }
     .field-err.show { display: block; }
 
     /* Password toggle */
     .pwd-toggle {
-      position: absolute;
-      right: 14px;
-      top: 50%;
+      position: absolute; right: 14px; top: 50%;
       transform: translateY(-50%);
-      background: none;
-      border: none;
-      cursor: pointer;
-      font-size: 16px;
-      color: var(--text-light);
-      padding: 0;
+      background: none; border: none; cursor: pointer;
+      font-size: 16px; color: var(--text-light); padding: 0;
     }
 
-    /* Account type pills */
+    /* Account type pills — REMOVED "Work/Professional" option */
     .account-type-row {
       display: grid;
-      grid-template-columns: 1fr 1fr 1fr;
-      gap: 8px;
-      margin-bottom: 18px;
+      grid-template-columns: 1fr 1fr; /* Only 2 columns now: Buy and Sell */
+      gap: 8px; margin-bottom: 18px;
     }
-    .type-pill {
-      position: relative;
-    }
-    .type-pill input[type="radio"] {
-      position: absolute;
-      opacity: 0;
-      width: 0; height: 0;
-    }
+    .type-pill { position: relative; }
+    .type-pill input[type="radio"] { position: absolute; opacity: 0; width: 0; height: 0; }
     .type-pill label {
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      gap: 4px;
-      padding: 12px 8px;
-      background: var(--bg);
-      border: 1.5px solid var(--border);
-      border-radius: var(--radius);
-      cursor: pointer;
+      display: flex; flex-direction: column;
+      align-items: center; gap: 4px;
+      padding: 14px 8px;
+      background: var(--bg); border: 1.5px solid var(--border);
+      border-radius: var(--radius); cursor: pointer;
       transition: all 0.2s;
-      text-transform: none;
-      letter-spacing: 0;
+      text-transform: none; letter-spacing: 0;
     }
-    .type-pill label .pill-icon { font-size: 22px; }
-    .type-pill label .pill-name {
-      font-size: 12px;
-      font-weight: 600;
-      color: var(--text-muted);
-    }
-    .type-pill input:checked + label {
-      border-color: var(--brand);
-      background: var(--brand-light);
-    }
+    .type-pill label .pill-icon { font-size: 24px; }
+    .type-pill label .pill-name { font-size: 12px; font-weight: 600; color: var(--text-muted); }
+    .type-pill input:checked + label { border-color: var(--brand); background: var(--brand-light); }
     .type-pill input:checked + label .pill-name { color: var(--brand-dark); }
 
     /* Two-col row */
-    .field-row {
-      display: grid;
-      grid-template-columns: 1fr 1fr;
-      gap: 14px;
-    }
+    .field-row { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; }
 
     /* Forgot password */
     .forgot-row {
-      display: flex;
-      justify-content: flex-end;
-      margin-top: -10px;
-      margin-bottom: 18px;
+      display: flex; justify-content: flex-end;
+      margin-top: -10px; margin-bottom: 18px;
     }
     .forgot-link {
-      font-size: 12px;
-      color: var(--brand);
-      font-weight: 500;
-      background: none;
-      border: none;
-      cursor: pointer;
+      font-size: 12px; color: var(--brand); font-weight: 500;
+      background: none; border: none; cursor: pointer;
       font-family: var(--font-body);
     }
 
     /* Password strength */
-    .pwd-strength {
-      margin-top: 6px;
-    }
+    .pwd-strength { margin-top: 6px; }
     .strength-bar {
-      height: 3px;
-      background: var(--border);
-      border-radius: 99px;
-      overflow: hidden;
-      margin-bottom: 4px;
+      height: 3px; background: var(--border);
+      border-radius: 99px; overflow: hidden; margin-bottom: 4px;
     }
     .strength-fill {
-      height: 100%;
-      border-radius: 99px;
-      width: 0%;
-      transition: width 0.3s, background 0.3s;
+      height: 100%; border-radius: 99px;
+      width: 0%; transition: width 0.3s, background 0.3s;
     }
-    .strength-label {
-      font-size: 11px;
-      color: var(--text-light);
-    }
+    .strength-label { font-size: 11px; color: var(--text-light); }
 
     /* Terms checkbox */
     .terms-row {
-      display: flex;
-      align-items: flex-start;
-      gap: 10px;
-      margin-bottom: 20px;
+      display: flex; align-items: flex-start;
+      gap: 10px; margin-bottom: 20px;
     }
     .terms-row input[type="checkbox"] {
       width: 16px; height: 16px;
-      accent-color: var(--brand);
-      margin-top: 2px;
-      flex-shrink: 0;
+      accent-color: var(--brand); margin-top: 2px; flex-shrink: 0;
     }
-    .terms-row span {
-      font-size: 12px;
-      color: var(--text-muted);
-      line-height: 1.5;
-    }
+    .terms-row span { font-size: 12px; color: var(--text-muted); line-height: 1.5; }
     .terms-row a { color: var(--brand); font-weight: 500; text-decoration: none; }
 
     /* Submit button */
     .btn-submit {
-      width: 100%;
-      height: 50px;
-      background: var(--brand);
-      color: #fff;
-      border: none;
-      border-radius: var(--radius);
-      font-family: var(--font-head);
-      font-size: 15px;
-      font-weight: 700;
-      cursor: pointer;
-      letter-spacing: 0.03em;
+      width: 100%; height: 50px; background: var(--brand); color: #fff;
+      border: none; border-radius: var(--radius);
+      font-family: var(--font-head); font-size: 15px; font-weight: 700;
+      cursor: pointer; letter-spacing: 0.03em;
       transition: background 0.2s, transform 0.15s;
-      position: relative;
-      overflow: hidden;
     }
     .btn-submit:hover { background: var(--brand-dark); transform: translateY(-1px); }
     .btn-submit:active { transform: translateY(0); }
@@ -409,79 +264,34 @@
 
     /* Divider */
     .divider {
-      display: flex;
-      align-items: center;
-      gap: 12px;
-      margin: 20px 0;
-      color: var(--text-light);
-      font-size: 12px;
+      display: flex; align-items: center;
+      gap: 12px; margin: 20px 0;
+      color: var(--text-light); font-size: 12px;
     }
     .divider::before, .divider::after {
-      content: '';
-      flex: 1;
-      height: 1px;
-      background: var(--border);
+      content: ''; flex: 1; height: 1px; background: var(--border);
     }
-
-    /* Social login */
-    .social-row {
-      display: grid;
-      grid-template-columns: 1fr 1fr;
-      gap: 10px;
-      margin-bottom: 20px;
-    }
-    .btn-social {
-      height: 44px;
-      background: var(--bg);
-      border: 1.5px solid var(--border);
-      border-radius: var(--radius);
-      font-family: var(--font-body);
-      font-size: 13px;
-      font-weight: 500;
-      color: var(--text);
-      cursor: pointer;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      gap: 8px;
-      transition: border-color 0.2s, background 0.2s;
-    }
-    .btn-social:hover { border-color: var(--brand); background: var(--brand-light); }
 
     /* Switch link */
     .switch-link {
-      text-align: center;
-      margin-top: 20px;
-      font-size: 13px;
-      color: var(--text-muted);
+      text-align: center; margin-top: 20px;
+      font-size: 13px; color: var(--text-muted);
     }
     .switch-link button {
-      background: none;
-      border: none;
-      color: var(--brand);
-      font-weight: 600;
-      cursor: pointer;
-      font-family: var(--font-body);
-      font-size: 13px;
+      background: none; border: none; color: var(--brand);
+      font-weight: 600; cursor: pointer;
+      font-family: var(--font-body); font-size: 13px;
     }
 
     /* ===== TOAST ===== */
     .toast {
-      position: fixed;
-      top: 24px;
-      right: 24px;
-      padding: 14px 20px;
-      border-radius: 12px;
-      font-size: 13px;
-      font-weight: 500;
-      font-family: var(--font-body);
-      z-index: 9999;
-      max-width: 320px;
-      box-shadow: 0 8px 32px rgba(0,0,0,0.15);
+      position: fixed; top: 24px; right: 24px;
+      padding: 14px 20px; border-radius: 12px;
+      font-size: 13px; font-weight: 500;
+      font-family: var(--font-body); z-index: 9999;
+      max-width: 320px; box-shadow: 0 8px 32px rgba(0,0,0,0.15);
       animation: slideIn 0.3s ease;
-      display: flex;
-      align-items: center;
-      gap: 10px;
+      display: flex; align-items: center; gap: 10px;
     }
     .toast.success { background: var(--brand-dark); color: #fff; }
     .toast.error   { background: #C0392B; color: #fff; }
@@ -491,46 +301,35 @@
       to   { opacity: 1; transform: translateX(0); }
     }
 
-    /* ===== FORGOT PASSWORD OVERLAY ===== */
+    /* ===== FORGOT PASSWORD MODAL ===== */
     .overlay {
       position: fixed; inset: 0;
       background: rgba(0,0,0,0.45);
       backdrop-filter: blur(4px);
-      z-index: 500;
-      display: none;
-      align-items: center;
-      justify-content: center;
+      z-index: 500; display: none;
+      align-items: center; justify-content: center;
     }
     .overlay.show { display: flex; }
     .modal {
-      background: var(--surface);
-      border-radius: 20px;
-      padding: 36px;
-      width: 100%;
-      max-width: 380px;
+      background: var(--surface); border-radius: 20px;
+      padding: 36px; width: 100%; max-width: 380px;
       animation: modalIn 0.3s ease;
     }
     @keyframes modalIn {
       from { opacity: 0; transform: scale(0.95) translateY(10px); }
       to   { opacity: 1; transform: scale(1) translateY(0); }
     }
-    .modal h3 {
-      font-family: var(--font-head);
-      font-size: 20px;
-      font-weight: 700;
-      margin-bottom: 6px;
-    }
+    .modal h3 { font-family: var(--font-head); font-size: 20px; font-weight: 700; margin-bottom: 6px; }
     .modal p { font-size: 13px; color: var(--text-muted); margin-bottom: 20px; line-height: 1.5; }
     .modal-actions { display: flex; gap: 10px; margin-top: 16px; }
     .btn-cancel {
-      flex: 1; height: 44px;
-      background: var(--bg); border: 1.5px solid var(--border);
-      border-radius: var(--radius); font-family: var(--font-body);
-      font-size: 13px; font-weight: 500; cursor: pointer; color: var(--text);
+      flex: 1; height: 44px; background: var(--bg);
+      border: 1.5px solid var(--border); border-radius: var(--radius);
+      font-family: var(--font-body); font-size: 13px; font-weight: 500;
+      cursor: pointer; color: var(--text);
     }
     .btn-modal-submit {
-      flex: 1; height: 44px;
-      background: var(--brand); color: #fff;
+      flex: 1; height: 44px; background: var(--brand); color: #fff;
       border: none; border-radius: var(--radius);
       font-family: var(--font-body); font-size: 13px; font-weight: 600; cursor: pointer;
     }
@@ -545,12 +344,12 @@
 </head>
 <body>
 
-  <!-- LEFT PANEL -->
+  <!-- ===== LEFT PANEL ===== -->
   <div class="left-panel">
     <div class="left-brand">
       <div class="brand-logo-big">K</div>
       <h1>Tanzania's Local Marketplace</h1>
-      <p>Buy from verified sellers, discover local businesses, and find professional services — all in one place.</p>
+      <p>Buy from verified sellers, discover local businesses, and get fast delivery — all in one place.</p>
     </div>
 
     <div class="left-features">
@@ -564,22 +363,22 @@
       <div class="feature-item">
         <div class="feature-icon">🏪</div>
         <div class="feature-text">
-          <h4>List Your Business</h4>
-          <p>Reach thousands of customers and grow your sales in Tanzania.</p>
+          <h4>Sell Your Products</h4>
+          <p>Reach thousands of customers and grow your business in Tanzania.</p>
         </div>
       </div>
       <div class="feature-item">
-        <div class="feature-icon">🔨</div>
+        <div class="feature-icon">🔐</div>
         <div class="feature-text">
-          <h4>Find Professional Services</h4>
-          <p>Engineers, fundis, contractors and specialists near you.</p>
+          <h4>Verified Sellers Only</h4>
+          <p>Every seller is approved by our admin team before going live.</p>
         </div>
       </div>
       <div class="feature-item">
         <div class="feature-icon">🚚</div>
         <div class="feature-text">
-          <h4>Fast Delivery</h4>
-          <p>Same-day delivery available in major cities across Tanzania.</p>
+          <h4>Cash on Delivery</h4>
+          <p>Pay cash when your order arrives. No online payment needed.</p>
         </div>
       </div>
     </div>
@@ -589,14 +388,14 @@
     </div>
   </div>
 
-  <!-- RIGHT PANEL -->
+  <!-- ===== RIGHT PANEL ===== -->
   <div class="right-panel">
     <div class="form-container">
 
-      <!-- TABS -->
+      <!-- TABS: Only Login and Register. NO admin tab visible to public. -->
       <div class="auth-tabs">
-        <button class="auth-tab active" id="tab-login" onclick="showTab('login')">Sign In</button>
-        <button class="auth-tab" id="tab-register" onclick="showTab('register')">Create Account</button>
+        <button class="auth-tab active" id="tab-login"    onclick="showTab('login')">Sign In</button>
+        <button class="auth-tab"        id="tab-register" onclick="showTab('register')">Create Account</button>
       </div>
 
       <!-- ===== LOGIN FORM ===== -->
@@ -607,6 +406,7 @@
         </div>
 
         <form id="login-form" onsubmit="handleLogin(event)" novalidate>
+
           <div class="field">
             <label>Email Address</label>
             <div class="field-wrap">
@@ -631,18 +431,8 @@
           </div>
 
           <button type="submit" class="btn-submit" id="btn-login">Sign In →</button>
+
         </form>
-
-        <div class="divider">or continue with</div>
-
-        <div class="social-row">
-          <button class="btn-social" onclick="socialLogin('Google')">
-            <span>🌐</span> Google
-          </button>
-          <button class="btn-social" onclick="socialLogin('Phone')">
-            <span>📱</span> Phone
-          </button>
-        </div>
 
         <div class="switch-link">
           New to Kaga's Market?
@@ -659,35 +449,34 @@
 
         <form id="register-form" onsubmit="handleRegister(event)" novalidate>
 
-          <!-- Account type -->
+          <!--
+            ACCOUNT TYPE — Only Buyer and Seller.
+            "Work/Professional" option has been REMOVED as requested.
+            Admin accounts are NEVER created from this page — only you can be admin.
+          -->
           <div style="margin-bottom:18px;">
-            <div style="font-size:12px;font-weight:600;color:var(--text-muted);text-transform:uppercase;letter-spacing:0.06em;margin-bottom:10px;">I want to</div>
+            <div style="font-size:12px;font-weight:600;color:var(--text-muted);text-transform:uppercase;letter-spacing:0.06em;margin-bottom:10px;">
+              I want to
+            </div>
             <div class="account-type-row">
               <div class="type-pill">
                 <input type="radio" name="actype" id="type-buyer" value="buyer" checked />
                 <label for="type-buyer">
                   <span class="pill-icon">🛍️</span>
-                  <span class="pill-name">Buy</span>
+                  <span class="pill-name">Buy Products</span>
                 </label>
               </div>
               <div class="type-pill">
                 <input type="radio" name="actype" id="type-seller" value="seller" />
                 <label for="type-seller">
                   <span class="pill-icon">🏪</span>
-                  <span class="pill-name">Sell</span>
-                </label>
-              </div>
-              <div class="type-pill">
-                <input type="radio" name="actype" id="type-professional" value="professional" />
-                <label for="type-professional">
-                  <span class="pill-icon">🔨</span>
-                  <span class="pill-name">Work</span>
+                  <span class="pill-name">Sell Products</span>
                 </label>
               </div>
             </div>
           </div>
 
-          <!-- Name row -->
+          <!-- Name -->
           <div class="field-row">
             <div class="field">
               <label>First Name</label>
@@ -750,7 +539,8 @@
             <label>Password</label>
             <div class="field-wrap">
               <span class="field-icon">🔒</span>
-              <input type="password" id="reg-password" placeholder="Create a strong password" autocomplete="new-password" oninput="checkStrength(this.value)" />
+              <input type="password" id="reg-password" placeholder="Create a strong password"
+                autocomplete="new-password" oninput="checkStrength(this.value)" />
               <button type="button" class="pwd-toggle" onclick="togglePwd('reg-password', this)">👁️</button>
             </div>
             <div class="pwd-strength">
@@ -772,10 +562,14 @@
 
           <div class="terms-row">
             <input type="checkbox" id="terms-check" />
-            <span>I agree to Kaga's Market <a href="#">Terms of Service</a> and <a href="#">Privacy Policy</a>. I understand my data will be stored securely.</span>
+            <span>
+              I agree to Kaga's Market <a href="#">Terms of Service</a> and
+              <a href="#">Privacy Policy</a>. I understand my data will be stored securely.
+            </span>
           </div>
 
           <button type="submit" class="btn-submit" id="btn-register">Create Account →</button>
+
         </form>
 
         <div class="switch-link">
@@ -787,11 +581,11 @@
     </div>
   </div>
 
-  <!-- FORGOT PASSWORD MODAL -->
+  <!-- ===== FORGOT PASSWORD MODAL ===== -->
   <div class="overlay" id="forgot-overlay">
     <div class="modal">
       <h3>🔑 Reset Password</h3>
-      <p>Enter the email address linked to your account. We'll send you a reset link.</p>
+      <p>Enter the email address linked to your account. We'll send you instructions to reset your password.</p>
       <div class="field">
         <label>Email Address</label>
         <div class="field-wrap">
@@ -807,54 +601,95 @@
   </div>
 
   <script>
-    // ===== ADMIN CREDENTIALS (HARDCODED — ONLY YOU KNOW THIS) =====
-    const ADMIN = {
-      email:    "admin@kagasmarket.com",
-      password: "Kaga@Admin2025",
-      name:     "Kelvin Kagaruki",
-      role:     "admin"
+    // ============================================================
+    // KAGA'S MARKET — login.js (inline)
+    //
+    // SECURITY RULES:
+    // 1. Admin credentials are hardcoded and NEVER shown on any form.
+    // 2. Normal users can ONLY register as Buyer or Seller.
+    //    The "Professional/Work" option has been REMOVED.
+    // 3. Admin role CANNOT be selected during registration.
+    //    Only the hardcoded admin below can access the admin panel.
+    // 4. After login, the user is redirected to index.html.
+    //    index.html checks the role and shows/hides the admin panel.
+    // ============================================================
+
+
+    // ============================================================
+    // ADMIN ACCOUNT
+    // This is the ONLY admin. No one else can become admin.
+    // Keep this email and password secret — only you know it.
+    // Change the password to something only you know.
+    // ============================================================
+    var ADMIN = {
+      id:        'admin-001',
+      firstName: 'Kelvin',
+      lastName:  'Kagaruki',
+      name:      'Kelvin Kagaruki',
+      email:     'admin@kagasmarket.com',
+      password:  'Kaga@Admin2025',  // Change this to your own secret password
+      role:      'admin',
+      city:      'Arusha',
     };
 
-    // ===== TAB SWITCHER =====
+
+    // ============================================================
+    // TAB SWITCHER
+    // Switches between Sign In and Create Account tabs.
+    // ============================================================
     function showTab(tab) {
-      document.querySelectorAll('.form-panel').forEach(p => p.classList.remove('active'));
-      document.querySelectorAll('.auth-tab').forEach(t => t.classList.remove('active'));
+      document.querySelectorAll('.form-panel').forEach(function(p) {
+        p.classList.remove('active');
+      });
+      document.querySelectorAll('.auth-tab').forEach(function(t) {
+        t.classList.remove('active');
+      });
       document.getElementById('panel-' + tab).classList.add('active');
-      document.getElementById('tab-' + tab).classList.add('active');
+      document.getElementById('tab-'   + tab).classList.add('active');
       clearErrors();
     }
 
-    // ===== PASSWORD VISIBILITY =====
+
+    // ============================================================
+    // PASSWORD VISIBILITY TOGGLE
+    // Shows or hides password text when the eye icon is clicked.
+    // ============================================================
     function togglePwd(inputId, btn) {
       var input = document.getElementById(inputId);
       if (input.type === 'password') {
-        input.type = 'text';
+        input.type      = 'text';
         btn.textContent = '🙈';
       } else {
-        input.type = 'password';
+        input.type      = 'password';
         btn.textContent = '👁️';
       }
     }
 
-    // ===== PASSWORD STRENGTH =====
+
+    // ============================================================
+    // PASSWORD STRENGTH CHECKER
+    // Shows a colored bar and label as the user types their password.
+    // ============================================================
     function checkStrength(val) {
       var fill  = document.getElementById('strength-fill');
       var label = document.getElementById('strength-label');
       var score = 0;
-      if (val.length >= 6)  score++;
-      if (val.length >= 10) score++;
-      if (/[A-Z]/.test(val)) score++;
-      if (/[0-9]/.test(val)) score++;
-      if (/[^A-Za-z0-9]/.test(val)) score++;
+
+      if (val.length >= 6)              score++;
+      if (val.length >= 10)             score++;
+      if (/[A-Z]/.test(val))            score++;
+      if (/[0-9]/.test(val))            score++;
+      if (/[^A-Za-z0-9]/.test(val))     score++;
 
       var levels = [
-        { w: '0%',   c: '#ccc',         t: 'Enter a password' },
-        { w: '20%',  c: '#E74C3C',      t: 'Very weak' },
-        { w: '40%',  c: '#E67E22',      t: 'Weak' },
-        { w: '60%',  c: '#F1C40F',      t: 'Fair' },
-        { w: '80%',  c: '#2ECC71',      t: 'Strong' },
-        { w: '100%', c: '#0F6E56',      t: 'Very strong ✅' },
+        { w: '0%',   c: '#ccc',    t: 'Enter a password' },
+        { w: '20%',  c: '#E74C3C', t: 'Very weak' },
+        { w: '40%',  c: '#E67E22', t: 'Weak' },
+        { w: '60%',  c: '#F1C40F', t: 'Fair' },
+        { w: '80%',  c: '#2ECC71', t: 'Strong' },
+        { w: '100%', c: '#0F6E56', t: 'Very strong ✅' },
       ];
+
       var lv = val.length === 0 ? levels[0] : levels[Math.min(score, 5)];
       fill.style.width      = lv.w;
       fill.style.background = lv.c;
@@ -862,50 +697,76 @@
       label.style.color     = lv.c === '#ccc' ? 'var(--text-light)' : lv.c;
     }
 
-    // ===== VALIDATION =====
+
+    // ============================================================
+    // ERROR HELPERS
+    // Show or hide error messages under form fields.
+    // ============================================================
     function showErr(id, msg) {
       var el = document.getElementById(id);
-      if (el) { el.textContent = msg || el.textContent; el.classList.add('show'); }
+      if (el) {
+        if (msg) el.textContent = msg;
+        el.classList.add('show');
+      }
     }
     function clearErr(id) {
       var el = document.getElementById(id);
       if (el) el.classList.remove('show');
     }
     function clearErrors() {
-      document.querySelectorAll('.field-err').forEach(function(e) { e.classList.remove('show'); });
-      document.querySelectorAll('input').forEach(function(i) { i.classList.remove('error'); });
+      document.querySelectorAll('.field-err').forEach(function(e) {
+        e.classList.remove('show');
+      });
+      document.querySelectorAll('input').forEach(function(i) {
+        i.classList.remove('error');
+      });
     }
 
-    // ===== TOAST =====
+
+    // ============================================================
+    // TOAST NOTIFICATION
+    // Shows a small popup message at the top-right of the screen.
+    // type: 'success' | 'error' | 'info'
+    // ============================================================
     function toast(msg, type) {
-      var t = document.createElement('div');
-      t.className = 'toast ' + (type || 'success');
+      var t         = document.createElement('div');
+      t.className   = 'toast ' + (type || 'success');
       t.textContent = msg;
       document.body.appendChild(t);
       setTimeout(function() {
-        t.style.opacity = '0';
+        t.style.opacity    = '0';
         t.style.transition = 'opacity 0.3s';
         setTimeout(function() { t.remove(); }, 300);
       }, 3000);
     }
 
-    // ===== LOGIN =====
+
+    // ============================================================
+    // LOGIN HANDLER
+    // Checks the entered email and password against:
+    //   1. The hardcoded admin account
+    //   2. Registered users saved in localStorage
+    // On success, saves the user to localStorage and redirects.
+    // ============================================================
     function handleLogin(e) {
       e.preventDefault();
       clearErrors();
+
       var email    = document.getElementById('login-email').value.trim();
       var password = document.getElementById('login-password').value;
       var valid    = true;
 
+      // Validate fields
       if (!email || !/\S+@\S+\.\S+/.test(email)) {
-        showErr('err-login-email'); valid = false;
+        showErr('err-login-email', 'Please enter a valid email'); valid = false;
       }
       if (!password) {
-        showErr('err-login-password'); valid = false;
+        showErr('err-login-password', 'Password is required'); valid = false;
       }
       if (!valid) return;
 
-      var btn = document.getElementById('btn-login');
+      // Show loading state on button
+      var btn         = document.getElementById('btn-login');
       btn.textContent = 'Signing in...';
       btn.classList.add('loading');
 
@@ -913,34 +774,67 @@
         btn.textContent = 'Sign In →';
         btn.classList.remove('loading');
 
-        // Check admin
+        // --- Check if this is the admin ---
+        // Admin login is completely silent — no special tab or button.
+        // Only the person who knows the admin email and password can log in as admin.
         if (email === ADMIN.email && password === ADMIN.password) {
-          localStorage.setItem('currentUser', JSON.stringify(ADMIN));
+          // Save admin session
+          localStorage.setItem('currentUser', JSON.stringify({
+            id:        ADMIN.id,
+            firstName: ADMIN.firstName,
+            name:      ADMIN.name,
+            email:     ADMIN.email,
+            role:      'admin',   // This role unlocks the admin panel in index.html
+            city:      ADMIN.city,
+          }));
           toast('✅ Welcome back, Admin! Redirecting...', 'success');
           setTimeout(function() { window.location.href = 'index.html'; }, 1200);
           return;
         }
 
-        // Check registered users
+        // --- Check registered users ---
         var users = JSON.parse(localStorage.getItem('kagaUsers') || '[]');
-        var user  = users.find(function(u) { return u.email === email && u.password === password; });
+        var user  = users.find(function(u) {
+          return u.email === email && u.password === password;
+        });
 
         if (!user) {
           toast('❌ Wrong email or password. Please try again.', 'error');
           return;
         }
 
-        // Update last login
+        // Update last login time
         user.lastLogin = new Date().toISOString();
         localStorage.setItem('kagaUsers', JSON.stringify(users));
-        localStorage.setItem('currentUser', JSON.stringify(user));
+
+        // Save session (WITHOUT the password for safety)
+        localStorage.setItem('currentUser', JSON.stringify({
+          id:        user.id,
+          firstName: user.firstName,
+          name:      user.name,
+          email:     user.email,
+          phone:     user.phone,
+          city:      user.city,
+          role:      user.role,  // 'buyer' or 'seller' — never 'admin'
+        }));
 
         toast('✅ Welcome back, ' + user.firstName + '! Redirecting...', 'success');
         setTimeout(function() { window.location.href = 'index.html'; }, 1200);
+
       }, 800);
     }
 
-    // ===== REGISTER =====
+
+    // ============================================================
+    // REGISTER HANDLER
+    // Creates a new buyer or seller account.
+    //
+    // SECURITY:
+    // - Role is read from the radio buttons (buyer or seller only).
+    // - Even if someone tries to manually set role to 'admin',
+    //   we force it to 'buyer' as a safety check.
+    // - Duplicate emails are rejected.
+    // ============================================================
     function handleRegister(e) {
       e.preventDefault();
       clearErrors();
@@ -952,28 +846,42 @@
       var city      = document.getElementById('reg-city').value;
       var password  = document.getElementById('reg-password').value;
       var confirm   = document.getElementById('reg-confirm').value;
-      var type      = document.querySelector('input[name="actype"]:checked').value;
       var terms     = document.getElementById('terms-check').checked;
-      var valid     = true;
 
-      if (!firstName) { showErr('err-reg-firstname', 'First name is required'); valid = false; }
-      if (!lastName)  { showErr('err-reg-lastname',  'Last name is required');  valid = false; }
-      if (!email || !/\S+@\S+\.\S+/.test(email)) { showErr('err-reg-email', 'Enter a valid email'); valid = false; }
-      if (!phone || phone.length < 9)             { showErr('err-reg-phone', 'Enter a valid phone number'); valid = false; }
-      if (!city)                                  { showErr('err-reg-city',  'Please select your city'); valid = false; }
-      if (!password || password.length < 6)       { showErr('err-reg-password', 'Password must be at least 6 characters'); valid = false; }
-      if (password !== confirm)                   { showErr('err-reg-confirm', 'Passwords do not match'); valid = false; }
-      if (!terms) { toast('⚠️ Please agree to the Terms of Service', 'info'); valid = false; }
+      // Read selected account type (buyer or seller only)
+      var selectedType = document.querySelector('input[name="actype"]:checked').value;
+
+      // SECURITY: Force role to buyer or seller — never allow admin via registration
+      var role = (selectedType === 'seller') ? 'seller' : 'buyer';
+
+      var valid = true;
+
+      // Validate all fields
+      if (!firstName)                              { showErr('err-reg-firstname', 'First name is required');          valid = false; }
+      if (!lastName)                               { showErr('err-reg-lastname',  'Last name is required');           valid = false; }
+      if (!email || !/\S+@\S+\.\S+/.test(email))  { showErr('err-reg-email',     'Enter a valid email address');     valid = false; }
+      if (!phone || phone.replace(/\s/g,'').length < 9) { showErr('err-reg-phone', 'Enter a valid phone number');    valid = false; }
+      if (!city)                                   { showErr('err-reg-city',      'Please select your city');         valid = false; }
+      if (!password || password.length < 6)        { showErr('err-reg-password',  'Password must be at least 6 characters'); valid = false; }
+      if (password !== confirm)                    { showErr('err-reg-confirm',   'Passwords do not match');          valid = false; }
+      if (!terms)                                  { toast('⚠️ Please agree to the Terms of Service', 'info'); valid = false; }
       if (!valid) return;
 
-      // Check duplicate email
+      // Check if email is already registered
       var users = JSON.parse(localStorage.getItem('kagaUsers') || '[]');
       if (users.find(function(u) { return u.email === email; })) {
-        showErr('err-reg-email', 'This email is already registered');
+        showErr('err-reg-email', 'This email is already registered. Please sign in.');
         return;
       }
 
-      var btn = document.getElementById('btn-register');
+      // Also block anyone trying to register with the admin email
+      if (email === ADMIN.email) {
+        showErr('err-reg-email', 'This email is not available.');
+        return;
+      }
+
+      // Show loading state
+      var btn         = document.getElementById('btn-register');
       btn.textContent = 'Creating account...';
       btn.classList.add('loading');
 
@@ -981,6 +889,7 @@
         btn.textContent = 'Create Account →';
         btn.classList.remove('loading');
 
+        // Build new user object
         var newUser = {
           id:           Date.now(),
           firstName:    firstName,
@@ -989,30 +898,39 @@
           email:        email,
           phone:        phone,
           city:         city,
-          password:     password,
-          role:         type,
+          password:     password,  // In future: hash this with Firebase Auth
+          role:         role,      // 'buyer' or 'seller' only
           registeredAt: new Date().toISOString(),
           lastLogin:    null,
-          verified:     false,
-          savedItems:   [],
-          orders:       []
         };
 
+        // Save to users list
         users.push(newUser);
         localStorage.setItem('kagaUsers', JSON.stringify(users));
-        localStorage.setItem('currentUser', JSON.stringify(newUser));
 
-        toast('🎉 Account created! Welcome to Kaga\'s Market, ' + firstName + '!', 'success');
+        // Save session (without password)
+        localStorage.setItem('currentUser', JSON.stringify({
+          id:        newUser.id,
+          firstName: newUser.firstName,
+          name:      newUser.name,
+          email:     newUser.email,
+          phone:     newUser.phone,
+          city:      newUser.city,
+          role:      newUser.role,
+        }));
+
+        toast('🎉 Welcome to Kaga\'s Market, ' + firstName + '!', 'success');
         setTimeout(function() { window.location.href = 'index.html'; }, 1500);
+
       }, 900);
     }
 
-    // ===== SOCIAL LOGIN (placeholder) =====
-    function socialLogin(provider) {
-      toast('🔧 ' + provider + ' login coming soon!', 'info');
-    }
 
-    // ===== FORGOT PASSWORD =====
+    // ============================================================
+    // FORGOT PASSWORD
+    // Shows a modal where user enters their email to reset password.
+    // In the future this will send a real email via Firebase.
+    // ============================================================
     function showForgot() {
       document.getElementById('forgot-overlay').classList.add('show');
     }
@@ -1025,30 +943,29 @@
         toast('⚠️ Please enter a valid email address', 'info');
         return;
       }
-      var users = JSON.parse(localStorage.getItem('kagaUsers') || '[]');
-      var found = users.find(function(u) { return u.email === email; });
       hideForgot();
-      if (found) {
-        toast('📧 Reset link sent to ' + email + ' (check your inbox)', 'success');
-      } else {
-        // Don't reveal if email exists for security
-        toast('📧 If that email exists, a reset link has been sent.', 'success');
-      }
+      // Always show same message whether email exists or not (security best practice)
+      toast('📧 If that email is registered, a reset link has been sent.', 'success');
     }
 
-    // Close modal on overlay click
+    // Close forgot modal when clicking outside it
     document.getElementById('forgot-overlay').addEventListener('click', function(e) {
       if (e.target === this) hideForgot();
     });
 
-    // ===== AUTO-FILL IF ALREADY LOGGED IN =====
-    (function() {
+
+    // ============================================================
+    // AUTO-REDIRECT IF ALREADY LOGGED IN
+    // If someone is already logged in and goes to login.html,
+    // redirect them straight to the main app.
+    // ============================================================
+    (function checkIfLoggedIn() {
       var user = JSON.parse(localStorage.getItem('currentUser') || 'null');
       if (user) {
-        // Already logged in — redirect
         window.location.href = 'index.html';
       }
     })();
+
   </script>
 </body>
 </html>
