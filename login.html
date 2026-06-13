@@ -8,7 +8,6 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Sans:ital,wght@0,400;0,500;0,600;1,400&display=swap" rel="stylesheet" />
   <style>
-    /* ===== VARIABLES ===== */
     :root {
       --brand:       #0F6E56;
       --brand-mid:   #1D9E75;
@@ -37,7 +36,7 @@
       overflow: hidden;
     }
 
-    /* ===== LEFT PANEL ===== */
+    /* LEFT PANEL */
     .left-panel {
       background: linear-gradient(160deg, var(--brand-dark) 0%, var(--brand) 50%, var(--brand-mid) 100%);
       position: relative;
@@ -80,15 +79,9 @@
       font-size: 28px; font-weight: 800; color: #fff;
       line-height: 1.1; margin-bottom: 10px;
     }
-    .left-brand p {
-      font-size: 14px; color: rgba(255,255,255,0.7);
-      line-height: 1.6; max-width: 280px;
-    }
+    .left-brand p { font-size: 14px; color: rgba(255,255,255,0.7); line-height: 1.6; max-width: 280px; }
     .left-features { position: relative; z-index: 1; }
-    .feature-item {
-      display: flex; align-items: flex-start;
-      gap: 14px; margin-bottom: 22px;
-    }
+    .feature-item { display: flex; align-items: flex-start; gap: 14px; margin-bottom: 22px; }
     .feature-icon {
       width: 40px; height: 40px;
       background: rgba(255,255,255,0.12);
@@ -101,7 +94,7 @@
     .feature-text p { font-size: 12px; color: rgba(255,255,255,0.6); line-height: 1.4; }
     .left-footer { position: relative; z-index: 1; font-size: 12px; color: rgba(255,255,255,0.4); }
 
-    /* ===== RIGHT PANEL ===== */
+    /* RIGHT PANEL */
     .right-panel {
       display: flex; flex-direction: column;
       justify-content: center; align-items: center;
@@ -116,12 +109,9 @@
         radial-gradient(circle at 10% 90%, rgba(15,110,86,0.03) 0%, transparent 50%);
       pointer-events: none;
     }
-    .form-container {
-      width: 100%; max-width: 400px;
-      position: relative; z-index: 1;
-    }
+    .form-container { width: 100%; max-width: 400px; position: relative; z-index: 1; }
 
-    /* ===== TABS ===== */
+    /* TABS */
     .auth-tabs {
       display: flex; background: var(--bg);
       border-radius: 12px; padding: 4px;
@@ -139,7 +129,7 @@
       box-shadow: 0 1px 6px rgba(0,0,0,0.1);
     }
 
-    /* ===== FORM HEADER ===== */
+    /* FORM HEADER */
     .form-header { margin-bottom: 28px; }
     .form-header h2 {
       font-family: var(--font-head);
@@ -148,7 +138,7 @@
     }
     .form-header p { font-size: 14px; color: var(--text-muted); }
 
-    /* ===== FORM FIELDS ===== */
+    /* FORM FIELDS */
     .form-panel { display: none; }
     .form-panel.active { display: block; }
 
@@ -172,17 +162,11 @@
       outline: none; transition: border-color 0.2s, background 0.2s;
       appearance: none;
     }
-    .field input:focus, .field select:focus {
-      border-color: var(--brand); background: #fff;
-    }
+    .field input:focus, .field select:focus { border-color: var(--brand); background: #fff; }
     .field input.error { border-color: var(--accent); }
-    .field-err {
-      font-size: 11px; color: var(--accent);
-      margin-top: 5px; display: none;
-    }
+    .field-err { font-size: 11px; color: var(--accent); margin-top: 5px; display: none; }
     .field-err.show { display: block; }
 
-    /* Password toggle */
     .pwd-toggle {
       position: absolute; right: 14px; top: 50%;
       transform: translateY(-50%);
@@ -190,12 +174,7 @@
       font-size: 16px; color: var(--text-light); padding: 0;
     }
 
-    /* Account type pills — REMOVED "Work/Professional" option */
-    .account-type-row {
-      display: grid;
-      grid-template-columns: 1fr 1fr; /* Only 2 columns now: Buy and Sell */
-      gap: 8px; margin-bottom: 18px;
-    }
+    .account-type-row { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin-bottom: 18px; }
     .type-pill { position: relative; }
     .type-pill input[type="radio"] { position: absolute; opacity: 0; width: 0; height: 0; }
     .type-pill label {
@@ -212,45 +191,25 @@
     .type-pill input:checked + label { border-color: var(--brand); background: var(--brand-light); }
     .type-pill input:checked + label .pill-name { color: var(--brand-dark); }
 
-    /* Two-col row */
     .field-row { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; }
 
-    /* Forgot password */
-    .forgot-row {
-      display: flex; justify-content: flex-end;
-      margin-top: -10px; margin-bottom: 18px;
-    }
+    .forgot-row { display: flex; justify-content: flex-end; margin-top: -10px; margin-bottom: 18px; }
     .forgot-link {
       font-size: 12px; color: var(--brand); font-weight: 500;
       background: none; border: none; cursor: pointer;
       font-family: var(--font-body);
     }
 
-    /* Password strength */
     .pwd-strength { margin-top: 6px; }
-    .strength-bar {
-      height: 3px; background: var(--border);
-      border-radius: 99px; overflow: hidden; margin-bottom: 4px;
-    }
-    .strength-fill {
-      height: 100%; border-radius: 99px;
-      width: 0%; transition: width 0.3s, background 0.3s;
-    }
+    .strength-bar { height: 3px; background: var(--border); border-radius: 99px; overflow: hidden; margin-bottom: 4px; }
+    .strength-fill { height: 100%; border-radius: 99px; width: 0%; transition: width 0.3s, background 0.3s; }
     .strength-label { font-size: 11px; color: var(--text-light); }
 
-    /* Terms checkbox */
-    .terms-row {
-      display: flex; align-items: flex-start;
-      gap: 10px; margin-bottom: 20px;
-    }
-    .terms-row input[type="checkbox"] {
-      width: 16px; height: 16px;
-      accent-color: var(--brand); margin-top: 2px; flex-shrink: 0;
-    }
+    .terms-row { display: flex; align-items: flex-start; gap: 10px; margin-bottom: 20px; }
+    .terms-row input[type="checkbox"] { width: 16px; height: 16px; accent-color: var(--brand); margin-top: 2px; flex-shrink: 0; }
     .terms-row span { font-size: 12px; color: var(--text-muted); line-height: 1.5; }
     .terms-row a { color: var(--brand); font-weight: 500; text-decoration: none; }
 
-    /* Submit button */
     .btn-submit {
       width: 100%; height: 50px; background: var(--brand); color: #fff;
       border: none; border-radius: var(--radius);
@@ -262,28 +221,14 @@
     .btn-submit:active { transform: translateY(0); }
     .btn-submit.loading { pointer-events: none; opacity: 0.8; }
 
-    /* Divider */
-    .divider {
-      display: flex; align-items: center;
-      gap: 12px; margin: 20px 0;
-      color: var(--text-light); font-size: 12px;
-    }
-    .divider::before, .divider::after {
-      content: ''; flex: 1; height: 1px; background: var(--border);
-    }
-
-    /* Switch link */
-    .switch-link {
-      text-align: center; margin-top: 20px;
-      font-size: 13px; color: var(--text-muted);
-    }
+    .switch-link { text-align: center; margin-top: 20px; font-size: 13px; color: var(--text-muted); }
     .switch-link button {
       background: none; border: none; color: var(--brand);
       font-weight: 600; cursor: pointer;
       font-family: var(--font-body); font-size: 13px;
     }
 
-    /* ===== TOAST ===== */
+    /* TOAST */
     .toast {
       position: fixed; top: 24px; right: 24px;
       padding: 14px 20px; border-radius: 12px;
@@ -301,7 +246,7 @@
       to   { opacity: 1; transform: translateX(0); }
     }
 
-    /* ===== FORGOT PASSWORD MODAL ===== */
+    /* FORGOT PASSWORD MODAL */
     .overlay {
       position: fixed; inset: 0;
       background: rgba(0,0,0,0.45);
@@ -334,7 +279,6 @@
       font-family: var(--font-body); font-size: 13px; font-weight: 600; cursor: pointer;
     }
 
-    /* ===== RESPONSIVE ===== */
     @media (max-width: 768px) {
       body { grid-template-columns: 1fr; }
       .left-panel { display: none; }
@@ -344,14 +288,13 @@
 </head>
 <body>
 
-  <!-- ===== LEFT PANEL ===== -->
+  <!-- LEFT PANEL -->
   <div class="left-panel">
     <div class="left-brand">
       <div class="brand-logo-big">K</div>
       <h1>Tanzania's Local Marketplace</h1>
       <p>Buy from verified sellers, discover local businesses, and get fast delivery — all in one place.</p>
     </div>
-
     <div class="left-features">
       <div class="feature-item">
         <div class="feature-icon">🛍️</div>
@@ -382,31 +325,25 @@
         </div>
       </div>
     </div>
-
-    <div class="left-footer">
-      © 2025 Kaga's Market · Built for Tanzania 🇹🇿
-    </div>
+    <div class="left-footer">© 2025 Kaga's Market · Built for Tanzania 🇹🇿</div>
   </div>
 
-  <!-- ===== RIGHT PANEL ===== -->
+  <!-- RIGHT PANEL -->
   <div class="right-panel">
     <div class="form-container">
 
-      <!-- TABS: Only Login and Register. NO admin tab visible to public. -->
       <div class="auth-tabs">
         <button class="auth-tab active" id="tab-login"    onclick="showTab('login')">Sign In</button>
         <button class="auth-tab"        id="tab-register" onclick="showTab('register')">Create Account</button>
       </div>
 
-      <!-- ===== LOGIN FORM ===== -->
+      <!-- LOGIN FORM -->
       <div class="form-panel active" id="panel-login">
         <div class="form-header">
           <h2>Welcome back 👋</h2>
           <p>Sign in to your Kaga's Market account</p>
         </div>
-
         <form id="login-form" onsubmit="handleLogin(event)" novalidate>
-
           <div class="field">
             <label>Email Address</label>
             <div class="field-wrap">
@@ -415,7 +352,6 @@
             </div>
             <div class="field-err" id="err-login-email">Please enter a valid email</div>
           </div>
-
           <div class="field">
             <label>Password</label>
             <div class="field-wrap">
@@ -425,39 +361,26 @@
             </div>
             <div class="field-err" id="err-login-password">Password is required</div>
           </div>
-
           <div class="forgot-row">
             <button type="button" class="forgot-link" onclick="showForgot()">Forgot password?</button>
           </div>
-
           <button type="submit" class="btn-submit" id="btn-login">Sign In →</button>
-
         </form>
-
         <div class="switch-link">
           New to Kaga's Market?
           <button onclick="showTab('register')">Create a free account</button>
         </div>
       </div>
 
-      <!-- ===== REGISTER FORM ===== -->
+      <!-- REGISTER FORM -->
       <div class="form-panel" id="panel-register">
         <div class="form-header">
           <h2>Join Kaga's Market ✨</h2>
           <p>Create your free account today</p>
         </div>
-
         <form id="register-form" onsubmit="handleRegister(event)" novalidate>
-
-          <!--
-            ACCOUNT TYPE — Only Buyer and Seller.
-            "Work/Professional" option has been REMOVED as requested.
-            Admin accounts are NEVER created from this page — only you can be admin.
-          -->
           <div style="margin-bottom:18px;">
-            <div style="font-size:12px;font-weight:600;color:var(--text-muted);text-transform:uppercase;letter-spacing:0.06em;margin-bottom:10px;">
-              I want to
-            </div>
+            <div style="font-size:12px;font-weight:600;color:var(--text-muted);text-transform:uppercase;letter-spacing:0.06em;margin-bottom:10px;">I want to</div>
             <div class="account-type-row">
               <div class="type-pill">
                 <input type="radio" name="actype" id="type-buyer" value="buyer" checked />
@@ -476,7 +399,6 @@
             </div>
           </div>
 
-          <!-- Name -->
           <div class="field-row">
             <div class="field">
               <label>First Name</label>
@@ -569,9 +491,7 @@
           </div>
 
           <button type="submit" class="btn-submit" id="btn-register">Create Account →</button>
-
         </form>
-
         <div class="switch-link">
           Already have an account?
           <button onclick="showTab('login')">Sign in here</button>
@@ -581,7 +501,7 @@
     </div>
   </div>
 
-  <!-- ===== FORGOT PASSWORD MODAL ===== -->
+  <!-- FORGOT PASSWORD MODAL -->
   <div class="overlay" id="forgot-overlay">
     <div class="modal">
       <h3>🔑 Reset Password</h3>
@@ -602,24 +522,7 @@
 
   <script>
     // ============================================================
-    // KAGA'S MARKET — login.js (inline)
-    //
-    // SECURITY RULES:
-    // 1. Admin credentials are hardcoded and NEVER shown on any form.
-    // 2. Normal users can ONLY register as Buyer or Seller.
-    //    The "Professional/Work" option has been REMOVED.
-    // 3. Admin role CANNOT be selected during registration.
-    //    Only the hardcoded admin below can access the admin panel.
-    // 4. After login, the user is redirected to index.html.
-    //    index.html checks the role and shows/hides the admin panel.
-    // ============================================================
-
-
-    // ============================================================
-    // ADMIN ACCOUNT
-    // This is the ONLY admin. No one else can become admin.
-    // Keep this email and password secret — only you know it.
-    // Change the password to something only you know.
+    // ADMIN ACCOUNT — only you know this email & password
     // ============================================================
     var ADMIN = {
       id:        'admin-001',
@@ -627,60 +530,56 @@
       lastName:  'Kagaruki',
       name:      'Kelvin Kagaruki',
       email:     'admin@kagasmarket.com',
-      password:  'Kaga@Admin2025',  // Change this to your own secret password
+      password:  'Kaga@Admin2025',
       role:      'admin',
       city:      'Arusha',
     };
 
+    // ============================================================
+    // KEY — must match app.js exactly
+    // ============================================================
+    var SESSION_KEY = 'kagaCurrentUser';
+
+    // ============================================================
+    // AUTO-REDIRECT: if already logged in, go straight to app
+    // ============================================================
+    (function checkIfLoggedIn() {
+      var user = JSON.parse(localStorage.getItem(SESSION_KEY) || 'null');
+      if (user) window.location.href = 'index.html';
+    })();
 
     // ============================================================
     // TAB SWITCHER
-    // Switches between Sign In and Create Account tabs.
     // ============================================================
     function showTab(tab) {
-      document.querySelectorAll('.form-panel').forEach(function(p) {
-        p.classList.remove('active');
-      });
-      document.querySelectorAll('.auth-tab').forEach(function(t) {
-        t.classList.remove('active');
-      });
+      document.querySelectorAll('.form-panel').forEach(function(p) { p.classList.remove('active'); });
+      document.querySelectorAll('.auth-tab').forEach(function(t) { t.classList.remove('active'); });
       document.getElementById('panel-' + tab).classList.add('active');
       document.getElementById('tab-'   + tab).classList.add('active');
       clearErrors();
     }
 
-
     // ============================================================
-    // PASSWORD VISIBILITY TOGGLE
-    // Shows or hides password text when the eye icon is clicked.
+    // PASSWORD TOGGLE
     // ============================================================
     function togglePwd(inputId, btn) {
       var input = document.getElementById(inputId);
-      if (input.type === 'password') {
-        input.type      = 'text';
-        btn.textContent = '🙈';
-      } else {
-        input.type      = 'password';
-        btn.textContent = '👁️';
-      }
+      if (input.type === 'password') { input.type = 'text';     btn.textContent = '🙈'; }
+      else                           { input.type = 'password'; btn.textContent = '👁️'; }
     }
 
-
     // ============================================================
-    // PASSWORD STRENGTH CHECKER
-    // Shows a colored bar and label as the user types their password.
+    // PASSWORD STRENGTH
     // ============================================================
     function checkStrength(val) {
       var fill  = document.getElementById('strength-fill');
       var label = document.getElementById('strength-label');
       var score = 0;
-
-      if (val.length >= 6)              score++;
-      if (val.length >= 10)             score++;
-      if (/[A-Z]/.test(val))            score++;
-      if (/[0-9]/.test(val))            score++;
-      if (/[^A-Za-z0-9]/.test(val))     score++;
-
+      if (val.length >= 6)          score++;
+      if (val.length >= 10)         score++;
+      if (/[A-Z]/.test(val))        score++;
+      if (/[0-9]/.test(val))        score++;
+      if (/[^A-Za-z0-9]/.test(val)) score++;
       var levels = [
         { w: '0%',   c: '#ccc',    t: 'Enter a password' },
         { w: '20%',  c: '#E74C3C', t: 'Very weak' },
@@ -689,7 +588,6 @@
         { w: '80%',  c: '#2ECC71', t: 'Strong' },
         { w: '100%', c: '#0F6E56', t: 'Very strong ✅' },
       ];
-
       var lv = val.length === 0 ? levels[0] : levels[Math.min(score, 5)];
       fill.style.width      = lv.w;
       fill.style.background = lv.c;
@@ -697,56 +595,39 @@
       label.style.color     = lv.c === '#ccc' ? 'var(--text-light)' : lv.c;
     }
 
-
     // ============================================================
     // ERROR HELPERS
-    // Show or hide error messages under form fields.
     // ============================================================
     function showErr(id, msg) {
       var el = document.getElementById(id);
-      if (el) {
-        if (msg) el.textContent = msg;
-        el.classList.add('show');
-      }
+      if (el) { if (msg) el.textContent = msg; el.classList.add('show'); }
     }
     function clearErr(id) {
       var el = document.getElementById(id);
       if (el) el.classList.remove('show');
     }
     function clearErrors() {
-      document.querySelectorAll('.field-err').forEach(function(e) {
-        e.classList.remove('show');
-      });
-      document.querySelectorAll('input').forEach(function(i) {
-        i.classList.remove('error');
-      });
+      document.querySelectorAll('.field-err').forEach(function(e) { e.classList.remove('show'); });
+      document.querySelectorAll('input').forEach(function(i) { i.classList.remove('error'); });
     }
 
-
     // ============================================================
-    // TOAST NOTIFICATION
-    // Shows a small popup message at the top-right of the screen.
-    // type: 'success' | 'error' | 'info'
+    // TOAST
     // ============================================================
     function toast(msg, type) {
-      var t         = document.createElement('div');
+      var t = document.createElement('div');
       t.className   = 'toast ' + (type || 'success');
       t.textContent = msg;
       document.body.appendChild(t);
       setTimeout(function() {
-        t.style.opacity    = '0';
-        t.style.transition = 'opacity 0.3s';
+        t.style.opacity = '0'; t.style.transition = 'opacity 0.3s';
         setTimeout(function() { t.remove(); }, 300);
       }, 3000);
     }
 
-
     // ============================================================
     // LOGIN HANDLER
-    // Checks the entered email and password against:
-    //   1. The hardcoded admin account
-    //   2. Registered users saved in localStorage
-    // On success, saves the user to localStorage and redirects.
+    // Saves session to 'kagaCurrentUser' — matches app.js
     // ============================================================
     function handleLogin(e) {
       e.preventDefault();
@@ -756,17 +637,11 @@
       var password = document.getElementById('login-password').value;
       var valid    = true;
 
-      // Validate fields
-      if (!email || !/\S+@\S+\.\S+/.test(email)) {
-        showErr('err-login-email', 'Please enter a valid email'); valid = false;
-      }
-      if (!password) {
-        showErr('err-login-password', 'Password is required'); valid = false;
-      }
+      if (!email || !/\S+@\S+\.\S+/.test(email)) { showErr('err-login-email',    'Please enter a valid email'); valid = false; }
+      if (!password)                               { showErr('err-login-password', 'Password is required');      valid = false; }
       if (!valid) return;
 
-      // Show loading state on button
-      var btn         = document.getElementById('btn-login');
+      var btn = document.getElementById('btn-login');
       btn.textContent = 'Signing in...';
       btn.classList.add('loading');
 
@@ -774,28 +649,25 @@
         btn.textContent = 'Sign In →';
         btn.classList.remove('loading');
 
-        // --- Check if this is the admin ---
-        // Admin login is completely silent — no special tab or button.
-        // Only the person who knows the admin email and password can log in as admin.
+        // --- Admin check ---
         if (email === ADMIN.email && password === ADMIN.password) {
-          // Save admin session
-          localStorage.setItem('currentUser', JSON.stringify({
+          localStorage.setItem(SESSION_KEY, JSON.stringify({
             id:        ADMIN.id,
             firstName: ADMIN.firstName,
             name:      ADMIN.name,
             email:     ADMIN.email,
-            role:      'admin',   // This role unlocks the admin panel in index.html
+            role:      'admin',
             city:      ADMIN.city,
           }));
-          toast('✅ Welcome back, Admin! Redirecting...', 'success');
+          toast('✅ Welcome back, Admin!', 'success');
           setTimeout(function() { window.location.href = 'index.html'; }, 1200);
           return;
         }
 
-        // --- Check registered users ---
+        // --- Registered users check ---
         var users = JSON.parse(localStorage.getItem('kagaUsers') || '[]');
         var user  = users.find(function(u) {
-          return u.email === email && u.password === password;
+          return u.email.toLowerCase() === email.toLowerCase() && u.password === password;
         });
 
         if (!user) {
@@ -803,37 +675,30 @@
           return;
         }
 
-        // Update last login time
+        // Update last login
         user.lastLogin = new Date().toISOString();
         localStorage.setItem('kagaUsers', JSON.stringify(users));
 
-        // Save session (WITHOUT the password for safety)
-        localStorage.setItem('currentUser', JSON.stringify({
+        // Save session — key matches app.js (kagaCurrentUser)
+        localStorage.setItem(SESSION_KEY, JSON.stringify({
           id:        user.id,
           firstName: user.firstName,
           name:      user.name,
           email:     user.email,
           phone:     user.phone,
           city:      user.city,
-          role:      user.role,  // 'buyer' or 'seller' — never 'admin'
+          role:      user.role,
         }));
 
-        toast('✅ Welcome back, ' + user.firstName + '! Redirecting...', 'success');
+        toast('✅ Welcome back, ' + user.firstName + '!', 'success');
         setTimeout(function() { window.location.href = 'index.html'; }, 1200);
 
       }, 800);
     }
 
-
     // ============================================================
     // REGISTER HANDLER
-    // Creates a new buyer or seller account.
-    //
-    // SECURITY:
-    // - Role is read from the radio buttons (buyer or seller only).
-    // - Even if someone tries to manually set role to 'admin',
-    //   we force it to 'buyer' as a safety check.
-    // - Duplicate emails are rejected.
+    // Saves session to 'kagaCurrentUser' — matches app.js
     // ============================================================
     function handleRegister(e) {
       e.preventDefault();
@@ -848,40 +713,32 @@
       var confirm   = document.getElementById('reg-confirm').value;
       var terms     = document.getElementById('terms-check').checked;
 
-      // Read selected account type (buyer or seller only)
       var selectedType = document.querySelector('input[name="actype"]:checked').value;
-
-      // SECURITY: Force role to buyer or seller — never allow admin via registration
-      var role = (selectedType === 'seller') ? 'seller' : 'buyer';
+      var role = (selectedType === 'seller') ? 'seller' : 'buyer'; // never admin
 
       var valid = true;
-
-      // Validate all fields
-      if (!firstName)                              { showErr('err-reg-firstname', 'First name is required');          valid = false; }
-      if (!lastName)                               { showErr('err-reg-lastname',  'Last name is required');           valid = false; }
-      if (!email || !/\S+@\S+\.\S+/.test(email))  { showErr('err-reg-email',     'Enter a valid email address');     valid = false; }
-      if (!phone || phone.replace(/\s/g,'').length < 9) { showErr('err-reg-phone', 'Enter a valid phone number');    valid = false; }
-      if (!city)                                   { showErr('err-reg-city',      'Please select your city');         valid = false; }
-      if (!password || password.length < 6)        { showErr('err-reg-password',  'Password must be at least 6 characters'); valid = false; }
-      if (password !== confirm)                    { showErr('err-reg-confirm',   'Passwords do not match');          valid = false; }
+      if (!firstName)                              { showErr('err-reg-firstname', 'First name is required');           valid = false; }
+      if (!lastName)                               { showErr('err-reg-lastname',  'Last name is required');            valid = false; }
+      if (!email || !/\S+@\S+\.\S+/.test(email))  { showErr('err-reg-email',     'Enter a valid email address');      valid = false; }
+      if (!phone || phone.replace(/\s/g,'').length < 9) { showErr('err-reg-phone', 'Enter a valid phone number');     valid = false; }
+      if (!city)                                   { showErr('err-reg-city',      'Please select your city');          valid = false; }
+      if (!password || password.length < 6)        { showErr('err-reg-password',  'Password must be at least 6 chars'); valid = false; }
+      if (password !== confirm)                    { showErr('err-reg-confirm',   'Passwords do not match');           valid = false; }
       if (!terms)                                  { toast('⚠️ Please agree to the Terms of Service', 'info'); valid = false; }
       if (!valid) return;
 
-      // Check if email is already registered
       var users = JSON.parse(localStorage.getItem('kagaUsers') || '[]');
-      if (users.find(function(u) { return u.email === email; })) {
+
+      if (users.find(function(u) { return u.email.toLowerCase() === email.toLowerCase(); })) {
         showErr('err-reg-email', 'This email is already registered. Please sign in.');
         return;
       }
-
-      // Also block anyone trying to register with the admin email
-      if (email === ADMIN.email) {
+      if (email.toLowerCase() === ADMIN.email.toLowerCase()) {
         showErr('err-reg-email', 'This email is not available.');
         return;
       }
 
-      // Show loading state
-      var btn         = document.getElementById('btn-register');
+      var btn = document.getElementById('btn-register');
       btn.textContent = 'Creating account...';
       btn.classList.add('loading');
 
@@ -889,7 +746,6 @@
         btn.textContent = 'Create Account →';
         btn.classList.remove('loading');
 
-        // Build new user object
         var newUser = {
           id:           Date.now(),
           firstName:    firstName,
@@ -898,18 +754,19 @@
           email:        email,
           phone:        phone,
           city:         city,
-          password:     password,  // In future: hash this with Firebase Auth
-          role:         role,      // 'buyer' or 'seller' only
+          password:     password,
+          role:         role,
+          status:       'active',
+          joinDate:     new Date().toLocaleDateString(),
           registeredAt: new Date().toISOString(),
           lastLogin:    null,
         };
 
-        // Save to users list
         users.push(newUser);
         localStorage.setItem('kagaUsers', JSON.stringify(users));
 
-        // Save session (without password)
-        localStorage.setItem('currentUser', JSON.stringify({
+        // Save session — key matches app.js (kagaCurrentUser)
+        localStorage.setItem(SESSION_KEY, JSON.stringify({
           id:        newUser.id,
           firstName: newUser.firstName,
           name:      newUser.name,
@@ -925,18 +782,11 @@
       }, 900);
     }
 
-
     // ============================================================
     // FORGOT PASSWORD
-    // Shows a modal where user enters their email to reset password.
-    // In the future this will send a real email via Firebase.
     // ============================================================
-    function showForgot() {
-      document.getElementById('forgot-overlay').classList.add('show');
-    }
-    function hideForgot() {
-      document.getElementById('forgot-overlay').classList.remove('show');
-    }
+    function showForgot() { document.getElementById('forgot-overlay').classList.add('show'); }
+    function hideForgot() { document.getElementById('forgot-overlay').classList.remove('show'); }
     function sendReset() {
       var email = document.getElementById('forgot-email').value.trim();
       if (!email || !/\S+@\S+\.\S+/.test(email)) {
@@ -944,27 +794,12 @@
         return;
       }
       hideForgot();
-      // Always show same message whether email exists or not (security best practice)
       toast('📧 If that email is registered, a reset link has been sent.', 'success');
     }
 
-    // Close forgot modal when clicking outside it
     document.getElementById('forgot-overlay').addEventListener('click', function(e) {
       if (e.target === this) hideForgot();
     });
-
-
-    // ============================================================
-    // AUTO-REDIRECT IF ALREADY LOGGED IN
-    // If someone is already logged in and goes to login.html,
-    // redirect them straight to the main app.
-    // ============================================================
-    (function checkIfLoggedIn() {
-      var user = JSON.parse(localStorage.getItem('currentUser') || 'null');
-      if (user) {
-        window.location.href = 'index.html';
-      }
-    })();
 
   </script>
 </body>
