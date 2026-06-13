@@ -1,13 +1,13 @@
 // ===============================
-// KAGA'S MARKET — APP.JS (CLEAN)
-// No fake hardcoded products
-// Real data from localStorage only
+// KAGA'S MARKET — APP.JS
+// Option B Auth: Guests browse freely
+// Login only required for protected actions
 // ===============================
 
 function $(id) { return document.getElementById(id); }
 
 // ===============================
-// CATEGORIES (static — no fake products)
+// SECTION 1: CATEGORIES
 // ===============================
 const categories = [
   { icon: '📱', name: 'Electronics',  count: '' },
@@ -21,16 +21,30 @@ const categories = [
 ];
 
 // ===============================
-// STORAGE HELPERS
+// SECTION 2: STORAGE HELPERS
 // ===============================
-function getProducts()  { return JSON.parse(localStorage.getItem('kagaProducts') || '[]'); }
-function saveProducts(p){ localStorage.setItem('kagaProducts', JSON.stringify(p)); }
-function getUsers()     { return JSON.parse(localStorage.getItem('kagaUsers') || '[]'); }
-function saveUsers(u)   { localStorage.setItem('kagaUsers', JSON.stringify(u)); }
-function getCurrentUser(){ const r = localStorage.getItem('kagaCurrentUser'); return r ? JSON.parse(r) : null; }
+function getProducts()    { return JSON.parse(localStorage.getItem('kagaProducts') || '[]'); }
+function saveProducts(p)  { localStorage.setItem('kagaProducts', JSON.stringify(p)); }
+function getUsers()       { return JSON.parse(localStorage.getItem('kagaUsers') || '[]'); }
+function saveUsers(u)     { localStorage.setItem('kagaUsers', JSON.stringify(u)); }
+function getCurrentUser() { const r = localStorage.getItem('kagaCurrentUser'); return r ? JSON.parse(r) : null; }
 
 // ===============================
-// VIEW SWITCHER
+// SECTION 3: AUTH GUARD (Option B)
+// Guests can browse home, shop, product pages
+// Login required only for: cart checkout, add product, dashboards, admin, messages
+// ===============================
+const guestAllowedViews = ['home', 'shop', 'product', 'businesses'];
+// All other views require login
+
+function requireLogin(reason) {
+  // Show a friendly message then redirect to login
+  showToast('🔒 ' + (reason || t('toast-login-first')));
+  setTimeout(() => { window.location.href = 'login.html'; }, 900);
+}
+
+// ===============================
+// SECTION 4: VIEW SWITCHER
 // ===============================
 const panelMap = {
   home:                 'home-panel',
@@ -48,24 +62,34 @@ const panelMap = {
 };
 
 const mobNavMap = {
-  home:         'mob-home',
-  shop:         'mob-shop',
-  'add-product':'mob-sell',
-  messenger:    'mob-messenger',
-  account:      'mob-account',
+  home:          'mob-home',
+  shop:          'mob-shop',
+  'add-product': 'mob-sell',
+  messenger:     'mob-messenger',
+  account:       'mob-account',
 };
-
-const protectedViews = ['customer-dashboard', 'business-dashboard', 'admin', 'delivery'];
 
 window.switchView = function(view) {
   const user = getCurrentUser();
 
-  // Auth guard
-  if (protectedViews.includes(view) && !user) {
-    showToast('🔒 ' + t('toast-login-first'));
-    setTimeout(() => window.location.href = 'login.html', 900);
+  // ---- OPTION B AUTH GATE ----
+  // If view is NOT in guest-allowed list AND user is not logged in → redirect to login
+  if (!guestAllowedViews.includes(view) && !user) {
+    if (view === 'cart') {
+      requireLogin('Ingia kwanza ili uone cart yako / Login to view your cart');
+    } else if (view === 'add-product') {
+      requireLogin('Ingia kwanza ili uweze kuuza / Login to sell a product');
+    } else if (view === 'messenger') {
+      requireLogin('Ingia kwanza ili utume ujumbe / Login to send messages');
+    } else if (view === 'delivery') {
+      requireLogin('Ingia kwanza ili ufanye order / Login to place an order');
+    } else {
+      requireLogin(t('toast-login-first'));
+    }
     return;
   }
+
+  // Role-based guards (user IS logged in)
   if (view === 'admin' && user && user.role !== 'admin') {
     showToast(t('toast-admin-only'));
     return;
@@ -98,12 +122,13 @@ window.switchView = function(view) {
   if (view === 'admin')              loadAdminStats();
   if (view === 'business-dashboard') loadBizDashboard();
   if (view === 'customer-dashboard') loadCustomerOrders();
+  if (view === 'cart')               renderCart();
 
   window.scrollTo({ top: 0, behavior: 'smooth' });
 };
 
 // ===============================
-// RENDER: CATEGORIES
+// SECTION 5: RENDER CATEGORIES
 // ===============================
 function renderCategories() {
   const grid = $('categories-grid');
@@ -122,7 +147,7 @@ function renderCategories() {
 }
 
 // ===============================
-// RENDER: PRODUCT CARD
+// SECTION 6: RENDER PRODUCT CARD
 // ===============================
 function renderProductCard(p) {
   const imgContent = p.images && p.images[0]
@@ -153,7 +178,7 @@ function formatWA(num) {
 }
 
 // ===============================
-// RENDER: HOME PRODUCTS
+// SECTION 7: RENDER HOME PRODUCTS
 // ===============================
 function renderHomeProducts() {
   const el = $('home-products-container');
@@ -175,9 +200,9 @@ function renderHomeProducts() {
 }
 
 // ===============================
-// RENDER: SHOP PRODUCTS
+// SECTION 8: RENDER SHOP PRODUCTS
 // ===============================
-let shopFilter   = { category: 'All', search: '', maxPrice: 2000000, condition: 'All' };
+let shopFilter = { category: 'All', search: '', maxPrice: 2000000, condition: 'All' };
 
 function renderShopProducts() {
   const el = $('shop-products-container');
@@ -185,7 +210,6 @@ function renderShopProducts() {
 
   let products = getProducts().filter(p => p.status === 'approved');
 
-  // Apply filters
   if (shopFilter.category !== 'All') {
     products = products.filter(p => p.category && p.category.includes(shopFilter.category));
   }
@@ -239,7 +263,8 @@ window.filterCondition = function(cond, el) {
 };
 
 // ===============================
-// OPEN PRODUCT PAGE
+// SECTION 9: OPEN PRODUCT PAGE
+// (Guests can view product pages freely)
 // ===============================
 window.openProduct = function(id) {
   const products = getProducts();
@@ -258,7 +283,11 @@ window.openProduct = function(id) {
   if (descEl)   descEl.textContent   = p.description || '';
   if (sellerNm) sellerNm.textContent = p.sellerName || 'Seller';
   if (waLink)   waLink.href          = 'https://wa.me/' + formatWA(p.whatsapp) + '?text=' + encodeURIComponent('Hi! I am interested in ' + p.name);
-  if (addBtn)   addBtn.onclick       = () => addToCart(p.id);
+
+  // Add to cart from product page — requires login
+  if (addBtn) {
+    addBtn.onclick = () => addToCart(p.id);
+  }
 
   // Main image
   const mainImg = $('main-product-img');
@@ -291,7 +320,8 @@ window.setMainImg = function(src, el) {
 };
 
 // ===============================
-// RENDER: BUSINESSES
+// SECTION 10: RENDER BUSINESSES
+// (Guests can view businesses freely)
 // ===============================
 function renderBusinessCard(b) {
   const logoContent = b.logo
@@ -325,10 +355,10 @@ function renderHomeBusinesses() {
 
   el.innerHTML = '<div class="businesses-grid">' +
     users.slice(0, 4).map(u => renderBusinessCard({
-      name: u.businessName || u.name,
-      category: u.businessCat || '',
-      logo: u.logo || '',
-      rating: '5.0 ★★★★★',
+      name:     u.businessName || u.name,
+      category: u.businessCat  || '',
+      logo:     u.logo         || '',
+      rating:   '5.0 ★★★★★',
     })).join('') +
   '</div>';
 }
@@ -351,38 +381,37 @@ function renderAllBusinesses() {
 
   el.innerHTML = '<div class="businesses-grid">' +
     users.map(u => renderBusinessCard({
-      name: u.businessName || u.name,
-      category: u.businessCat || '',
-      logo: u.logo || '',
-      rating: '5.0 ★★★★★',
+      name:     u.businessName || u.name,
+      category: u.businessCat  || '',
+      logo:     u.logo         || '',
+      rating:   '5.0 ★★★★★',
     })).join('') +
   '</div>';
 }
 
 // ===============================
-// ADD PRODUCT
+// SECTION 11: ADD PRODUCT
+// (Only sellers/admins — login required, enforced by switchView)
 // ===============================
 let uploadedImages = [];
 
 function setupAddProductPanel() {
-  const user = getCurrentUser();
-  const notice = $('seller-notice');
+  const user     = getCurrentUser();
+  const notice   = $('seller-notice');
   const formCard = $('add-product-form-card');
 
   if (!user || (user.role !== 'seller' && user.role !== 'admin')) {
-    if (notice)   notice.style.display   = 'flex';
-    if (formCard) formCard.style.opacity  = '0.4';
+    if (notice)   notice.style.display        = 'flex';
+    if (formCard) formCard.style.opacity       = '0.4';
     if (formCard) formCard.style.pointerEvents = 'none';
   } else {
-    if (notice)   notice.style.display   = 'none';
-    if (formCard) formCard.style.opacity  = '1';
+    if (notice)   notice.style.display        = 'none';
+    if (formCard) formCard.style.opacity       = '1';
     if (formCard) formCard.style.pointerEvents = 'auto';
 
-    // Pre-fill WhatsApp from user profile
     const waInput = $('prod-whatsapp');
     if (waInput && user.phone && !waInput.value) waInput.value = user.phone;
 
-    // Pre-fill location
     const locSelect = $('prod-location');
     if (locSelect && user.location && !locSelect.value) {
       for (let i = 0; i < locSelect.options.length; i++) {
@@ -397,9 +426,6 @@ function setupAddProductPanel() {
 
 window.handleImageUpload = function(input) {
   const files = Array.from(input.files);
-  const previews = $('img-previews');
-  const area = $('img-upload-area');
-
   files.forEach(file => {
     if (uploadedImages.length >= 4) return;
     const reader = new FileReader();
@@ -435,21 +461,20 @@ window.updateCharCount = function(el, countId, max) {
 window.submitProduct = function() {
   const user = getCurrentUser();
   if (!user || (user.role !== 'seller' && user.role !== 'admin')) {
-    showToast('🔒 Please login as a seller first');
+    requireLogin('Ingia kama muuzaji / Login as a seller to post products');
     return;
   }
 
-  const name      = $('prod-name')     ? $('prod-name').value.trim()     : '';
-  const category  = $('prod-category') ? $('prod-category').value        : '';
-  const condition = $('prod-condition')? $('prod-condition').value        : '';
-  const price     = $('prod-price')    ? $('prod-price').value            : '';
-  const stock     = $('prod-stock')    ? $('prod-stock').value            : '1';
-  const desc      = $('prod-desc')     ? $('prod-desc').value.trim()      : '';
-  const location  = $('prod-location') ? $('prod-location').value         : '';
-  const whatsapp  = $('prod-whatsapp') ? $('prod-whatsapp').value.trim()  : '';
-  const delivery  = $('prod-delivery') ? $('prod-delivery').value         : '';
+  const name      = $('prod-name')      ? $('prod-name').value.trim()      : '';
+  const category  = $('prod-category')  ? $('prod-category').value         : '';
+  const condition = $('prod-condition') ? $('prod-condition').value         : '';
+  const price     = $('prod-price')     ? $('prod-price').value             : '';
+  const stock     = $('prod-stock')     ? $('prod-stock').value             : '1';
+  const desc      = $('prod-desc')      ? $('prod-desc').value.trim()       : '';
+  const location  = $('prod-location')  ? $('prod-location').value          : '';
+  const whatsapp  = $('prod-whatsapp')  ? $('prod-whatsapp').value.trim()   : '';
+  const delivery  = $('prod-delivery')  ? $('prod-delivery').value          : '';
 
-  // Validation
   if (!name)      { showToast('⚠️ Please enter a product name'); return; }
   if (!category)  { showToast('⚠️ Please select a category');    return; }
   if (!condition) { showToast('⚠️ Please select condition');      return; }
@@ -458,7 +483,7 @@ window.submitProduct = function() {
   if (!location)  { showToast('⚠️ Please select your location');  return; }
   if (!whatsapp)  { showToast('⚠️ Please add your WhatsApp number'); return; }
 
-  const products = getProducts();
+  const products   = getProducts();
   const newProduct = {
     id:          Date.now(),
     name:        name,
@@ -489,13 +514,13 @@ window.submitProduct = function() {
   // Reset form
   uploadedImages = [];
   renderImagePreviews();
-  ['prod-name','prod-price','prod-desc','prod-whatsapp'].forEach(id => {
+  ['prod-name', 'prod-price', 'prod-desc', 'prod-whatsapp'].forEach(id => {
     if ($(id)) $(id).value = '';
   });
-  ['prod-category','prod-condition','prod-location','prod-delivery'].forEach(id => {
+  ['prod-category', 'prod-condition', 'prod-location', 'prod-delivery'].forEach(id => {
     if ($(id)) $(id).selectedIndex = 0;
   });
-  ['name-count','desc-count'].forEach(id => {
+  ['name-count', 'desc-count'].forEach(id => {
     if ($(id)) $(id).textContent = '0';
   });
 
@@ -503,13 +528,16 @@ window.submitProduct = function() {
 };
 
 // ===============================
-// CART
+// SECTION 12: CART
+// Guests can ADD to cart (stored in localStorage)
+// But CHECKOUT requires login
 // ===============================
 let cart = JSON.parse(localStorage.getItem('kagaCart') || '[]');
 
 function saveCart() { localStorage.setItem('kagaCart', JSON.stringify(cart)); }
 
 window.addToCart = function(productId) {
+  // Guests CAN add to cart — no login needed here
   const products = getProducts();
   const p = products.find(pr => pr.id === productId);
   if (!p) return;
@@ -518,31 +546,27 @@ window.addToCart = function(productId) {
   if (existing) {
     existing.qty = (existing.qty || 1) + 1;
   } else {
-    cart.push({ id: productId, name: p.name, price: p.price, qty: 1, image: p.images && p.images[0] ? p.images[0] : '' });
+    cart.push({
+      id:    productId,
+      name:  p.name,
+      price: p.price,
+      qty:   1,
+      image: p.images && p.images[0] ? p.images[0] : '',
+    });
   }
   saveCart();
   updateCartBadge();
-  renderCart();
   showToast('✅ "' + p.name + '" ' + t('toast-added-cart'));
 };
 
-window.removeFromCart = function(index) {
-  cart.splice(index, 1);
-  saveCart();
-  updateCartBadge();
-  renderCart();
-};
-
-function updateCartBadge() {
-  const badge = $('cart-count');
-  const total = cart.reduce((s, i) => s + i.qty, 0);
-  if (badge) badge.textContent = total;
-}
-
+// Cart view — requires login (handled in switchView)
+// But if someone somehow gets to cart panel, show login prompt on checkout button
 function renderCart() {
   const cartList = $('cart-list');
   const totalBar = $('cart-total-bar');
   if (!cartList) return;
+
+  const user = getCurrentUser();
 
   if (cart.length === 0) {
     cartList.innerHTML = '<div class="empty-state" style="margin-top:20px;">' +
@@ -557,9 +581,7 @@ function renderCart() {
   if (totalBar) totalBar.style.display = 'block';
 
   cartList.innerHTML = cart.map((item, i) => {
-    const imgContent = item.image
-      ? '<img src="' + item.image + '" alt="" />'
-      : '📦';
+    const imgContent = item.image ? '<img src="' + item.image + '" alt="" />' : '📦';
     return '<div class="cart-item">' +
       '<div class="cart-item-img">' + imgContent + '</div>' +
       '<div class="cart-item-info">' +
@@ -581,6 +603,31 @@ function renderCart() {
   const totEl    = $('cart-grand-total');
   if (subEl) subEl.textContent = 'TZS ' + subtotal.toLocaleString();
   if (totEl) totEl.textContent = 'TZS ' + total.toLocaleString();
+
+  // Checkout button — require login
+  const checkoutBtn = $('cart-checkout-btn');
+  if (checkoutBtn) {
+    if (!user) {
+      checkoutBtn.onclick = () => requireLogin('Ingia kwanza ili ufanye order / Login to place your order');
+      checkoutBtn.textContent = '🔒 Login to Checkout';
+    } else {
+      checkoutBtn.onclick = () => switchView('delivery');
+      checkoutBtn.textContent = t('btn-checkout') || 'Checkout';
+    }
+  }
+}
+
+window.removeFromCart = function(index) {
+  cart.splice(index, 1);
+  saveCart();
+  updateCartBadge();
+  renderCart();
+};
+
+function updateCartBadge() {
+  const badge = $('cart-count');
+  const total = cart.reduce((s, i) => s + i.qty, 0);
+  if (badge) badge.textContent = total;
 }
 
 window.changeQty = function(index, delta) {
@@ -591,25 +638,31 @@ window.changeQty = function(index, delta) {
 };
 
 // ===============================
-// DELIVERY
+// SECTION 13: DELIVERY
+// (Login required — enforced by switchView)
 // ===============================
 function setupDelivery() {
   const form = $('delivery-form');
   if (!form) return;
   form.addEventListener('submit', function(e) {
     e.preventDefault();
-    // Save order to localStorage
+
+    const user = getCurrentUser();
+    if (!user) {
+      requireLogin('Ingia kwanza ili kukamilisha order / Login to complete your order');
+      return;
+    }
+
     const orders = JSON.parse(localStorage.getItem('kagaOrders') || '[]');
-    const user   = getCurrentUser();
     const order  = {
       id:       Date.now(),
-      userId:   user ? user.id : null,
+      userId:   user.id,
       items:    cart.slice(),
-      name:     $('del-name')    ? $('del-name').value    : '',
-      phone:    $('del-phone')   ? $('del-phone').value   : '',
-      address:  $('del-address') ? $('del-address').value : '',
-      landmark: $('del-landmark')? $('del-landmark').value: '',
-      payment:  $('del-payment') ? $('del-payment').value : '',
+      name:     $('del-name')     ? $('del-name').value     : '',
+      phone:    $('del-phone')    ? $('del-phone').value    : '',
+      address:  $('del-address')  ? $('del-address').value  : '',
+      landmark: $('del-landmark') ? $('del-landmark').value : '',
+      payment:  $('del-payment')  ? $('del-payment').value  : '',
       status:   'Processing',
       date:     new Date().toLocaleDateString(),
       total:    cart.reduce((s, i) => s + (i.price * i.qty), 0) + 5000,
@@ -628,7 +681,8 @@ function setupDelivery() {
 }
 
 // ===============================
-// CUSTOMER DASHBOARD
+// SECTION 14: CUSTOMER DASHBOARD
+// (Login required — enforced by switchView)
 // ===============================
 function loadCustomerOrders() {
   const el = $('customer-orders-list');
@@ -671,7 +725,8 @@ window.showDashTab = function(tab, btn) {
 };
 
 // ===============================
-// BUSINESS DASHBOARD
+// SECTION 15: BUSINESS DASHBOARD
+// (Login required — enforced by switchView)
 // ===============================
 function loadBizDashboard() {
   const user = getCurrentUser();
@@ -707,10 +762,13 @@ function loadBizDashboard() {
     '</tr></thead><tbody>' +
     allProducts.map(p =>
       '<tr>' +
-        '<td>' + (p.images && p.images[0] ? '<img src="' + p.images[0] + '" style="width:32px;height:32px;object-fit:cover;border-radius:4px;margin-right:8px;vertical-align:middle;" />' : '📦 ') + p.name + '</td>' +
+        '<td>' + (p.images && p.images[0]
+          ? '<img src="' + p.images[0] + '" style="width:32px;height:32px;object-fit:cover;border-radius:4px;margin-right:8px;vertical-align:middle;" />'
+          : '📦 ') + p.name + '</td>' +
         '<td>TZS ' + Number(p.price).toLocaleString() + '</td>' +
         '<td>' + (p.stock || 1) + '</td>' +
-        '<td><span class="order-status ' + (p.status === 'approved' ? 'status-delivered' : 'status-processing') + '">' + (p.status === 'approved' ? 'Active' : 'Pending') + '</span></td>' +
+        '<td><span class="order-status ' + (p.status === 'approved' ? 'status-delivered' : 'status-processing') + '">' +
+          (p.status === 'approved' ? 'Active' : 'Pending') + '</span></td>' +
         '<td><button onclick="deleteMyProduct(' + p.id + ')" style="background:none;border:none;color:var(--accent);font-size:13px;cursor:pointer;">Delete</button></td>' +
       '</tr>'
     ).join('') +
@@ -719,14 +777,14 @@ function loadBizDashboard() {
 
 window.deleteMyProduct = function(id) {
   if (!confirm('Delete this product?')) return;
-  const products = getProducts().filter(p => p.id !== id);
-  saveProducts(products);
+  saveProducts(getProducts().filter(p => p.id !== id));
   loadBizDashboard();
   showToast('🗑️ Product deleted');
 };
 
 // ===============================
-// ADMIN
+// SECTION 16: ADMIN
+// (Login + admin role required — enforced by switchView)
 // ===============================
 function loadAdminStats() {
   const users    = getUsers();
@@ -734,10 +792,10 @@ function loadAdminStats() {
   const pending  = products.filter(p => p.status === 'pending');
   const sellers  = users.filter(u => u.role === 'seller');
 
-  const uEl = $('admin-stat-users');
-  const bEl = $('admin-stat-biz');
-  const pEl = $('admin-stat-products');
-  const peEl= $('admin-stat-pending');
+  const uEl  = $('admin-stat-users');
+  const bEl  = $('admin-stat-biz');
+  const pEl  = $('admin-stat-products');
+  const peEl = $('admin-stat-pending');
 
   if (uEl)  uEl.textContent  = users.length;
   if (bEl)  bEl.textContent  = sellers.length;
@@ -856,7 +914,8 @@ window.adminApproveUser = function(id) {
 };
 
 // ===============================
-// AUTH SYSTEM
+// SECTION 17: AUTH SYSTEM
+// Updates header UI based on login state
 // ===============================
 function checkAuth() {
   const user      = getCurrentUser();
@@ -867,36 +926,45 @@ function checkAuth() {
   const bizItem   = $('biz-menu-item');
 
   if (user) {
-    if (nameEl)   nameEl.textContent  = user.name;
-    if (roleEl)   roleEl.textContent  = user.role === 'admin' ? '🛡️ Administrator' : user.role === 'seller' ? '🏪 Seller' : '🛍️ Buyer';
-    if (loginBtn) loginBtn.innerHTML  = '👤 ' + user.name.split(' ')[0];
-    if (adminItem) adminItem.style.display = user.role === 'admin'  ? 'flex' : 'none';
+    // Logged in — show user info
+    if (nameEl)    nameEl.textContent = user.name;
+    if (roleEl)    roleEl.textContent = user.role === 'admin'
+      ? '🛡️ Administrator'
+      : user.role === 'seller' ? '🏪 Seller' : '🛍️ Buyer';
+    if (loginBtn)  loginBtn.innerHTML = '👤 ' + user.name.split(' ')[0];
+    if (adminItem) adminItem.style.display = user.role === 'admin' ? 'flex' : 'none';
     if (bizItem)   bizItem.style.display   = (user.role === 'seller' || user.role === 'admin') ? 'flex' : 'none';
   } else {
-    if (nameEl)   nameEl.textContent  = t('account-guest');
-    if (roleEl)   roleEl.textContent  = t('account-not-logged');
+    // Guest — show login prompt
+    if (nameEl)    nameEl.textContent = t('account-guest') || 'Guest';
+    if (roleEl)    roleEl.textContent = t('account-not-logged') || 'Not logged in';
+    if (loginBtn)  loginBtn.innerHTML = '🔒 Login';
     if (adminItem) adminItem.style.display = 'none';
     if (bizItem)   bizItem.style.display   = 'none';
   }
 
-  // Header login button
+  // Header login/account button
   if (loginBtn) {
-    loginBtn.onclick = () => user ? switchView('account') : window.location.href = 'login.html';
+    loginBtn.onclick = () => user
+      ? switchView('account')
+      : window.location.href = 'login.html';
   }
 
   // Logout
   const logoutItem = $('logout-menu-item');
   if (logoutItem) {
+    logoutItem.style.display = user ? 'flex' : 'none';
     logoutItem.onclick = () => {
       localStorage.removeItem('kagaCurrentUser');
-      showToast(t('toast-logged-out'));
+      showToast(t('toast-logged-out') || 'Logged out successfully');
       setTimeout(() => window.location.href = 'login.html', 900);
     };
   }
 }
 
 // ===============================
-// MESSENGER
+// SECTION 18: MESSENGER
+// (Login required — enforced by switchView)
 // ===============================
 function setupMessenger() {
   const input   = $('chat-input');
@@ -927,7 +995,7 @@ function setupMessenger() {
 }
 
 // ===============================
-// SEARCH
+// SECTION 19: SEARCH
 // ===============================
 function setupSearch() {
   const global = $('global-search-input');
@@ -963,7 +1031,6 @@ window.doHeroSearch = function() {
   }
 };
 
-// Price slider
 function setupPriceSlider() {
   const slider = $('price-slider');
   const label  = $('price-val');
@@ -975,7 +1042,6 @@ function setupPriceSlider() {
   });
 }
 
-// Sort
 function setupSort() {
   const select = $('sort-select');
   if (!select) return;
@@ -983,7 +1049,7 @@ function setupSort() {
 }
 
 // ===============================
-// TOAST
+// SECTION 20: TOAST
 // ===============================
 function showToast(msg) {
   const existing = document.querySelector('.toast-msg');
@@ -997,13 +1063,19 @@ function showToast(msg) {
     'font-size:13px;font-weight:500;z-index:9999;white-space:nowrap;' +
     'box-shadow:0 4px 20px rgba(0,0,0,0.2);';
   document.body.appendChild(toast);
-  setTimeout(() => { toast.style.opacity = '0'; toast.style.transition = 'opacity 0.3s'; setTimeout(() => toast.remove(), 300); }, 2500);
+  setTimeout(() => {
+    toast.style.opacity    = '0';
+    toast.style.transition = 'opacity 0.3s';
+    setTimeout(() => toast.remove(), 300);
+  }, 2500);
 }
 
 // ===============================
-// BOOT
+// SECTION 21: BOOT
 // ===============================
 document.addEventListener('DOMContentLoaded', function() {
+
+  // No forced redirect — guests are welcome to browse
   checkAuth();
   renderCategories();
   renderHomeProducts();
@@ -1016,5 +1088,8 @@ document.addEventListener('DOMContentLoaded', function() {
   updateCartBadge();
   renderCart();
   switchView('home');
-  console.log("✅ Kaga's Market loaded — clean, no fake data");
+
+  console.log("✅ Kaga's Market loaded — Option B auth active");
+  console.log("   Guests: can browse home, shop, products, businesses");
+  console.log("   Login required: cart checkout, add product, dashboards, messenger, delivery");
 });
