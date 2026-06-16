@@ -33,7 +33,7 @@
       min-height: 100vh;
       display: grid;
       grid-template-columns: 1fr 1fr;
-      overflow: hidden;
+      overflow: auto;
     }
 
     /* LEFT PANEL */
@@ -282,7 +282,7 @@
     @media (max-width: 768px) {
       body { grid-template-columns: 1fr; }
       .left-panel { display: none; }
-      .right-panel { padding: 32px 24px; }
+      .right-panel { padding: 32px 24px; overflow-y: auto; }
     }
   </style>
 </head>
