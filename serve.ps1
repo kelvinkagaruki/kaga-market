@@ -52,3 +52,4 @@ while ($listener.IsListening) {
 
     $response.OutputStream.Close()
 }
+export { app };

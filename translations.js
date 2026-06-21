@@ -643,3 +643,4 @@ document.addEventListener('DOMContentLoaded', () => {
   applyTranslations(currentLanguage);
   updateLangSwitcherUI(currentLanguage);
 });
+export { app };

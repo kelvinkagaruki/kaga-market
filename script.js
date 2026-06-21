@@ -67,4 +67,4 @@ function updateActiveNav(sectionId) {
 window.onerror = function (message) {
   console.log("Kaga Market Error Handled:", message);
   return true;
-};
+};export { app };

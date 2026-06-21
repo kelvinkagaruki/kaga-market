@@ -1093,3 +1093,4 @@ document.addEventListener('DOMContentLoaded', function() {
   console.log("   Guests: can browse home, shop, products, businesses");
   console.log("   Login required: cart checkout, add product, dashboards, messenger, delivery");
 });
+export { app };
