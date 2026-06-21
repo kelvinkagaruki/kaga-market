@@ -98,66 +98,111 @@
     .panel { display: none; }
     .panel.active { display: block; }
 
-    /* ===== HERO ===== */
+    /* ===== HERO - REDUCED SIZE ===== */
     .hero {
       background: linear-gradient(135deg, var(--brand-dark) 0%, var(--brand) 60%, var(--brand-mid) 100%);
-      padding: 48px 20px 56px; text-align: center; position: relative; overflow: hidden;
+      padding: 28px 20px 32px;
+      text-align: center; position: relative; overflow: hidden;
     }
     .hero::before {
       content: ''; position: absolute; inset: 0;
       background: url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none'%3E%3Cg fill='%23ffffff' fill-opacity='0.04'%3E%3Cpath d='M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E");
     }
-    .hero-badge {
-      display: inline-flex; align-items: center; gap: 6px; background: rgba(255,255,255,0.15);
-      color: rgba(255,255,255,0.9); padding: 6px 14px; border-radius: 999px;
-      font-size: 12px; font-weight: 500; margin-bottom: 18px; backdrop-filter: blur(4px);
-    }
     .hero h2 {
-      font-family: var(--font-head); font-size: clamp(28px,5vw,46px); font-weight: 800;
-      color: #fff; line-height: 1.1; margin-bottom: 12px;
+      font-family: var(--font-head); font-size: clamp(24px,4vw,32px); font-weight: 800;
+      color: #fff; line-height: 1.15; margin-bottom: 10px;
     }
-    .hero p { font-size: 15px; color: rgba(255,255,255,0.8); max-width: 420px; margin: 0 auto 28px; line-height: 1.6; }
-    .hero-search { max-width: 520px; margin: 0 auto 28px; position: relative; }
+    .hero p { font-size: 13px; color: rgba(255,255,255,0.8); max-width: 400px; margin: 0 auto 18px; line-height: 1.5; }
+    .hero-search { max-width: 480px; margin: 0 auto 18px; position: relative; }
     .hero-search input {
-      width: 100%; height: 52px; background: #fff; border: none; border-radius: var(--radius-sm);
-      padding: 0 130px 0 20px; font-size: 15px; color: var(--text); outline: none;
-      box-shadow: 0 4px 24px rgba(0,0,0,0.15);
+      width: 100%; height: 44px; background: #fff; border: none; border-radius: var(--radius-sm);
+      padding: 0 110px 0 16px; font-size: 14px; color: var(--text); outline: none;
+      box-shadow: 0 2px 12px rgba(0,0,0,0.12);
     }
     .hero-search button {
-      position: absolute; right: 6px; top: 6px; height: 40px; padding: 0 18px;
+      position: absolute; right: 4px; top: 4px; height: 36px; padding: 0 16px;
       background: var(--brand); color: #fff; border: none; border-radius: var(--radius-sm);
-      font-size: 13px; font-weight: 600; font-family: var(--font-body);
+      font-size: 12px; font-weight: 600; font-family: var(--font-body);
     }
-    .hero-actions { display: flex; gap: 12px; justify-content: center; flex-wrap: wrap; }
+    .hero-actions { display: flex; gap: 10px; justify-content: center; flex-wrap: wrap; }
     .btn-primary {
-      height: 46px; padding: 0 24px; background: #fff; color: var(--brand-dark);
-      border: none; border-radius: var(--radius-sm); font-size: 14px; font-weight: 600;
+      height: 40px; padding: 0 18px; background: #fff; color: var(--brand-dark);
+      border: none; border-radius: var(--radius-sm); font-size: 13px; font-weight: 600;
       font-family: var(--font-body); transition: transform 0.15s, box-shadow 0.15s;
     }
-    .btn-primary:hover { transform: translateY(-1px); box-shadow: 0 6px 20px rgba(0,0,0,0.15); }
+    .btn-primary:hover { transform: translateY(-1px); box-shadow: 0 4px 16px rgba(0,0,0,0.12); }
     .btn-secondary {
-      height: 46px; padding: 0 24px; background: rgba(255,255,255,0.15); color: #fff;
+      height: 40px; padding: 0 18px; background: rgba(255,255,255,0.15); color: #fff;
       border: 1px solid rgba(255,255,255,0.3); border-radius: var(--radius-sm);
-      font-size: 14px; font-weight: 500; font-family: var(--font-body); backdrop-filter: blur(4px);
+      font-size: 13px; font-weight: 500; font-family: var(--font-body); backdrop-filter: blur(4px);
     }
     .btn-secondary:hover { background: rgba(255,255,255,0.25); }
 
-    /* ===== SECTIONS ===== */
-    .section { padding: 32px 20px; }
-    .section-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 18px; }
-    .section-title { font-family: var(--font-head); font-size: 20px; font-weight: 700; }
-    .see-all { font-size: 13px; color: var(--brand); font-weight: 500; background: none; border: none; }
-
-    /* ===== CATEGORIES ===== */
-    .categories-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(88px,1fr)); gap: 12px; }
-    .category-card {
-      background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius-md);
-      padding: 16px 8px; text-align: center; cursor: pointer; transition: border-color 0.2s, transform 0.15s;
+    /* ===== HOME WITH SIDEBAR ===== */
+    .home-with-sidebar {
+      display: grid;
+      grid-template-columns: 200px 1fr;
+      gap: 0;
     }
-    .category-card:hover { border-color: var(--brand); transform: translateY(-2px); }
-    .category-icon { font-size: 26px; margin-bottom: 8px; display: block; }
-    .category-name { font-size: 12px; font-weight: 500; }
-    .category-count { font-size: 10px; color: var(--text-light); margin-top: 2px; }
+
+    /* ===== CATEGORIES SIDEBAR ===== */
+    .categories-sidebar {
+      background: var(--surface);
+      border-right: 1px solid var(--border);
+      padding: 16px 0;
+      max-height: calc(100vh - var(--nav-h));
+      overflow-y: auto;
+    }
+    .sidebar-title {
+      font-size: 11px;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      color: var(--text-muted);
+      padding: 0 16px;
+      margin-bottom: 12px;
+    }
+    .category-item {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      padding: 10px 16px;
+      cursor: pointer;
+      transition: background 0.15s, color 0.15s;
+      color: var(--text-muted);
+      font-size: 13px;
+      border-left: 3px solid transparent;
+    }
+    .category-item:hover {
+      background: var(--surface2);
+      color: var(--text);
+    }
+    .category-item.active {
+      background: var(--brand-light);
+      color: var(--brand-dark);
+      border-left-color: var(--brand);
+      font-weight: 500;
+    }
+    .category-icon {
+      font-size: 16px;
+      width: 20px;
+      text-align: center;
+      flex-shrink: 0;
+    }
+    .category-name {
+      flex: 1;
+    }
+
+    /* ===== MAIN CONTENT ===== */
+    .home-main-content {
+      overflow-y: auto;
+    }
+
+    /* ===== SECTIONS ===== */
+    .section { padding: 28px 20px; }
+    .section-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 16px; }
+    .section-title { font-family: var(--font-head); font-size: 18px; font-weight: 700; }
+    .see-all { font-size: 13px; color: var(--brand); font-weight: 500; background: none; border: none; }
 
     /* ===== EMPTY STATE ===== */
     .empty-state {
@@ -465,6 +510,15 @@
     .mob-nav-btn.active { color: var(--brand); }
 
     /* ===== RESPONSIVE ===== */
+    @media (max-width: 900px) {
+      .home-with-sidebar {
+        grid-template-columns: 160px 1fr;
+      }
+      .categories-sidebar {
+        padding: 12px 0;
+      }
+    }
+
     @media (max-width: 640px) {
       .header-nav { display: none; }
       .header-search { display: none; }
@@ -474,6 +528,19 @@
       .messenger-list { display: none; }
       .footer-inner { grid-template-columns: 1fr 1fr; }
       .form-row { grid-template-columns: 1fr; }
+      
+      .home-with-sidebar {
+        grid-template-columns: 1fr;
+      }
+      .categories-sidebar {
+        display: none;
+      }
+      .hero {
+        padding: 20px 16px 24px;
+      }
+      .section {
+        padding: 20px 16px;
+      }
     }
   </style>
 </head>
@@ -514,77 +581,109 @@
     <!-- HOME PANEL -->
     <section class="panel active" id="home-panel">
       <div class="hero">
-        <div class="hero-badge" data-i18n="hero-badge">📍 Tanzania's Local Marketplace</div>
-        <h2 data-i18n="hero-title">Buy, Sell & Get It<br/>Delivered Today</h2>
-        <p data-i18n="hero-subtitle">Connect with local sellers, verified businesses across Tanzania.</p>
+        <h2 data-i18n="hero-title">What Are You Looking For?</h2>
+        <p data-i18n="hero-subtitle">Browse from thousands of products · Fast delivery in Tanzania</p>
         <div class="hero-search">
-          <input type="search" data-i18n-ph="hero-search-placeholder" placeholder="What are you looking for?" id="hero-search-input" />
+          <input type="search" data-i18n-ph="hero-search-placeholder" placeholder="Search products..." id="hero-search-input" />
           <button data-i18n="hero-search-btn" onclick="doHeroSearch()">Search</button>
         </div>
-        <div class="hero-actions">
-          <button class="btn-primary" onclick="switchView('shop')" data-i18n="hero-btn-browse">Browse Products</button>
-          <button class="btn-secondary" onclick="switchView('add-product')" id="sell-btn">🏪 Start Selling</button>
-        </div>
       </div>
 
-      <!-- Categories -->
-      <div class="section">
-        <div class="section-header">
-          <h2 class="section-title" data-i18n="section-categories">Categories</h2>
-          <button class="see-all" onclick="switchView('shop')" data-i18n="see-all">See all →</button>
-        </div>
-        <div class="categories-grid" id="categories-grid"></div>
-      </div>
+      <div class="home-with-sidebar">
+        <!-- CATEGORIES SIDEBAR -->
+        <aside class="categories-sidebar">
+          <div class="sidebar-title">Categories</div>
+          <div class="category-item active" onclick="filterShopByCategory('All'); this.parentElement.querySelectorAll('.category-item').forEach(e=>e.classList.remove('active')); this.classList.add('active');">
+            <span class="category-icon">🏷️</span>
+            <span class="category-name">All Items</span>
+          </div>
+          <div class="category-item" onclick="filterShopByCategory('Electronics'); this.parentElement.querySelectorAll('.category-item').forEach(e=>e.classList.remove('active')); this.classList.add('active');">
+            <span class="category-icon">📱</span>
+            <span class="category-name">Electronics</span>
+          </div>
+          <div class="category-item" onclick="filterShopByCategory('Fashion'); this.parentElement.querySelectorAll('.category-item').forEach(e=>e.classList.remove('active')); this.classList.add('active');">
+            <span class="category-icon">👗</span>
+            <span class="category-name">Fashion</span>
+          </div>
+          <div class="category-item" onclick="filterShopByCategory('Groceries'); this.parentElement.querySelectorAll('.category-item').forEach(e=>e.classList.remove('active')); this.classList.add('active');">
+            <span class="category-icon">🍎</span>
+            <span class="category-name">Groceries</span>
+          </div>
+          <div class="category-item" onclick="filterShopByCategory('Home'); this.parentElement.querySelectorAll('.category-item').forEach(e=>e.classList.remove('active')); this.classList.add('active');">
+            <span class="category-icon">🏠</span>
+            <span class="category-name">Home</span>
+          </div>
+          <div class="category-item" onclick="filterShopByCategory('Beauty'); this.parentElement.querySelectorAll('.category-item').forEach(e=>e.classList.remove('active')); this.classList.add('active');">
+            <span class="category-icon">💄</span>
+            <span class="category-name">Beauty</span>
+          </div>
+          <div class="category-item" onclick="filterShopByCategory('Sports'); this.parentElement.querySelectorAll('.category-item').forEach(e=>e.classList.remove('active')); this.classList.add('active');">
+            <span class="category-icon">⚽</span>
+            <span class="category-name">Sports</span>
+          </div>
+          <div class="category-item" onclick="filterShopByCategory('Books'); this.parentElement.querySelectorAll('.category-item').forEach(e=>e.classList.remove('active')); this.classList.add('active');">
+            <span class="category-icon">📚</span>
+            <span class="category-name">Books</span>
+          </div>
+          <div class="category-item" onclick="filterShopByCategory('Tools'); this.parentElement.querySelectorAll('.category-item').forEach(e=>e.classList.remove('active')); this.classList.add('active');">
+            <span class="category-icon">🔧</span>
+            <span class="category-name">Tools</span>
+          </div>
+        </aside>
 
-      <!-- Featured Products -->
-      <div class="section" style="background:var(--surface2);margin:0;padding:32px 20px;">
-        <div class="section-header">
-          <h2 class="section-title" data-i18n="section-featured">Featured Products</h2>
-          <button class="see-all" onclick="switchView('shop')" data-i18n="see-all">See all →</button>
-        </div>
-        <div id="home-products-container"></div>
-      </div>
+        <!-- MAIN CONTENT -->
+        <div class="home-main-content">
+          <!-- Featured Products -->
+          <div class="section">
+            <div class="section-header">
+              <h2 class="section-title" data-i18n="section-featured">Featured Products</h2>
+              <button class="see-all" onclick="switchView('shop')" data-i18n="see-all">See all →</button>
+            </div>
+            <div id="home-products-container"></div>
+          </div>
 
-      <!-- Verified Businesses -->
-      <div class="section">
-        <div class="section-header">
-          <h2 class="section-title" data-i18n="section-businesses">Verified Businesses</h2>
-          <button class="see-all" onclick="switchView('businesses')" data-i18n="see-all">See all →</button>
-        </div>
-        <div id="home-businesses-container"></div>
-      </div>
+          <!-- Verified Businesses -->
+          <div class="section">
+            <div class="section-header">
+              <h2 class="section-title" data-i18n="section-businesses">Verified Businesses</h2>
+              <button class="see-all" onclick="switchView('businesses')" data-i18n="see-all">See all →</button>
+            </div>
+            <div id="home-businesses-container"></div>
+          </div>
 
-      <footer class="site-footer">
-        <div class="footer-inner">
-          <div class="footer-col">
-            <h4 data-i18n="footer-about">Kaga's Market</h4>
-            <a href="#" data-i18n="footer-about-us">About Us</a>
-            <a href="#" data-i18n="footer-how">How It Works</a>
-            <a href="#" data-i18n="footer-contact">Contact Us</a>
-          </div>
-          <div class="footer-col">
-            <h4 data-i18n="footer-buyers">For Buyers</h4>
-            <a href="#" data-i18n="footer-browse">Browse Products</a>
-            <a href="#" data-i18n="footer-track">Track Order</a>
-            <a href="#" data-i18n="footer-returns">Returns</a>
-          </div>
-          <div class="footer-col">
-            <h4 data-i18n="footer-sellers">For Sellers</h4>
-            <a href="#" onclick="switchView('add-product')" data-i18n="footer-register-biz">Register Business</a>
-            <a href="#" data-i18n="footer-seller-guide">Seller Guide</a>
-            <a href="#" data-i18n="footer-pricing">Pricing</a>
-          </div>
-          <div class="footer-col">
-            <h4 data-i18n="footer-legal">Legal</h4>
-            <a href="#" data-i18n="footer-privacy">Privacy Policy</a>
-            <a href="#" data-i18n="footer-terms">Terms of Use</a>
-            <a href="#" data-i18n="footer-cookie">Cookie Policy</a>
-          </div>
+          <footer class="site-footer">
+            <div class="footer-inner">
+              <div class="footer-col">
+                <h4 data-i18n="footer-about">Kaga's Market</h4>
+                <a href="#" data-i18n="footer-about-us">About Us</a>
+                <a href="#" data-i18n="footer-how">How It Works</a>
+                <a href="#" data-i18n="footer-contact">Contact Us</a>
+              </div>
+              <div class="footer-col">
+                <h4 data-i18n="footer-buyers">For Buyers</h4>
+                <a href="#" data-i18n="footer-browse">Browse Products</a>
+                <a href="#" data-i18n="footer-track">Track Order</a>
+                <a href="#" data-i18n="footer-returns">Returns</a>
+              </div>
+              <div class="footer-col">
+                <h4 data-i18n="footer-sellers">For Sellers</h4>
+                <a href="#" onclick="switchView('add-product')" data-i18n="footer-register-biz">Register Business</a>
+                <a href="#" data-i18n="footer-seller-guide">Seller Guide</a>
+                <a href="#" data-i18n="footer-pricing">Pricing</a>
+              </div>
+              <div class="footer-col">
+                <h4 data-i18n="footer-legal">Legal</h4>
+                <a href="#" data-i18n="footer-privacy">Privacy Policy</a>
+                <a href="#" data-i18n="footer-terms">Terms of Use</a>
+                <a href="#" data-i18n="footer-cookie">Cookie Policy</a>
+              </div>
+            </div>
+            <div class="footer-bottom">
+              <p data-i18n="footer-copy">© 2025 Kaga's Market · Built for Tanzania 🇹🇿</p>
+            </div>
+          </footer>
         </div>
-        <div class="footer-bottom">
-          <p data-i18n="footer-copy">© 2025 Kaga's Market · Built for Tanzania 🇹🇿</p>
-        </div>
-      </footer>
+      </div>
     </section>
 
     <!-- SHOP PANEL -->
