@@ -1,1096 +1,408 @@
-// ===============================
-// KAGA'S MARKET — APP.JS
-// Option B Auth: Guests browse freely
-// Login only required for protected actions
-// ===============================
-
-function $(id) { return document.getElementById(id); }
-
-// ===============================
-// SECTION 1: CATEGORIES
-// ===============================
-const categories = [
-  { icon: '📱', name: 'Electronics',  count: '' },
-  { icon: '👗', name: 'Fashion',      count: '' },
-  { icon: '🍎', name: 'Groceries',    count: '' },
-  { icon: '🏠', name: 'Home',         count: '' },
-  { icon: '💄', name: 'Beauty',       count: '' },
-  { icon: '⚽', name: 'Sports',       count: '' },
-  { icon: '📚', name: 'Books',        count: '' },
-  { icon: '🔧', name: 'Tools',        count: '' },
-];
-
-// ===============================
-// SECTION 2: STORAGE HELPERS
-// ===============================
-function getProducts()    { return JSON.parse(localStorage.getItem('kagaProducts') || '[]'); }
-function saveProducts(p)  { localStorage.setItem('kagaProducts', JSON.stringify(p)); }
-function getUsers()       { return JSON.parse(localStorage.getItem('kagaUsers') || '[]'); }
-function saveUsers(u)     { localStorage.setItem('kagaUsers', JSON.stringify(u)); }
-function getCurrentUser() { const r = localStorage.getItem('kagaCurrentUser'); return r ? JSON.parse(r) : null; }
-
-// ===============================
-// SECTION 3: AUTH GUARD (Option B)
-// Guests can browse home, shop, product pages
-// Login required only for: cart checkout, add product, dashboards, admin, messages
-// ===============================
-const guestAllowedViews = ['home', 'shop', 'product', 'businesses'];
-// All other views require login
-
-function requireLogin(reason) {
-  // Show a friendly message then redirect to login
-  showToast('🔒 ' + (reason || t('toast-login-first')));
-  setTimeout(() => { window.location.href = 'login.html'; }, 900);
-}
-
-// ===============================
-// SECTION 4: VIEW SWITCHER
-// ===============================
-const panelMap = {
-  home:                 'home-panel',
-  shop:                 'shop-panel',
-  product:              'product-panel',
-  businesses:           'businesses-panel',
-  'add-product':        'add-product-panel',
-  'customer-dashboard': 'customer-dashboard-panel',
-  'business-dashboard': 'business-dashboard-panel',
-  admin:                'admin-panel',
-  account:              'account-panel',
-  messenger:            'messenger-panel',
-  cart:                 'cart-panel',
-  delivery:             'delivery-panel',
+/**
+ * Core Application State
+ */
+const AppState = {
+  currentView: 'home',
+  language: 'en',
+  cart: [],
+  products: [
+    { id: 1, name: 'Samsung Galaxy A15', category: 'Electronics', price: 450000, rating: 4.7, seller: 'Kaga Tech', desc: '128GB Storage, 4GB RAM, Brand New.', img: 'https://images.unsplash.com/photo-1610945265064-0e34e5519bbf?w=400', whatsapp: '0754000000', location: 'Dar es Salaam' },
+    { id: 2, name: 'Smart Watch Ultra', category: 'Electronics', price: 120000, rating: 4.5, seller: 'Kaga Tech', desc: 'Waterproof sports smartwatch with heart rate monitoring.', img: 'https://images.unsplash.com/photo-1523275335684-37898b6baf30?w=400', whatsapp: '0754000000', location: 'Arusha' },
+    { id: 3, name: 'Classic Leather Sneakers', category: 'Fashion', price: 65000, rating: 4.4, seller: 'Mwanza Trendy Walks', desc: 'Durable white street fashion wear sneakers.', img: 'https://images.unsplash.com/photo-1549298916-b41d501d3772?w=400', whatsapp: '0713000000', location: 'Mwanza' },
+    { id: 4, name: 'Premium Coffee Beans Bag', category: 'Groceries', price: 25000, rating: 4.9, seller: 'Kilimanjaro Harvest', desc: 'Organic roasted medium blend robusta coffee.', img: 'https://images.unsplash.com/photo-1559056199-641a0ac8b55e?w=400', whatsapp: '0784000000', location: 'Dodoma' }
+  ],
+  businesses: [
+    { id: 1, name: 'Kaga Tech', type: 'Electronics & Gadgets', emoji: '📱', verified: true },
+    { id: 2, name: 'Mwanza Trendy Walks', type: 'Fashion & Shoes', emoji: '👗', verified: true },
+    { id: 3, name: 'Kilimanjaro Harvest', type: 'Groceries & Organics', emoji: '☕', verified: false }
+  ],
+  activeCategory: 'All',
+  searchQuery: ''
 };
 
-const mobNavMap = {
-  home:          'mob-home',
-  shop:          'mob-shop',
-  'add-product': 'mob-sell',
-  messenger:     'mob-messenger',
-  account:       'mob-account',
-};
+/**
+ * Initialize Application Lifecycle Hooks
+ */
+document.addEventListener('DOMContentLoaded', () => {
+  // 1. Initial view components render templates
+  renderCategories();
+  renderHomeProducts();
+  renderShopProducts();
+  renderBusinesses();
+  updateCartUI();
 
-window.switchView = function(view) {
-  const user = getCurrentUser();
+  // 2. Wire Global Search Input Event Listeners
+  const globalSearch = document.getElementById('global-search-input');
+  globalSearch?.addEventListener('input', (e) => {
+    AppState.searchQuery = e.target.value.toLowerCase();
+    doSearchFiltering();
+  });
 
-  // ---- OPTION B AUTH GATE ----
-  // If view is NOT in guest-allowed list AND user is not logged in → redirect to login
-  if (!guestAllowedViews.includes(view) && !user) {
-    if (view === 'cart') {
-      requireLogin('Ingia kwanza ili uone cart yako / Login to view your cart');
-    } else if (view === 'add-product') {
-      requireLogin('Ingia kwanza ili uweze kuuza / Login to sell a product');
-    } else if (view === 'messenger') {
-      requireLogin('Ingia kwanza ili utume ujumbe / Login to send messages');
-    } else if (view === 'delivery') {
-      requireLogin('Ingia kwanza ili ufanye order / Login to place an order');
+  // 3. Wire Shop Panel Live Search Input Event Listeners
+  const shopSearch = document.getElementById('shop-search-input');
+  shopSearch?.addEventListener('input', (e) => {
+    AppState.searchQuery = e.target.value.toLowerCase();
+    doSearchFiltering();
+  });
+
+  // 4. Handle Delivery Checkout Form Form Submissions
+  const deliveryForm = document.getElementById('delivery-form');
+  deliveryForm?.addEventListener('submit', handleCheckoutSubmit);
+});
+
+/**
+ * SPA Global View Switcher
+ * Perfectly pairs with onclick="switchView('viewname')" tags inside your HTML buttons
+ */
+window.switchView = function(viewId) {
+  if (!viewId) return;
+  AppState.currentView = viewId;
+
+  // Select all layout panels 
+  const panels = document.querySelectorAll('.panel');
+  panels.forEach(panel => {
+    if (panel.id === `${viewId}-panel`) {
+      panel.classList.add('active');
     } else {
-      requireLogin(t('toast-login-first'));
+      panel.classList.remove('active');
     }
-    return;
-  }
+  });
 
-  // Role-based guards (user IS logged in)
-  if (view === 'admin' && user && user.role !== 'admin') {
-    showToast(t('toast-admin-only'));
-    return;
-  }
-  if (view === 'business-dashboard' && user && user.role === 'buyer') {
-    showToast(t('toast-seller-only'));
-    return;
-  }
+  // Keep navigation buttons active styling synced across Desktop & Mobile bars
+  const allNavBtns = document.querySelectorAll('.nav-btn, .mob-nav-btn');
+  allNavBtns.forEach(btn => {
+    const onClickAttr = btn.getAttribute('onclick');
+    if (onClickAttr && onClickAttr.includes(`'${viewId}'`)) {
+      btn.classList.add('active');
+    } else {
+      btn.classList.remove('active');
+    }
+  });
 
-  // Switch panels
-  document.querySelectorAll('.panel').forEach(p => p.classList.remove('active'));
-  const panelId = panelMap[view];
-  if (panelId) {
-    const panel = $(panelId);
-    if (panel) panel.classList.add('active');
-  }
-
-  // Nav highlights
-  document.querySelectorAll('.nav-btn').forEach(b => b.classList.remove('active'));
-  document.querySelectorAll('.mob-nav-btn').forEach(b => b.classList.remove('active'));
-  if (mobNavMap[view]) {
-    const mb = $(mobNavMap[view]);
-    if (mb) mb.classList.add('active');
-  }
-
-  // On-open hooks
-  if (view === 'shop')               renderShopProducts();
-  if (view === 'businesses')         renderAllBusinesses();
-  if (view === 'add-product')        setupAddProductPanel();
-  if (view === 'admin')              loadAdminStats();
-  if (view === 'business-dashboard') loadBizDashboard();
-  if (view === 'customer-dashboard') loadCustomerOrders();
-  if (view === 'cart')               renderCart();
-
+  // Auto scroll window back up on panel viewport transitions
   window.scrollTo({ top: 0, behavior: 'smooth' });
 };
 
-// ===============================
-// SECTION 5: RENDER CATEGORIES
-// ===============================
+/**
+ * Categories Horizontal Carousel Injector
+ */
 function renderCategories() {
-  const grid = $('categories-grid');
-  if (!grid) return;
+  const cats = ['All', 'Electronics', 'Fashion', 'Groceries', 'Home', 'Beauty', 'Sports', 'Books', 'Tools'];
+  const scrollContainer = document.getElementById('categories-scroll');
+  if (!scrollContainer) return;
 
-  const products = getProducts().filter(p => p.status === 'approved');
-
-  grid.innerHTML = categories.map(c => {
-    const count = products.filter(p => p.category && p.category.includes(c.name)).length;
-    return '<div class="category-card" onclick="filterShopByCategory(\'' + c.name + '\')">' +
-      '<span class="category-icon">' + c.icon + '</span>' +
-      '<div class="category-name">' + c.name + '</div>' +
-      '<div class="category-count">' + (count > 0 ? count + ' items' : '') + '</div>' +
-    '</div>';
+  scrollContainer.innerHTML = cats.map(c => {
+    const icon = getCategoryIcon(c);
+    return `<div class="category-chip ${AppState.activeCategory === c ? 'active' : ''}" 
+                 onclick="filterShopByCategory('${c}')">${icon} ${c}</div>`;
   }).join('');
 }
 
-// ===============================
-// SECTION 6: RENDER PRODUCT CARD
-// ===============================
-function renderProductCard(p) {
-  const imgContent = p.images && p.images[0]
-    ? '<img src="' + p.images[0] + '" alt="' + p.name + '" />'
-    : '<span style="font-size:40px;">' + (p.icon || '📦') + '</span>';
-
-  return '<div class="product-card" onclick="openProduct(' + p.id + ')">' +
-    '<div class="product-img-wrap"><div class="product-img">' + imgContent + '</div></div>' +
-    '<div class="product-info">' +
-      '<div class="product-name">' + p.name + '</div>' +
-      '<div class="product-price">TZS ' + Number(p.price).toLocaleString() + '</div>' +
-      '<div class="product-seller">' + (p.sellerName || 'Seller') + ' · ' + (p.location || '') + '</div>' +
-    '</div>' +
-    '<div class="product-actions">' +
-      '<button class="btn-cart" onclick="event.stopPropagation(); addToCart(' + p.id + ')">' + t('btn-add-cart') + '</button>' +
-      '<a href="https://wa.me/' + formatWA(p.whatsapp) + '?text=' + encodeURIComponent('Hi! I am interested in ' + p.name) + '" target="_blank" onclick="event.stopPropagation();">' +
-        '<button class="btn-wa-small">💬</button>' +
-      '</a>' +
-    '</div>' +
-  '</div>';
+function getCategoryIcon(cat) {
+  const icons = { 'All': '✨', 'Electronics': '📱', 'Fashion': '👗', 'Groceries': '🍎', 'Home': '🏠', 'Beauty': '💄', 'Sports': '⚽', 'Books': '📚', 'Tools': '🔧' };
+  return icons[cat] || '📦';
 }
 
-function formatWA(num) {
-  if (!num) return '255700000000';
-  num = num.replace(/\D/g, '');
-  if (num.startsWith('0')) num = '255' + num.slice(1);
-  return num;
-}
-
-// ===============================
-// SECTION 7: RENDER HOME PRODUCTS
-// ===============================
-function renderHomeProducts() {
-  const el = $('home-products-container');
-  if (!el) return;
-
-  const products = getProducts().filter(p => p.status === 'approved');
-
-  if (products.length === 0) {
-    el.innerHTML = '<div class="empty-state">' +
-      '<span class="empty-icon">🛍️</span>' +
-      '<div class="empty-title">No products yet</div>' +
-      '<div class="empty-desc">Be the first to post a product on Kaga\'s Market!</div>' +
-      '<button class="btn-empty" onclick="switchView(\'add-product\')">Post a Product</button>' +
-    '</div>';
-    return;
-  }
-
-  el.innerHTML = '<div class="products-grid">' + products.slice(0, 8).map(renderProductCard).join('') + '</div>';
-}
-
-// ===============================
-// SECTION 8: RENDER SHOP PRODUCTS
-// ===============================
-let shopFilter = { category: 'All', search: '', maxPrice: 2000000, condition: 'All' };
-
-function renderShopProducts() {
-  const el = $('shop-products-container');
-  if (!el) return;
-
-  let products = getProducts().filter(p => p.status === 'approved');
-
-  if (shopFilter.category !== 'All') {
-    products = products.filter(p => p.category && p.category.includes(shopFilter.category));
-  }
-  if (shopFilter.condition !== 'All') {
-    products = products.filter(p => p.condition && p.condition.includes(shopFilter.condition));
-  }
-  if (shopFilter.search) {
-    const q = shopFilter.search.toLowerCase();
-    products = products.filter(p =>
-      p.name.toLowerCase().includes(q) ||
-      (p.sellerName && p.sellerName.toLowerCase().includes(q)) ||
-      (p.description && p.description.toLowerCase().includes(q))
-    );
-  }
-  products = products.filter(p => Number(p.price) <= shopFilter.maxPrice);
-
-  const countEl = $('results-count');
-  if (countEl) countEl.textContent = products.length + ' ' + t('results-count');
-
-  if (products.length === 0) {
-    el.innerHTML = '<div class="empty-state">' +
-      '<span class="empty-icon">🔍</span>' +
-      '<div class="empty-title">No products found</div>' +
-      '<div class="empty-desc">Try a different search or be the first to sell in this category!</div>' +
-      '<button class="btn-empty" onclick="switchView(\'add-product\')">Post a Product</button>' +
-    '</div>';
-    return;
-  }
-
-  el.innerHTML = '<div class="products-grid">' + products.map(renderProductCard).join('') + '</div>';
-}
-
-window.filterShopByCategory = function(cat) {
-  shopFilter.category = cat;
+/**
+ * Filter Marketplace catalog views using categories
+ */
+window.filterShopByCategory = function(category) {
+  AppState.activeCategory = category;
+  renderCategories(); // Rerender dynamic visual active indicator states
+  
+  // Apply category filtering rule
+  renderShopProducts();
   switchView('shop');
 };
 
-window.filterCat = function(cat, el) {
-  shopFilter.category = cat;
-  document.querySelectorAll('.shop-filters .filter-option').forEach(o => o.classList.remove('active'));
-  el.classList.add('active');
+/**
+ * Core Component Renderers
+ */
+function renderHomeProducts() {
+  const container = document.getElementById('home-products-container');
+  if (!container) return;
+
+  // Take the top 2 items to show on the main homepage
+  const featured = AppState.products.slice(0, 2);
+  container.innerHTML = generateProductGridHTML(featured);
+}
+
+function renderShopProducts() {
+  const container = document.getElementById('shop-products-container');
+  if (!container) return;
+
+  let filtered = AppState.products;
+  if (AppState.activeCategory !== 'All') {
+    filtered = filtered.filter(p => p.category === AppState.activeCategory);
+  }
+  if (AppState.searchQuery) {
+    filtered = filtered.filter(p => p.name.toLowerCase().includes(AppState.searchQuery));
+  }
+
+  if (filtered.length === 0) {
+    container.innerHTML = `
+      <div class="empty-state">
+        <div class="empty-icon">🔍</div>
+        <div class="empty-title">No items found</div>
+        <div class="empty-desc">We couldn't find matches matching your criteria.</div>
+      </div>`;
+    return;
+  }
+
+  container.innerHTML = `<div class="products-grid">${generateProductGridHTML(filtered)}</div>`;
+}
+
+function generateProductGridHTML(productArray) {
+  return productArray.map(product => `
+    <div class="product-card">
+      <div class="product-img" onclick="viewProductDetails(${product.id})">
+        <img src="${product.img}" alt="${product.name}" onerror="this.parentElement.innerHTML='📦';">
+      </div>
+      <div class="product-info" onclick="viewProductDetails(${product.id})">
+        <div class="product-name">${product.name}</div>
+        <div class="product-price">${product.price.toLocaleString()} TZS</div>
+        <div class="product-seller">Shop: ${product.seller}</div>
+      </div>
+      <div class="product-actions">
+        <button class="btn-cart" onclick="addToCart(${product.id})">🛒 Add</button>
+        <button class="btn-wa-small" onclick="openWhatsAppInquiry(${product.id})">💬</button>
+      </div>
+    </div>
+  `).join('');
+}
+
+function renderBusinesses() {
+  const homeContainer = document.getElementById('home-businesses-container');
+  const allContainer = document.getElementById('all-businesses-container');
+
+  const generateHTML = (bizArray) => bizArray.map(b => `
+    <div class="business-card">
+      <div class="biz-header">
+        <div class="biz-logo">${b.emoji}</div>
+        <div>
+          <div class="biz-name">${b.name}</div>
+          <div class="biz-type">${b.type}</div>
+          ${b.verified ? '<span class="verified-badge">✓ Verified</span>' : ''}
+        </div>
+      </div>
+    </div>
+  `).join('');
+
+  if (homeContainer) homeContainer.innerHTML = generateHTML(AppState.businesses.slice(0, 2));
+  if (allContainer) allContainer.innerHTML = generateHTML(AppState.businesses);
+}
+
+/**
+ * Handle Direct Searches
+ */
+window.doHeroSearch = function() {
+  const input = document.getElementById('hero-search-input');
+  if (!input) return;
+  AppState.searchQuery = input.value.toLowerCase();
+  
+  // Synchronize search boxes for clarity
+  const shopSearch = document.getElementById('shop-search-input');
+  if (shopSearch) shopSearch.value = input.value;
+
   renderShopProducts();
+  switchView('shop');
 };
 
-window.filterCondition = function(cond, el) {
-  shopFilter.condition = cond;
-  const group = el.closest('.filter-group');
-  if (group) group.querySelectorAll('.filter-option').forEach(o => o.classList.remove('active'));
-  el.classList.add('active');
+function doSearchFiltering() {
   renderShopProducts();
-};
+}
 
-// ===============================
-// SECTION 9: OPEN PRODUCT PAGE
-// (Guests can view product pages freely)
-// ===============================
-window.openProduct = function(id) {
-  const products = getProducts();
-  const p = products.find(pr => pr.id === id);
-  if (!p) return;
+/**
+ * Dynamic Product Item Page Inspector View
+ */
+window.viewProductDetails = function(productId) {
+  const product = AppState.products.find(p => p.id === productId);
+  const detailsContainer = document.getElementById('product-details');
+  if (!product || !detailsContainer) return;
 
-  const nameEl   = $('product-page-name');
-  const priceEl  = $('product-page-price');
-  const descEl   = $('product-page-desc');
-  const waLink   = $('product-wa-link');
-  const sellerNm = $('product-seller-name');
-  const addBtn   = $('product-add-cart-btn');
+  detailsContainer.innerHTML = `
+    <div class="product-card" style="cursor: default;">
+      <div class="product-img" style="aspect-ratio: 16/9; font-size: 64px;">
+        <img src="${product.img}" alt="${product.name}" onerror="this.parentElement.innerHTML='📦';">
+      </div>
+      <div class="product-info" style="padding: 16px;">
+        <span class="category-chip active" style="font-size:10px; padding:4px 8px;">${product.category}</span>
+        <h2 style="font-size: 18px; font-weight:700; margin: 8px 0 4px;">${product.name}</h2>
+        <div class="product-price" style="font-size: 20px; margin-bottom: 12px;">${product.price.toLocaleString()} TZS</div>
+        <p style="font-size: 13px; color: var(--text-muted); line-height:1.5; margin-bottom:16px;">${product.desc}</p>
+        
+        <div style="font-size: 11px; color:var(--text-light); margin-bottom:12px;">
+          📍 Location: ${product.location}<br>
+          🏪 Seller: ${product.seller}
+        </div>
 
-  if (nameEl)   nameEl.textContent   = p.name;
-  if (priceEl)  priceEl.textContent  = 'TZS ' + Number(p.price).toLocaleString();
-  if (descEl)   descEl.textContent   = p.description || '';
-  if (sellerNm) sellerNm.textContent = p.sellerName || 'Seller';
-  if (waLink)   waLink.href          = 'https://wa.me/' + formatWA(p.whatsapp) + '?text=' + encodeURIComponent('Hi! I am interested in ' + p.name);
-
-  // Add to cart from product page — requires login
-  if (addBtn) {
-    addBtn.onclick = () => addToCart(p.id);
-  }
-
-  // Main image
-  const mainImg = $('main-product-img');
-  if (mainImg) {
-    if (p.images && p.images[0]) {
-      mainImg.innerHTML = '<img src="' + p.images[0] + '" alt="' + p.name + '" />';
-    } else {
-      mainImg.innerHTML = '<span id="main-img-icon" style="font-size:80px;">📦</span>';
-    }
-  }
-
-  // Thumbs
-  const thumbs = $('product-thumbs');
-  if (thumbs && p.images && p.images.length > 0) {
-    thumbs.innerHTML = p.images.map((img, i) =>
-      '<div class="img-thumb ' + (i === 0 ? 'active' : '') + '" onclick="setMainImg(\'' + img + '\', this)">' +
-        '<img src="' + img + '" alt="" />' +
-      '</div>'
-    ).join('');
-  }
-
+        <div style="display:flex; gap:10px;">
+          <button class="btn-submit" onclick="addToCart(${product.id})" style="flex:1; height:44px;">🛒 Add to Cart</button>
+          <button class="btn-wa-small" onclick="openWhatsAppInquiry(${product.id})" style="width:44px; height:44px; font-size:20px;">💬</button>
+        </div>
+      </div>
+    </div>
+  `;
   switchView('product');
 };
 
-window.setMainImg = function(src, el) {
-  const mainImg = $('main-product-img');
-  if (mainImg) mainImg.innerHTML = '<img src="' + src + '" alt="" />';
-  document.querySelectorAll('.img-thumb').forEach(t => t.classList.remove('active'));
-  el.classList.add('active');
-};
-
-// ===============================
-// SECTION 10: RENDER BUSINESSES
-// (Guests can view businesses freely)
-// ===============================
-function renderBusinessCard(b) {
-  const logoContent = b.logo
-    ? '<img src="' + b.logo + '" alt="' + b.name + '" />'
-    : '🏪';
-  return '<div class="business-card">' +
-    '<div class="biz-header">' +
-      '<div class="biz-logo">' + logoContent + '</div>' +
-      '<div><div class="biz-name">' + b.name + '</div><div class="biz-type">' + (b.category || '') + '</div></div>' +
-    '</div>' +
-    '<span class="verified-badge" data-i18n="verified-badge">✅ Verified</span>' +
-    '<div class="biz-rating">⭐ ' + (b.rating || 'New') + '</div>' +
-  '</div>';
-}
-
-function renderHomeBusinesses() {
-  const el = $('home-businesses-container');
-  if (!el) return;
-
-  const users = getUsers().filter(u => u.role === 'seller' && u.status === 'active');
-
-  if (users.length === 0) {
-    el.innerHTML = '<div class="empty-state">' +
-      '<span class="empty-icon">🏪</span>' +
-      '<div class="empty-title">No businesses yet</div>' +
-      '<div class="empty-desc">Be the first business to join Kaga\'s Market!</div>' +
-      '<button class="btn-empty" onclick="window.location.href=\'login.html\'">Register Business</button>' +
-    '</div>';
-    return;
-  }
-
-  el.innerHTML = '<div class="businesses-grid">' +
-    users.slice(0, 4).map(u => renderBusinessCard({
-      name:     u.businessName || u.name,
-      category: u.businessCat  || '',
-      logo:     u.logo         || '',
-      rating:   '5.0 ★★★★★',
-    })).join('') +
-  '</div>';
-}
-
-function renderAllBusinesses() {
-  const el = $('all-businesses-container');
-  if (!el) return;
-
-  const users = getUsers().filter(u => u.role === 'seller' && u.status === 'active');
-
-  if (users.length === 0) {
-    el.innerHTML = '<div class="empty-state" style="max-width:400px;margin:40px auto;">' +
-      '<span class="empty-icon">🏪</span>' +
-      '<div class="empty-title">No businesses yet</div>' +
-      '<div class="empty-desc">Verified businesses will appear here once they register.</div>' +
-      '<button class="btn-empty" onclick="window.location.href=\'login.html\'">Register as Seller</button>' +
-    '</div>';
-    return;
-  }
-
-  el.innerHTML = '<div class="businesses-grid">' +
-    users.map(u => renderBusinessCard({
-      name:     u.businessName || u.name,
-      category: u.businessCat  || '',
-      logo:     u.logo         || '',
-      rating:   '5.0 ★★★★★',
-    })).join('') +
-  '</div>';
-}
-
-// ===============================
-// SECTION 11: ADD PRODUCT
-// (Only sellers/admins — login required, enforced by switchView)
-// ===============================
-let uploadedImages = [];
-
-function setupAddProductPanel() {
-  const user     = getCurrentUser();
-  const notice   = $('seller-notice');
-  const formCard = $('add-product-form-card');
-
-  if (!user || (user.role !== 'seller' && user.role !== 'admin')) {
-    if (notice)   notice.style.display        = 'flex';
-    if (formCard) formCard.style.opacity       = '0.4';
-    if (formCard) formCard.style.pointerEvents = 'none';
-  } else {
-    if (notice)   notice.style.display        = 'none';
-    if (formCard) formCard.style.opacity       = '1';
-    if (formCard) formCard.style.pointerEvents = 'auto';
-
-    const waInput = $('prod-whatsapp');
-    if (waInput && user.phone && !waInput.value) waInput.value = user.phone;
-
-    const locSelect = $('prod-location');
-    if (locSelect && user.location && !locSelect.value) {
-      for (let i = 0; i < locSelect.options.length; i++) {
-        if (locSelect.options[i].text === user.location) {
-          locSelect.selectedIndex = i;
-          break;
-        }
-      }
-    }
-  }
-}
-
-window.handleImageUpload = function(input) {
-  const files = Array.from(input.files);
-  files.forEach(file => {
-    if (uploadedImages.length >= 4) return;
-    const reader = new FileReader();
-    reader.onload = function(e) {
-      uploadedImages.push(e.target.result);
-      renderImagePreviews();
-    };
-    reader.readAsDataURL(file);
-  });
-};
-
-function renderImagePreviews() {
-  const previews = $('img-previews');
-  if (!previews) return;
-  previews.innerHTML = uploadedImages.map((img, i) =>
-    '<div style="position:relative;display:inline-block;">' +
-      '<img class="img-preview-thumb" src="' + img + '" alt="preview ' + i + '" />' +
-      '<button class="btn-remove-img" onclick="removeUploadedImg(' + i + ')">✕</button>' +
-    '</div>'
-  ).join('');
-}
-
-window.removeUploadedImg = function(index) {
-  uploadedImages.splice(index, 1);
-  renderImagePreviews();
-};
-
-window.updateCharCount = function(el, countId, max) {
-  const counter = $(countId);
-  if (counter) counter.textContent = el.value.length;
-};
-
-window.submitProduct = function() {
-  const user = getCurrentUser();
-  if (!user || (user.role !== 'seller' && user.role !== 'admin')) {
-    requireLogin('Ingia kama muuzaji / Login as a seller to post products');
-    return;
-  }
-
-  const name      = $('prod-name')      ? $('prod-name').value.trim()      : '';
-  const category  = $('prod-category')  ? $('prod-category').value         : '';
-  const condition = $('prod-condition') ? $('prod-condition').value         : '';
-  const price     = $('prod-price')     ? $('prod-price').value             : '';
-  const stock     = $('prod-stock')     ? $('prod-stock').value             : '1';
-  const desc      = $('prod-desc')      ? $('prod-desc').value.trim()       : '';
-  const location  = $('prod-location')  ? $('prod-location').value          : '';
-  const whatsapp  = $('prod-whatsapp')  ? $('prod-whatsapp').value.trim()   : '';
-  const delivery  = $('prod-delivery')  ? $('prod-delivery').value          : '';
-
-  if (!name)      { showToast('⚠️ Please enter a product name'); return; }
-  if (!category)  { showToast('⚠️ Please select a category');    return; }
-  if (!condition) { showToast('⚠️ Please select condition');      return; }
-  if (!price || isNaN(price) || Number(price) <= 0) { showToast('⚠️ Please enter a valid price'); return; }
-  if (!desc)      { showToast('⚠️ Please add a description');     return; }
-  if (!location)  { showToast('⚠️ Please select your location');  return; }
-  if (!whatsapp)  { showToast('⚠️ Please add your WhatsApp number'); return; }
-
-  const products   = getProducts();
-  const newProduct = {
-    id:          Date.now(),
-    name:        name,
-    category:    category,
-    condition:   condition,
-    price:       Number(price),
-    stock:       Number(stock),
-    description: desc,
-    location:    location,
-    whatsapp:    whatsapp,
-    delivery:    delivery,
-    images:      uploadedImages.slice(),
-    sellerId:    user.id,
-    sellerName:  user.businessName || user.name,
-    sellerRole:  user.role,
-    status:      user.role === 'admin' ? 'approved' : 'pending',
-    datePosted:  new Date().toLocaleDateString(),
-    views:       0,
-  };
-
-  products.push(newProduct);
-  saveProducts(products);
-
-  showToast(user.role === 'admin'
-    ? '✅ Product posted and live!'
-    : '✅ Product submitted! It will go live after review.');
-
-  // Reset form
-  uploadedImages = [];
-  renderImagePreviews();
-  ['prod-name', 'prod-price', 'prod-desc', 'prod-whatsapp'].forEach(id => {
-    if ($(id)) $(id).value = '';
-  });
-  ['prod-category', 'prod-condition', 'prod-location', 'prod-delivery'].forEach(id => {
-    if ($(id)) $(id).selectedIndex = 0;
-  });
-  ['name-count', 'desc-count'].forEach(id => {
-    if ($(id)) $(id).textContent = '0';
-  });
-
-  setTimeout(() => switchView(user.role === 'admin' ? 'admin' : 'business-dashboard'), 1500);
-};
-
-// ===============================
-// SECTION 12: CART
-// Guests can ADD to cart (stored in localStorage)
-// But CHECKOUT requires login
-// ===============================
-let cart = JSON.parse(localStorage.getItem('kagaCart') || '[]');
-
-function saveCart() { localStorage.setItem('kagaCart', JSON.stringify(cart)); }
-
+/**
+ * Core Shopping Cart Operations
+ */
 window.addToCart = function(productId) {
-  // Guests CAN add to cart — no login needed here
-  const products = getProducts();
-  const p = products.find(pr => pr.id === productId);
-  if (!p) return;
+  const item = AppState.products.find(p => p.id === productId);
+  if (!item) return;
 
-  const existing = cart.find(c => c.id === productId);
-  if (existing) {
-    existing.qty = (existing.qty || 1) + 1;
+  const existingItem = AppState.cart.find(c => c.id === productId);
+  if (existingItem) {
+    existingItem.quantity += 1;
   } else {
-    cart.push({
-      id:    productId,
-      name:  p.name,
-      price: p.price,
-      qty:   1,
-      image: p.images && p.images[0] ? p.images[0] : '',
-    });
+    AppState.cart.push({ ...item, quantity: 1 });
   }
-  saveCart();
-  updateCartBadge();
-  showToast('✅ "' + p.name + '" ' + t('toast-added-cart'));
+
+  updateCartUI();
 };
 
-// Cart view — requires login (handled in switchView)
-// But if someone somehow gets to cart panel, show login prompt on checkout button
-function renderCart() {
-  const cartList = $('cart-list');
-  const totalBar = $('cart-total-bar');
+window.updateQty = function(productId, delta) {
+  const item = AppState.cart.find(c => c.id === productId);
+  if (!item) return;
+
+  item.quantity += delta;
+  if (item.quantity <= 0) {
+    AppState.cart = AppState.cart.filter(c => c.id !== productId);
+  }
+  updateCartUI();
+};
+
+function updateCartUI() {
+  const countBadge = document.getElementById('cart-count');
+  const cartList = document.getElementById('cart-list');
+  const totalBar = document.getElementById('cart-total-bar');
+
+  const subtotalPrice = AppState.cart.reduce((acc, curr) => acc + (curr.price * curr.quantity), 0);
+  const totalItemsCount = AppState.cart.reduce((acc, curr) => acc + curr.quantity, 0);
+
+  // 1. Update count badge
+  if (countBadge) {
+    countBadge.textContent = totalItemsCount;
+  }
+
+  // 2. Render summary panel structure updates
   if (!cartList) return;
 
-  const user = getCurrentUser();
-
-  if (cart.length === 0) {
-    cartList.innerHTML = '<div class="empty-state" style="margin-top:20px;">' +
-      '<span class="empty-icon">🛒</span>' +
-      '<div class="empty-title">' + t('cart-empty') + '</div>' +
-      '<button class="btn-empty" onclick="switchView(\'shop\')">' + t('cart-browse') + '</button>' +
-    '</div>';
+  if (AppState.cart.length === 0) {
+    cartList.innerHTML = `
+      <div class="empty-state">
+        <div class="empty-icon">🛒</div>
+        <div class="empty-title">Your cart is empty</div>
+        <div class="empty-desc">Explore the marketplace to find products you need.</div>
+        <button class="btn-empty" onclick="switchView('shop')">Start Shopping</button>
+      </div>`;
     if (totalBar) totalBar.style.display = 'none';
-    return;
-  }
-
-  if (totalBar) totalBar.style.display = 'block';
-
-  cartList.innerHTML = cart.map((item, i) => {
-    const imgContent = item.image ? '<img src="' + item.image + '" alt="" />' : '📦';
-    return '<div class="cart-item">' +
-      '<div class="cart-item-img">' + imgContent + '</div>' +
-      '<div class="cart-item-info">' +
-        '<div class="cart-item-name">' + item.name + '</div>' +
-        '<div class="cart-item-price">TZS ' + Number(item.price).toLocaleString() + '</div>' +
-        '<div class="qty-control">' +
-          '<button class="qty-btn" onclick="changeQty(' + i + ', -1)">−</button>' +
-          '<span class="qty-num">' + item.qty + '</span>' +
-          '<button class="qty-btn" onclick="changeQty(' + i + ', 1)">+</button>' +
-        '</div>' +
-      '</div>' +
-      '<button onclick="removeFromCart(' + i + ')" style="background:none;border:none;font-size:18px;cursor:pointer;color:var(--text-light);">🗑️</button>' +
-    '</div>';
-  }).join('');
-
-  const subtotal = cart.reduce((s, i) => s + (i.price * i.qty), 0);
-  const total    = subtotal + 5000;
-  const subEl    = $('cart-subtotal');
-  const totEl    = $('cart-grand-total');
-  if (subEl) subEl.textContent = 'TZS ' + subtotal.toLocaleString();
-  if (totEl) totEl.textContent = 'TZS ' + total.toLocaleString();
-
-  // Checkout button — require login
-  const checkoutBtn = $('cart-checkout-btn');
-  if (checkoutBtn) {
-    if (!user) {
-      checkoutBtn.onclick = () => requireLogin('Ingia kwanza ili ufanye order / Login to place your order');
-      checkoutBtn.textContent = '🔒 Login to Checkout';
-    } else {
-      checkoutBtn.onclick = () => switchView('delivery');
-      checkoutBtn.textContent = t('btn-checkout') || 'Checkout';
-    }
-  }
-}
-
-window.removeFromCart = function(index) {
-  cart.splice(index, 1);
-  saveCart();
-  updateCartBadge();
-  renderCart();
-};
-
-function updateCartBadge() {
-  const badge = $('cart-count');
-  const total = cart.reduce((s, i) => s + i.qty, 0);
-  if (badge) badge.textContent = total;
-}
-
-window.changeQty = function(index, delta) {
-  cart[index].qty = Math.max(1, (cart[index].qty || 1) + delta);
-  saveCart();
-  updateCartBadge();
-  renderCart();
-};
-
-// ===============================
-// SECTION 13: DELIVERY
-// (Login required — enforced by switchView)
-// ===============================
-function setupDelivery() {
-  const form = $('delivery-form');
-  if (!form) return;
-  form.addEventListener('submit', function(e) {
-    e.preventDefault();
-
-    const user = getCurrentUser();
-    if (!user) {
-      requireLogin('Ingia kwanza ili kukamilisha order / Login to complete your order');
-      return;
-    }
-
-    const orders = JSON.parse(localStorage.getItem('kagaOrders') || '[]');
-    const order  = {
-      id:       Date.now(),
-      userId:   user.id,
-      items:    cart.slice(),
-      name:     $('del-name')     ? $('del-name').value     : '',
-      phone:    $('del-phone')    ? $('del-phone').value    : '',
-      address:  $('del-address')  ? $('del-address').value  : '',
-      landmark: $('del-landmark') ? $('del-landmark').value : '',
-      payment:  $('del-payment')  ? $('del-payment').value  : '',
-      status:   'Processing',
-      date:     new Date().toLocaleDateString(),
-      total:    cart.reduce((s, i) => s + (i.price * i.qty), 0) + 5000,
-    };
-    orders.push(order);
-    localStorage.setItem('kagaOrders', JSON.stringify(orders));
-
-    cart = [];
-    saveCart();
-    updateCartBadge();
-    renderCart();
-
-    showToast(t('toast-order-placed'));
-    setTimeout(() => switchView('customer-dashboard'), 1500);
-  });
-}
-
-// ===============================
-// SECTION 14: CUSTOMER DASHBOARD
-// (Login required — enforced by switchView)
-// ===============================
-function loadCustomerOrders() {
-  const el = $('customer-orders-list');
-  if (!el) return;
-
-  const user   = getCurrentUser();
-  const orders = JSON.parse(localStorage.getItem('kagaOrders') || '[]')
-    .filter(o => user && o.userId === user.id);
-
-  if (orders.length === 0) {
-    el.innerHTML = '<div class="empty-state">' +
-      '<span class="empty-icon">📦</span>' +
-      '<div class="empty-title">No orders yet</div>' +
-      '<div class="empty-desc">Your orders will appear here once you make a purchase.</div>' +
-      '<button class="btn-empty" onclick="switchView(\'shop\')">Browse Products</button>' +
-    '</div>';
-    return;
-  }
-
-  el.innerHTML = orders.reverse().map(o =>
-    '<div class="order-card">' +
-      '<div class="order-emoji">📦</div>' +
-      '<div class="order-info">' +
-        '<div class="order-name">' + o.items.map(i => i.name).join(', ') + '</div>' +
-        '<div class="order-meta">Order #' + o.id + ' · ' + o.date + '</div>' +
-      '</div>' +
-      '<span class="order-status status-processing">' + o.status + '</span>' +
-      '<div class="order-price">TZS ' + Number(o.total).toLocaleString() + '</div>' +
-    '</div>'
-  ).join('');
-}
-
-window.showDashTab = function(tab, btn) {
-  document.querySelectorAll('.dash-tab-content, #dash-orders, #dash-saved, #dash-messages')
-    .forEach(t => t.style.display = 'none');
-  document.querySelectorAll('.dash-tab').forEach(b => b.classList.remove('active'));
-  const el = $('dash-' + tab);
-  if (el) el.style.display = 'block';
-  if (btn) btn.classList.add('active');
-};
-
-// ===============================
-// SECTION 15: BUSINESS DASHBOARD
-// (Login required — enforced by switchView)
-// ===============================
-function loadBizDashboard() {
-  const user = getCurrentUser();
-  if (!user) return;
-
-  const allProducts = getProducts().filter(p => p.sellerId === user.id);
-  const approved    = allProducts.filter(p => p.status === 'approved');
-  const orders      = JSON.parse(localStorage.getItem('kagaOrders') || '[]');
-
-  const salesEl    = $('biz-stat-sales');
-  const ordersEl   = $('biz-stat-orders');
-  const productsEl = $('biz-stat-products');
-
-  if (productsEl) productsEl.textContent = approved.length;
-  if (ordersEl)   ordersEl.textContent   = orders.length;
-  if (salesEl)    salesEl.textContent    = 'TZS ' + orders.reduce((s, o) => s + (o.total || 0), 0).toLocaleString();
-
-  const listEl = $('biz-products-list');
-  if (!listEl) return;
-
-  if (allProducts.length === 0) {
-    listEl.innerHTML = '<div class="empty-state">' +
-      '<span class="empty-icon">🏪</span>' +
-      '<div class="empty-title">No products yet</div>' +
-      '<div class="empty-desc">Post your first product and start selling!</div>' +
-      '<button class="btn-empty" onclick="switchView(\'add-product\')">Post a Product</button>' +
-    '</div>';
-    return;
-  }
-
-  listEl.innerHTML = '<table class="biz-products-table"><thead><tr>' +
-    '<th>Product</th><th>Price</th><th>Stock</th><th>Status</th><th>Actions</th>' +
-    '</tr></thead><tbody>' +
-    allProducts.map(p =>
-      '<tr>' +
-        '<td>' + (p.images && p.images[0]
-          ? '<img src="' + p.images[0] + '" style="width:32px;height:32px;object-fit:cover;border-radius:4px;margin-right:8px;vertical-align:middle;" />'
-          : '📦 ') + p.name + '</td>' +
-        '<td>TZS ' + Number(p.price).toLocaleString() + '</td>' +
-        '<td>' + (p.stock || 1) + '</td>' +
-        '<td><span class="order-status ' + (p.status === 'approved' ? 'status-delivered' : 'status-processing') + '">' +
-          (p.status === 'approved' ? 'Active' : 'Pending') + '</span></td>' +
-        '<td><button onclick="deleteMyProduct(' + p.id + ')" style="background:none;border:none;color:var(--accent);font-size:13px;cursor:pointer;">Delete</button></td>' +
-      '</tr>'
-    ).join('') +
-    '</tbody></table>';
-}
-
-window.deleteMyProduct = function(id) {
-  if (!confirm('Delete this product?')) return;
-  saveProducts(getProducts().filter(p => p.id !== id));
-  loadBizDashboard();
-  showToast('🗑️ Product deleted');
-};
-
-// ===============================
-// SECTION 16: ADMIN
-// (Login + admin role required — enforced by switchView)
-// ===============================
-function loadAdminStats() {
-  const users    = getUsers();
-  const products = getProducts();
-  const pending  = products.filter(p => p.status === 'pending');
-  const sellers  = users.filter(u => u.role === 'seller');
-
-  const uEl  = $('admin-stat-users');
-  const bEl  = $('admin-stat-biz');
-  const pEl  = $('admin-stat-products');
-  const peEl = $('admin-stat-pending');
-
-  if (uEl)  uEl.textContent  = users.length;
-  if (bEl)  bEl.textContent  = sellers.length;
-  if (pEl)  pEl.textContent  = products.filter(p => p.status === 'approved').length;
-  if (peEl) peEl.textContent = pending.length;
-}
-
-window.adminShowSection = function(section) {
-  const area = $('admin-content-area');
-  if (!area) return;
-
-  const users    = getUsers();
-  const products = getProducts();
-
-  if (section === 'users') {
-    area.innerHTML = '<div class="dash-section-title" style="margin-top:20px;">👥 All Users</div>' +
-      (users.length === 0
-        ? '<p style="color:var(--text-light);font-size:14px;">No users registered yet.</p>'
-        : users.map(u =>
-            '<div style="padding:12px 14px;border:1px solid var(--border);border-radius:10px;margin-bottom:8px;background:var(--surface);display:flex;align-items:center;gap:12px;">' +
-              '<span style="font-size:22px;">' + (u.role === 'admin' ? '🛡️' : u.role === 'seller' ? '🏪' : '🛍️') + '</span>' +
-              '<div style="flex:1;">' +
-                '<div style="font-weight:600;font-size:13px;">' + u.name + '</div>' +
-                '<div style="font-size:12px;color:var(--text-light);">' + u.email + ' · ' + u.role + ' · Joined ' + (u.joinDate || '—') + '</div>' +
-              '</div>' +
-              '<span style="font-size:11px;background:' + (u.status === 'pending' ? 'var(--gold-light)' : 'var(--brand-light)') + ';color:' + (u.status === 'pending' ? 'var(--gold)' : 'var(--brand-dark)') + ';padding:3px 10px;border-radius:999px;font-weight:600;">' + (u.status || 'active') + '</span>' +
-              (u.status === 'pending' ? '<button onclick="adminApproveUser(' + u.id + ')" style="background:var(--brand);color:#fff;border:none;border-radius:6px;padding:5px 12px;font-size:12px;cursor:pointer;">Approve</button>' : '') +
-            '</div>'
-          ).join(''));
-  }
-
-  else if (section === 'pending-products') {
-    const pending = products.filter(p => p.status === 'pending');
-    area.innerHTML = '<div class="dash-section-title" style="margin-top:20px;">⏳ Pending Products (' + pending.length + ')</div>' +
-      (pending.length === 0
-        ? '<p style="color:var(--text-light);font-size:14px;">No pending products. 🎉</p>'
-        : pending.map(p =>
-            '<div style="padding:14px;border:1px solid var(--border);border-radius:10px;margin-bottom:10px;background:var(--surface);display:flex;align-items:center;gap:14px;">' +
-              (p.images && p.images[0] ? '<img src="' + p.images[0] + '" style="width:56px;height:56px;object-fit:cover;border-radius:8px;flex-shrink:0;" />' : '<span style="font-size:36px;">📦</span>') +
-              '<div style="flex:1;">' +
-                '<div style="font-weight:600;font-size:14px;">' + p.name + '</div>' +
-                '<div style="font-size:12px;color:var(--text-light);">By ' + p.sellerName + ' · TZS ' + Number(p.price).toLocaleString() + ' · ' + p.location + '</div>' +
-                '<div style="font-size:12px;color:var(--text-muted);margin-top:4px;">' + (p.description || '').slice(0, 80) + '...</div>' +
-              '</div>' +
-              '<div style="display:flex;flex-direction:column;gap:6px;">' +
-                '<button onclick="adminApproveProduct(' + p.id + ')" style="background:var(--brand);color:#fff;border:none;border-radius:6px;padding:7px 14px;font-size:12px;cursor:pointer;font-weight:600;">✅ Approve</button>' +
-                '<button onclick="adminRejectProduct(' + p.id + ')" style="background:var(--accent-light);color:var(--accent);border:1px solid var(--accent);border-radius:6px;padding:7px 14px;font-size:12px;cursor:pointer;font-weight:600;">❌ Reject</button>' +
-              '</div>' +
-            '</div>'
-          ).join(''));
-  }
-
-  else if (section === 'all-products') {
-    const approved = products.filter(p => p.status === 'approved');
-    area.innerHTML = '<div class="dash-section-title" style="margin-top:20px;">📦 All Live Products (' + approved.length + ')</div>' +
-      (approved.length === 0
-        ? '<p style="color:var(--text-light);font-size:14px;">No approved products yet.</p>'
-        : approved.map(p =>
-            '<div style="padding:12px 14px;border:1px solid var(--border);border-radius:10px;margin-bottom:8px;background:var(--surface);display:flex;align-items:center;gap:12px;">' +
-              (p.images && p.images[0] ? '<img src="' + p.images[0] + '" style="width:44px;height:44px;object-fit:cover;border-radius:6px;" />' : '<span style="font-size:28px;">📦</span>') +
-              '<div style="flex:1;"><div style="font-weight:600;font-size:13px;">' + p.name + '</div><div style="font-size:12px;color:var(--text-light);">' + p.sellerName + ' · TZS ' + Number(p.price).toLocaleString() + '</div></div>' +
-              '<button onclick="adminRejectProduct(' + p.id + ')" style="background:none;border:none;color:var(--accent);font-size:13px;cursor:pointer;">Remove</button>' +
-            '</div>'
-          ).join(''));
-  }
-
-  else if (section === 'businesses') {
-    const sellers = users.filter(u => u.role === 'seller');
-    area.innerHTML = '<div class="dash-section-title" style="margin-top:20px;">🏪 Registered Sellers (' + sellers.length + ')</div>' +
-      (sellers.length === 0
-        ? '<p style="color:var(--text-light);font-size:14px;">No sellers registered yet.</p>'
-        : sellers.map(u =>
-            '<div style="padding:12px 14px;border:1px solid var(--border);border-radius:10px;margin-bottom:8px;background:var(--surface);display:flex;align-items:center;gap:12px;">' +
-              '<span style="font-size:24px;">🏪</span>' +
-              '<div style="flex:1;"><div style="font-weight:600;font-size:13px;">' + (u.businessName || u.name) + '</div><div style="font-size:12px;color:var(--text-light);">' + u.email + ' · ' + (u.businessCat || '') + '</div></div>' +
-              '<span style="font-size:11px;background:' + (u.status === 'pending' ? 'var(--gold-light)' : 'var(--brand-light)') + ';color:' + (u.status === 'pending' ? 'var(--gold)' : 'var(--brand-dark)') + ';padding:3px 10px;border-radius:999px;">' + (u.status || 'active') + '</span>' +
-              (u.status === 'pending' ? '<button onclick="adminApproveUser(' + u.id + ')" style="background:var(--brand);color:#fff;border:none;border-radius:6px;padding:5px 12px;font-size:12px;cursor:pointer;">Approve</button>' : '') +
-            '</div>'
-          ).join(''));
-  }
-
-  area.scrollIntoView({ behavior: 'smooth', block: 'start' });
-};
-
-window.adminApproveProduct = function(id) {
-  const products = getProducts();
-  const idx = products.findIndex(p => p.id === id);
-  if (idx !== -1) {
-    products[idx].status = 'approved';
-    saveProducts(products);
-    showToast('✅ Product approved and live!');
-    loadAdminStats();
-    adminShowSection('pending-products');
-    renderHomeProducts();
-  }
-};
-
-window.adminRejectProduct = function(id) {
-  if (!confirm('Remove this product?')) return;
-  saveProducts(getProducts().filter(p => p.id !== id));
-  showToast('🗑️ Product removed');
-  loadAdminStats();
-  adminShowSection('pending-products');
-};
-
-window.adminApproveUser = function(id) {
-  const users = getUsers();
-  const idx   = users.findIndex(u => u.id === id);
-  if (idx !== -1) {
-    users[idx].status = 'active';
-    saveUsers(users);
-    showToast('✅ User approved!');
-    loadAdminStats();
-    adminShowSection('users');
-  }
-};
-
-// ===============================
-// SECTION 17: AUTH SYSTEM
-// Updates header UI based on login state
-// ===============================
-function checkAuth() {
-  const user      = getCurrentUser();
-  const nameEl    = $('account-name');
-  const roleEl    = $('account-role');
-  const loginBtn  = $('header-login-btn');
-  const adminItem = $('admin-menu-item');
-  const bizItem   = $('biz-menu-item');
-
-  if (user) {
-    // Logged in — show user info
-    if (nameEl)    nameEl.textContent = user.name;
-    if (roleEl)    roleEl.textContent = user.role === 'admin'
-      ? '🛡️ Administrator'
-      : user.role === 'seller' ? '🏪 Seller' : '🛍️ Buyer';
-    if (loginBtn)  loginBtn.innerHTML = '👤 ' + user.name.split(' ')[0];
-    if (adminItem) adminItem.style.display = user.role === 'admin' ? 'flex' : 'none';
-    if (bizItem)   bizItem.style.display   = (user.role === 'seller' || user.role === 'admin') ? 'flex' : 'none';
   } else {
-    // Guest — show login prompt
-    if (nameEl)    nameEl.textContent = t('account-guest') || 'Guest';
-    if (roleEl)    roleEl.textContent = t('account-not-logged') || 'Not logged in';
-    if (loginBtn)  loginBtn.innerHTML = '🔒 Login';
-    if (adminItem) adminItem.style.display = 'none';
-    if (bizItem)   bizItem.style.display   = 'none';
-  }
+    cartList.innerHTML = AppState.cart.map(item => `
+      <div class="cart-item">
+        <div class="cart-item-img">📦</div>
+        <div class="cart-item-info">
+          <div class="cart-item-name">${item.name}</div>
+          <div class="cart-item-price">${(item.price * item.quantity).toLocaleString()} TZS</div>
+          <div class="qty-control">
+            <button class="qty-btn" onclick="updateQty(${item.id}, -1)">-</button>
+            <span class="qty-num">${item.quantity}</span>
+            <button class="qty-btn" onclick="updateQty(${item.id}, 1)">+</button>
+          </div>
+        </div>
+      </div>
+    `).join('');
 
-  // Header login/account button
-  if (loginBtn) {
-    loginBtn.onclick = () => user
-      ? switchView('account')
-      : window.location.href = 'login.html';
-  }
+    // Update monetary total components values
+    const deliveryCost = 5000;
+    const grandTotal = subtotalPrice + deliveryCost;
 
-  // Logout
-  const logoutItem = $('logout-menu-item');
-  if (logoutItem) {
-    logoutItem.style.display = user ? 'flex' : 'none';
-    logoutItem.onclick = () => {
-      localStorage.removeItem('kagaCurrentUser');
-      showToast(t('toast-logged-out') || 'Logged out successfully');
-      setTimeout(() => window.location.href = 'login.html', 900);
-    };
+    document.getElementById('cart-subtotal').textContent = `TZS ${subtotalPrice.toLocaleString()}`;
+    document.getElementById('cart-grand-total').textContent = `TZS ${grandTotal.toLocaleString()}`;
+    if (totalBar) totalBar.style.display = 'block';
   }
 }
 
-// ===============================
-// SECTION 18: MESSENGER
-// (Login required — enforced by switchView)
-// ===============================
-function setupMessenger() {
-  const input   = $('chat-input');
-  const sendBtn = $('send-btn');
-  const msgs    = $('chat-messages');
-  if (!input || !msgs) return;
-
-  function sendMsg() {
-    const text = input.value.trim();
-    if (!text) return;
-    const bubble = document.createElement('div');
-    bubble.className = 'msg-bubble msg-out';
-    bubble.textContent = text;
-    msgs.appendChild(bubble);
-    msgs.scrollTop = msgs.scrollHeight;
-    input.value = '';
-    setTimeout(() => {
-      const reply = document.createElement('div');
-      reply.className = 'msg-bubble msg-in';
-      reply.textContent = 'Asante! Tutawasiliana nawe hivi karibuni.';
-      msgs.appendChild(reply);
-      msgs.scrollTop = msgs.scrollHeight;
-    }, 1000);
+/**
+ * Handle Order Post Operations & Checkout Form Submissions
+ */
+function handleCheckoutSubmit(e) {
+  e.preventDefault();
+  if (AppState.cart.length === 0) {
+    alert('Your cart is empty!');
+    return;
   }
 
-  input.addEventListener('keydown', e => { if (e.key === 'Enter') sendMsg(); });
-  if (sendBtn) sendBtn.addEventListener('click', sendMsg);
+  const clientName = document.getElementById('del-name').value;
+  const paymentMethod = document.getElementById('del-payment').value;
+
+  alert(`Asante sana ${clientName}! Your order has been registered via ${paymentMethod}.`);
+  
+  // Flush local cart memory values data and redirect home
+  AppState.cart = [];
+  updateCartUI();
+  document.getElementById('delivery-form').reset();
+  switchView('home');
 }
 
-// ===============================
-// SECTION 19: SEARCH
-// ===============================
-function setupSearch() {
-  const global = $('global-search-input');
-  const shop   = $('shop-search-input');
-  const hero   = $('hero-search-input');
+/**
+ * Direct WhatsApp Link Routing Generator
+ */
+window.openWhatsAppInquiry = function(productId) {
+  const product = AppState.products.find(p => p.id === productId);
+  if (!product) return;
 
-  if (global) {
-    global.addEventListener('keydown', e => {
-      if (e.key === 'Enter' && global.value.trim()) {
-        shopFilter.search = global.value.trim();
-        switchView('shop');
-      }
-    });
-  }
-  if (shop) {
-    shop.addEventListener('input', () => {
-      shopFilter.search = shop.value.trim();
-      renderShopProducts();
-    });
-  }
-  if (hero) {
-    hero.addEventListener('keydown', e => {
-      if (e.key === 'Enter') doHeroSearch();
-    });
-  }
-}
-
-window.doHeroSearch = function() {
-  const heroInput = $('hero-search-input');
-  if (heroInput && heroInput.value.trim()) {
-    shopFilter.search = heroInput.value.trim();
-    switchView('shop');
-  }
+  // Clean phone spacing configurations safely
+  const formattedPhone = product.whatsapp.replace(/\s+/g, '');
+  const message = encodeURIComponent(`Habari, ninahitaji bidhaa hii: ${product.name} yenye thamani ya TZS ${product.price.toLocaleString()} kutoka Kaga's Market.`);
+  
+  window.open(`https://wa.me/${formattedPhone}?text=${message}`, '_blank');
 };
 
-function setupPriceSlider() {
-  const slider = $('price-slider');
-  const label  = $('price-val');
-  if (!slider) return;
-  slider.addEventListener('input', () => {
-    shopFilter.maxPrice = Number(slider.value);
-    if (label) label.textContent = Number(slider.value).toLocaleString();
-    renderShopProducts();
-  });
-}
+/**
+ * Vendor User Operations: Add custom product properties
+ */
+window.submitProduct = function() {
+  const name = document.getElementById('prod-name').value.trim();
+  const category = document.getElementById('prod-category').value;
+  const price = parseFloat(document.getElementById('prod-price').value);
+  const desc = document.getElementById('prod-desc').value.trim();
+  const whatsapp = document.getElementById('prod-whatsapp').value.trim();
+  const location = document.getElementById('prod-location').value;
 
-function setupSort() {
-  const select = $('sort-select');
-  if (!select) return;
-  select.addEventListener('change', () => renderShopProducts());
-}
+  if (!name || !price || !whatsapp) {
+    alert('Tafadhali jaza Jina, Bei, na Namba ya WhatsApp!');
+    return;
+  }
 
-// ===============================
-// SECTION 20: TOAST
-// ===============================
-function showToast(msg) {
-  const existing = document.querySelector('.toast-msg');
-  if (existing) existing.remove();
-  const toast = document.createElement('div');
-  toast.className = 'toast-msg';
-  toast.textContent = msg;
-  toast.style.cssText =
-    'position:fixed;bottom:80px;left:50%;transform:translateX(-50%);' +
-    'background:var(--brand-dark);color:#fff;padding:12px 20px;border-radius:999px;' +
-    'font-size:13px;font-weight:500;z-index:9999;white-space:nowrap;' +
-    'box-shadow:0 4px 20px rgba(0,0,0,0.2);';
-  document.body.appendChild(toast);
-  setTimeout(() => {
-    toast.style.opacity    = '0';
-    toast.style.transition = 'opacity 0.3s';
-    setTimeout(() => toast.remove(), 300);
-  }, 2500);
-}
+  const newProduct = {
+    id: AppState.products.length + 1,
+    name: name,
+    category: category,
+    price: price,
+    rating: 5.0,
+    seller: 'My Shop',
+    desc: desc || 'No description provided.',
+    img: 'placeholder',
+    whatsapp: whatsapp,
+    location: location
+  };
 
-// ===============================
-// SECTION 21: BOOT
-// ===============================
-document.addEventListener('DOMContentLoaded', function() {
-
-  // No forced redirect — guests are welcome to browse
-  checkAuth();
-  renderCategories();
+  AppState.products.unshift(newProduct); // Add straight to top of stack lists
+  
+  // Refresh rendering state pipelines
   renderHomeProducts();
-  renderHomeBusinesses();
-  setupSearch();
-  setupPriceSlider();
-  setupSort();
-  setupMessenger();
-  setupDelivery();
-  updateCartBadge();
-  renderCart();
-  switchView('home');
-
-  console.log("✅ Kaga's Market loaded — Option B auth active");
-  console.log("   Guests: can browse home, shop, products, businesses");
-  console.log("   Login required: cart checkout, add product, dashboards, messenger, delivery");
-});
-export { app };
+  renderShopProducts();
+  
+  alert('Bidhaa yako imepokelewa! Itahakikiwa ndani ya saa 24.');
+  
+  // Reset form strings
+  document.getElementById('prod-name').value = '';
+  document.getElementById('prod-price').value = '';
+  document.getElementById('prod-desc').value = '';
+  document.getElementById('prod-whatsapp').value = '';
+  
+  switchView('shop');
+};
