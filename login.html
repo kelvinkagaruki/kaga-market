@@ -325,7 +325,7 @@
         </div>
       </div>
     </div>
-    <div class="left-footer">© 2025 Kaga's Market · Built for Tanzania 🇹🇿</div>
+    <div class="left-footer">© 2026 Kaga's Market · Built for Tanzania 🇹🇿</div>
   </div>
 
   <!-- RIGHT PANEL -->
@@ -333,8 +333,8 @@
     <div class="form-container">
 
       <div class="auth-tabs">
-        <button class="auth-tab active" id="tab-login"    onclick="showTab('login')">Sign In</button>
-        <button class="auth-tab"        id="tab-register" onclick="showTab('register')">Create Account</button>
+        <button class="auth-tab active" id="tab-login" onclick="showTab('login')">Sign In</button>
+        <button class="auth-tab" id="tab-register" onclick="showTab('register')">Create Account</button>
       </div>
 
       <!-- LOGIN FORM -->
@@ -535,50 +535,39 @@
       city:      'Arusha',
     };
 
-    // ============================================================
-    // KEY — must match app.js exactly
-    // ============================================================
     var SESSION_KEY = 'kagaCurrentUser';
 
-    // ============================================================
-    // AUTO-REDIRECT: if already logged in, go straight to app
-    // ============================================================
+    // AUTO-REDIRECT
     (function checkIfLoggedIn() {
       var user = JSON.parse(localStorage.getItem(SESSION_KEY) || 'null');
       if (user) window.location.href = 'index.html';
     })();
 
-    // ============================================================
     // TAB SWITCHER
-    // ============================================================
     function showTab(tab) {
       document.querySelectorAll('.form-panel').forEach(function(p) { p.classList.remove('active'); });
       document.querySelectorAll('.auth-tab').forEach(function(t) { t.classList.remove('active'); });
       document.getElementById('panel-' + tab).classList.add('active');
-      document.getElementById('tab-'   + tab).classList.add('active');
+      document.getElementById('tab-'    + tab).classList.add('active');
       clearErrors();
     }
 
-    // ============================================================
     // PASSWORD TOGGLE
-    // ============================================================
     function togglePwd(inputId, btn) {
       var input = document.getElementById(inputId);
       if (input.type === 'password') { input.type = 'text';     btn.textContent = '🙈'; }
       else                           { input.type = 'password'; btn.textContent = '👁️'; }
     }
 
-    // ============================================================
     // PASSWORD STRENGTH
-    // ============================================================
     function checkStrength(val) {
       var fill  = document.getElementById('strength-fill');
       var label = document.getElementById('strength-label');
       var score = 0;
-      if (val.length >= 6)          score++;
-      if (val.length >= 10)         score++;
-      if (/[A-Z]/.test(val))        score++;
-      if (/[0-9]/.test(val))        score++;
+      if (val.length >= 6)           score++;
+      if (val.length >= 10)          score++;
+      if (/[A-Z]/.test(val))         score++;
+      if (/[0-9]/.test(val))         score++;
       if (/[^A-Za-z0-9]/.test(val)) score++;
       var levels = [
         { w: '0%',   c: '#ccc',    t: 'Enter a password' },
@@ -595,25 +584,17 @@
       label.style.color     = lv.c === '#ccc' ? 'var(--text-light)' : lv.c;
     }
 
-    // ============================================================
     // ERROR HELPERS
-    // ============================================================
     function showErr(id, msg) {
       var el = document.getElementById(id);
       if (el) { if (msg) el.textContent = msg; el.classList.add('show'); }
-    }
-    function clearErr(id) {
-      var el = document.getElementById(id);
-      if (el) el.classList.remove('show');
     }
     function clearErrors() {
       document.querySelectorAll('.field-err').forEach(function(e) { e.classList.remove('show'); });
       document.querySelectorAll('input').forEach(function(i) { i.classList.remove('error'); });
     }
 
-    // ============================================================
     // TOAST
-    // ============================================================
     function toast(msg, type) {
       var t = document.createElement('div');
       t.className   = 'toast ' + (type || 'success');
@@ -625,10 +606,17 @@
       }, 3000);
     }
 
-    // ============================================================
+    // FORGOT MODAL TOGGLES
+    function showForgot() { document.getElementById('forgot-overlay').classList.add('show'); }
+    document.window; function hideForgot() { document.getElementById('forgot-overlay').classList.remove('show'); }
+    function sendReset() {
+      var em = document.getElementById('forgot-email').value.trim();
+      if(!em) return alert('Please input an email address.');
+      toast('✉️ Reset instructions sent to your email if registered.', 'info');
+      hideForgot();
+    }
+
     // LOGIN HANDLER
-    // Saves session to 'kagaCurrentUser' — matches app.js
-    // ============================================================
     function handleLogin(e) {
       e.preventDefault();
       clearErrors();
@@ -649,7 +637,6 @@
         btn.textContent = 'Sign In →';
         btn.classList.remove('loading');
 
-        // --- Admin check ---
         if (email === ADMIN.email && password === ADMIN.password) {
           localStorage.setItem(SESSION_KEY, JSON.stringify({
             id:        ADMIN.id,
@@ -664,7 +651,6 @@
           return;
         }
 
-        // --- Registered users check ---
         var users = JSON.parse(localStorage.getItem('kagaUsers') || '[]');
         var user  = users.find(function(u) {
           return u.email.toLowerCase() === email.toLowerCase() && u.password === password;
@@ -675,11 +661,9 @@
           return;
         }
 
-        // Update last login
         user.lastLogin = new Date().toISOString();
         localStorage.setItem('kagaUsers', JSON.stringify(users));
 
-        // Save session — key matches app.js (kagaCurrentUser)
         localStorage.setItem(SESSION_KEY, JSON.stringify({
           id:        user.id,
           firstName: user.firstName,
@@ -692,14 +676,10 @@
 
         toast('✅ Welcome back, ' + user.firstName + '!', 'success');
         setTimeout(function() { window.location.href = 'index.html'; }, 1200);
-
       }, 800);
     }
 
-    // ============================================================
     // REGISTER HANDLER
-    // Saves session to 'kagaCurrentUser' — matches app.js
-    // ============================================================
     function handleRegister(e) {
       e.preventDefault();
       clearErrors();
@@ -714,14 +694,14 @@
       var terms     = document.getElementById('terms-check').checked;
 
       var selectedType = document.querySelector('input[name="actype"]:checked').value;
-      var role = (selectedType === 'seller') ? 'seller' : 'buyer'; // never admin
+      var role = (selectedType === 'seller') ? 'seller' : 'buyer';
 
       var valid = true;
-      if (!firstName)                              { showErr('err-reg-firstname', 'First name is required');           valid = false; }
-      if (!lastName)                               { showErr('err-reg-lastname',  'Last name is required');            valid = false; }
+      if (!firstName)                             { showErr('err-reg-firstname', 'First name is required');           valid = false; }
+      if (!lastName)                              { showErr('err-reg-lastname',  'Last name is required');            valid = false; }
       if (!email || !/\S+@\S+\.\S+/.test(email))  { showErr('err-reg-email',     'Enter a valid email address');      valid = false; }
       if (!phone || phone.replace(/\s/g,'').length < 9) { showErr('err-reg-phone', 'Enter a valid phone number');     valid = false; }
-      if (!city)                                   { showErr('err-reg-city',      'Please select your city');          valid = false; }
+      if (!city)                                  { showErr('err-reg-city',      'Please select your city');          valid = false; }
       if (!password || password.length < 6)        { showErr('err-reg-password',  'Password must be at least 6 chars'); valid = false; }
       if (password !== confirm)                    { showErr('err-reg-confirm',   'Passwords do not match');           valid = false; }
       if (!terms)                                  { toast('⚠️ Please agree to the Terms of Service', 'info'); valid = false; }
@@ -765,7 +745,6 @@
         users.push(newUser);
         localStorage.setItem('kagaUsers', JSON.stringify(users));
 
-        // Save session — key matches app.js (kagaCurrentUser)
         localStorage.setItem(SESSION_KEY, JSON.stringify({
           id:        newUser.id,
           firstName: newUser.firstName,
@@ -776,32 +755,10 @@
           role:      newUser.role,
         }));
 
-        toast('🎉 Welcome to Kaga\'s Market, ' + firstName + '!', 'success');
-        setTimeout(function() { window.location.href = 'index.html'; }, 1500);
-
-      }, 900);
+        toast('✨ Account created successfully!', 'success');
+        setTimeout(function() { window.location.href = 'index.html'; }, 1200);
+      }, 800);
     }
-
-    // ============================================================
-    // FORGOT PASSWORD
-    // ============================================================
-    function showForgot() { document.getElementById('forgot-overlay').classList.add('show'); }
-    function hideForgot() { document.getElementById('forgot-overlay').classList.remove('show'); }
-    function sendReset() {
-      var email = document.getElementById('forgot-email').value.trim();
-      if (!email || !/\S+@\S+\.\S+/.test(email)) {
-        toast('⚠️ Please enter a valid email address', 'info');
-        return;
-      }
-      hideForgot();
-      toast('📧 If that email is registered, a reset link has been sent.', 'success');
-    }
-
-    document.getElementById('forgot-overlay').addEventListener('click', function(e) {
-      if (e.target === this) hideForgot();
-    });
-
   </script>
 </body>
 </html>
-export { app };
