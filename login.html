@@ -533,14 +533,17 @@
       password:  'mgisha05@K',
       role:      'admin',
       city:      'Arusha',
+      phone:     '+255 756 000 001',
     };
 
     var SESSION_KEY = 'kagaCurrentUser';
 
-    // AUTO-REDIRECT
+    // AUTO-REDIRECT (If already logged in, go straight to index.html)
     (function checkIfLoggedIn() {
       var user = JSON.parse(localStorage.getItem(SESSION_KEY) || 'null');
-      if (user) window.location.href = 'index.html';
+      if (user && user.loginStatus === true) {
+        window.location.href = 'index.html';
+      }
     })();
 
     // TAB SWITCHER
@@ -608,7 +611,7 @@
 
     // FORGOT MODAL TOGGLES
     function showForgot() { document.getElementById('forgot-overlay').classList.add('show'); }
-    document.window; function hideForgot() { document.getElementById('forgot-overlay').classList.remove('show'); }
+    function hideForgot() { document.getElementById('forgot-overlay').classList.remove('show'); }
     function sendReset() {
       var em = document.getElementById('forgot-email').value.trim();
       if(!em) return alert('Please input an email address.');
@@ -616,7 +619,7 @@
       hideForgot();
     }
 
-    // LOGIN HANDLER
+    // ===== LOGIN HANDLER (Updated for index.html compatibility) =====
     function handleLogin(e) {
       e.preventDefault();
       clearErrors();
@@ -637,20 +640,29 @@
         btn.textContent = 'Sign In →';
         btn.classList.remove('loading');
 
+        // Admin login
         if (email === ADMIN.email && password === ADMIN.password) {
+          var loginTime = new Date().toISOString();
           localStorage.setItem(SESSION_KEY, JSON.stringify({
-            id:        ADMIN.id,
-            firstName: ADMIN.firstName,
-            name:      ADMIN.name,
-            email:     ADMIN.email,
-            role:      'admin',
-            city:      ADMIN.city,
+            id:             ADMIN.id,
+            firstName:      ADMIN.firstName,
+            lastName:       ADMIN.lastName,
+            name:           ADMIN.name,
+            email:          ADMIN.email,
+            phone:          ADMIN.phone,
+            city:           ADMIN.city,
+            role:           'admin',
+            profilePhoto:   null,
+            isSeller:       true,
+            loginStatus:    true,
+            loginTime:      loginTime,
           }));
           toast('✅ Welcome back, Admin!', 'success');
           setTimeout(function() { window.location.href = 'index.html'; }, 1200);
           return;
         }
 
+        // Regular user login
         var users = JSON.parse(localStorage.getItem('kagaUsers') || '[]');
         var user  = users.find(function(u) {
           return u.email.toLowerCase() === email.toLowerCase() && u.password === password;
@@ -661,17 +673,24 @@
           return;
         }
 
-        user.lastLogin = new Date().toISOString();
+        var loginTime = new Date().toISOString();
+        user.lastLogin = loginTime;
         localStorage.setItem('kagaUsers', JSON.stringify(users));
 
+        // Save complete user data for index.html My Market dropdown
         localStorage.setItem(SESSION_KEY, JSON.stringify({
-          id:        user.id,
-          firstName: user.firstName,
-          name:      user.name,
-          email:     user.email,
-          phone:     user.phone,
-          city:      user.city,
-          role:      user.role,
+          id:             user.id,
+          firstName:      user.firstName,
+          lastName:       user.lastName || '',
+          name:           user.name,
+          email:          user.email,
+          phone:          user.phone || '',
+          city:           user.city || '',
+          role:           user.role || 'buyer',
+          profilePhoto:   user.profilePhoto || null,
+          isSeller:       (user.role === 'seller'),
+          loginStatus:    true,
+          loginTime:      loginTime,
         }));
 
         toast('✅ Welcome back, ' + user.firstName + '!', 'success');
@@ -679,7 +698,7 @@
       }, 800);
     }
 
-    // REGISTER HANDLER
+    // ===== REGISTER HANDLER (Updated for auto-login) =====
     function handleRegister(e) {
       e.preventDefault();
       clearErrors();
@@ -726,6 +745,7 @@
         btn.textContent = 'Create Account →';
         btn.classList.remove('loading');
 
+        var loginTime = new Date().toISOString();
         var newUser = {
           id:           Date.now(),
           firstName:    firstName,
@@ -739,20 +759,27 @@
           status:       'active',
           joinDate:     new Date().toLocaleDateString(),
           registeredAt: new Date().toISOString(),
-          lastLogin:    null,
+          lastLogin:    loginTime,
+          profilePhoto: null,
         };
 
         users.push(newUser);
         localStorage.setItem('kagaUsers', JSON.stringify(users));
 
+        // Auto-login: Save complete user data for index.html
         localStorage.setItem(SESSION_KEY, JSON.stringify({
-          id:        newUser.id,
-          firstName: newUser.firstName,
-          name:      newUser.name,
-          email:     newUser.email,
-          phone:     newUser.phone,
-          city:      newUser.city,
-          role:      newUser.role,
+          id:             newUser.id,
+          firstName:      newUser.firstName,
+          lastName:       newUser.lastName,
+          name:           newUser.name,
+          email:          newUser.email,
+          phone:          newUser.phone,
+          city:           newUser.city,
+          role:           newUser.role,
+          profilePhoto:   null,
+          isSeller:       (newUser.role === 'seller'),
+          loginStatus:    true,
+          loginTime:      loginTime,
         }));
 
         toast('✨ Account created successfully!', 'success');
