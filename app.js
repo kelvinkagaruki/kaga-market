@@ -6,10 +6,10 @@ const AppState = {
   language: 'en',
   cart: [],
   products: [
-    { id: 1, name: 'Samsung Galaxy A15', category: 'Electronics', price: 450000, rating: 4.7, seller: 'Kaga Tech', desc: '128GB Storage, 4GB RAM, Brand New.', img: 'https://images.unsplash.com/photo-1610945265064-0e34e5519bbf?w=400', whatsapp: '0754000000', location: 'Dar es Salaam' },
-    { id: 2, name: 'Smart Watch Ultra', category: 'Electronics', price: 120000, rating: 4.5, seller: 'Kaga Tech', desc: 'Waterproof sports smartwatch with heart rate monitoring.', img: 'https://images.unsplash.com/photo-1523275335684-37898b6baf30?w=400', whatsapp: '0754000000', location: 'Arusha' },
-    { id: 3, name: 'Classic Leather Sneakers', category: 'Fashion', price: 65000, rating: 4.4, seller: 'Mwanza Trendy Walks', desc: 'Durable white street fashion wear sneakers.', img: 'https://images.unsplash.com/photo-1549298916-b41d501d3772?w=400', whatsapp: '0713000000', location: 'Mwanza' },
-    { id: 4, name: 'Premium Coffee Beans Bag', category: 'Groceries', price: 25000, rating: 4.9, seller: 'Kilimanjaro Harvest', desc: 'Organic roasted medium blend robusta coffee.', img: 'https://images.unsplash.com/photo-1559056199-641a0ac8b55e?w=400', whatsapp: '0784000000', location: 'Dodoma' }
+    { id: 1, name: 'Samsung Galaxy A15', category: 'Electronics', price: 450000, rating: 4.7, seller: 'Kaga Tech', sellerId: 'seller-001', desc: '128GB Storage, 4GB RAM, Brand New.', img: 'https://images.unsplash.com/photo-1610945265064-0e34e5519bbf?w=400', whatsapp: '0754000000', location: 'Dar es Salaam' },
+    { id: 2, name: 'Smart Watch Ultra', category: 'Electronics', price: 120000, rating: 4.5, seller: 'Kaga Tech', sellerId: 'seller-001', desc: 'Waterproof sports smartwatch with heart rate monitoring.', img: 'https://images.unsplash.com/photo-1523275335684-37898b6baf30?w=400', whatsapp: '0754000000', location: 'Arusha' },
+    { id: 3, name: 'Classic Leather Sneakers', category: 'Fashion', price: 65000, rating: 4.4, seller: 'Mwanza Trendy Walks', sellerId: 'seller-002', desc: 'Durable white street fashion wear sneakers.', img: 'https://images.unsplash.com/photo-1549298916-b41d501d3772?w=400', whatsapp: '0713000000', location: 'Mwanza' },
+    { id: 4, name: 'Premium Coffee Beans Bag', category: 'Groceries', price: 25000, rating: 4.9, seller: 'Kilimanjaro Harvest', sellerId: 'seller-003', desc: 'Organic roasted medium blend robusta coffee.', img: 'https://images.unsplash.com/photo-1559056199-641a0ac8b55e?w=400', whatsapp: '0784000000', location: 'Dodoma' }
   ],
   businesses: [
     { id: 1, name: 'Kaga Tech', type: 'Electronics & Gadgets', emoji: '📱', verified: true },
@@ -17,13 +17,250 @@ const AppState = {
     { id: 3, name: 'Kilimanjaro Harvest', type: 'Groceries & Organics', emoji: '☕', verified: false }
   ],
   activeCategory: 'All',
-  searchQuery: ''
+  searchQuery: '',
+  currentUser: null,
+  userOrders: [],
+  userWishlist: [],
+  userChats: {}
 };
+
+/**
+ * ===== LOGIN SESSION MANAGEMENT =====
+ */
+function initializeLoginState() {
+  const storedUser = localStorage.getItem('kagaCurrentUser');
+  if (storedUser) {
+    try {
+      AppState.currentUser = JSON.parse(storedUser);
+      updateNavigationForLoggedInUser();
+    } catch (e) {
+      console.error('Error parsing user data:', e);
+      AppState.currentUser = null;
+    }
+  }
+  
+  // Load user preferences
+  loadUserPreferences();
+}
+
+function updateNavigationForLoggedInUser() {
+  if (!AppState.currentUser || !AppState.currentUser.loginStatus) {
+    return;
+  }
+
+  // Call the index.html function to update UI
+  if (typeof window.updateLoginState === 'function') {
+    window.updateLoginState();
+  }
+}
+
+/**
+ * ===== USER PREFERENCES MANAGEMENT =====
+ */
+function loadUserPreferences() {
+  // Load language
+  const savedLang = localStorage.getItem('kagaLanguage') || 'en';
+  AppState.language = savedLang;
+  
+  // Load theme
+  const savedTheme = localStorage.getItem('kagaTheme') || 'light';
+  applyTheme(savedTheme);
+  
+  // Load delivery address
+  const savedAddress = localStorage.getItem('kagaDeliveryAddress');
+  if (savedAddress) {
+    AppState.deliveryAddress = JSON.parse(savedAddress);
+  }
+}
+
+function saveLanguage(lang) {
+  AppState.language = lang;
+  localStorage.setItem('kagaLanguage', lang);
+  // Reload to apply language changes
+  location.reload();
+}
+
+function applyTheme(theme) {
+  localStorage.setItem('kagaTheme', theme);
+  if (theme === 'dark') {
+    document.documentElement.style.filter = 'invert(1) hue-rotate(180deg)';
+  } else {
+    document.documentElement.style.filter = 'none';
+  }
+}
+
+function saveDeliveryAddress(address) {
+  AppState.deliveryAddress = address;
+  localStorage.setItem('kagaDeliveryAddress', JSON.stringify(address));
+}
+
+/**
+ * ===== MY MARKET FUNCTIONS =====
+ */
+window.openProfile = function() {
+  if (!AppState.currentUser) {
+    alert('Please log in first');
+    return;
+  }
+  switchView('account');
+};
+
+window.openOrders = function() {
+  if (!AppState.currentUser) {
+    alert('Please log in first');
+    return;
+  }
+  switchView('customer-dashboard');
+};
+
+window.openWishlist = function() {
+  if (!AppState.currentUser) {
+    alert('Please log in first');
+    return;
+  }
+  switchView('customer-dashboard');
+};
+
+window.openStore = function() {
+  if (!AppState.currentUser) {
+    alert('Please log in first');
+    return;
+  }
+  if (AppState.currentUser.role !== 'seller' && !AppState.currentUser.isSeller) {
+    alert('Only sellers can access the store dashboard');
+    return;
+  }
+  switchView('business-dashboard');
+};
+
+window.openSettings = function() {
+  if (!AppState.currentUser) {
+    alert('Please log in first');
+    return;
+  }
+  alert('Settings panel coming soon');
+};
+
+window.logoutUser = function() {
+  if (!confirm('Are you sure you want to log out?')) {
+    return;
+  }
+  
+  // Clear user session
+  localStorage.removeItem('kagaCurrentUser');
+  AppState.currentUser = null;
+  
+  // Call index.html function to update UI
+  if (typeof window.updateLoginState === 'function') {
+    window.updateLoginState();
+  }
+  
+  // Redirect and show message
+  switchView('home');
+  alert('Logged out successfully');
+};
+
+/**
+ * ===== CHAT SYSTEM STRUCTURE (Firebase Ready) =====
+ */
+window.startChat = function(sellerId) {
+  if (!AppState.currentUser) {
+    alert('Please log in to start a chat');
+    return;
+  }
+
+  const chatId = `chat_${AppState.currentUser.id}_${sellerId}`;
+  
+  if (!AppState.userChats[chatId]) {
+    AppState.userChats[chatId] = {
+      id: chatId,
+      sellerId: sellerId,
+      buyerId: AppState.currentUser.id,
+      messages: [],
+      createdAt: new Date().toISOString()
+    };
+  }
+
+  saveChatLocally(chatId, AppState.userChats[chatId]);
+  loadMessages(chatId);
+  switchView('messenger');
+};
+
+window.sendMessage = function(chatId, message) {
+  if (!chatId || !message.trim()) return;
+
+  const chat = AppState.userChats[chatId];
+  if (!chat) return;
+
+  const msg = {
+    id: Date.now(),
+    from: AppState.currentUser.id,
+    fromName: AppState.currentUser.firstName,
+    text: message,
+    timestamp: new Date().toISOString()
+  };
+
+  chat.messages.push(msg);
+  saveChatLocally(chatId, chat);
+  
+  // In future, sync with Firebase
+  console.log('Message saved:', msg);
+};
+
+window.loadMessages = function(chatId) {
+  const chat = loadChatLocally(chatId);
+  if (chat) {
+    AppState.userChats[chatId] = chat;
+  }
+  
+  // Display messages in messenger UI
+  renderChatMessages(chatId);
+};
+
+window.showUnreadMessages = function() {
+  let unreadCount = 0;
+  Object.values(AppState.userChats).forEach(chat => {
+    const unread = chat.messages.filter(m => m.from !== AppState.currentUser.id).length;
+    unreadCount += unread;
+  });
+  return unreadCount;
+};
+
+function saveChatLocally(chatId, chatData) {
+  const chats = JSON.parse(localStorage.getItem('kagaChats') || '{}');
+  chats[chatId] = chatData;
+  localStorage.setItem('kagaChats', JSON.stringify(chats));
+}
+
+function loadChatLocally(chatId) {
+  const chats = JSON.parse(localStorage.getItem('kagaChats') || '{}');
+  return chats[chatId] || null;
+}
+
+function renderChatMessages(chatId) {
+  const chat = AppState.userChats[chatId];
+  if (!chat) return;
+
+  const messagesContainer = document.getElementById('chat-messages');
+  if (!messagesContainer) return;
+
+  messagesContainer.innerHTML = chat.messages.map(msg => `
+    <div class="msg-bubble ${msg.from === AppState.currentUser.id ? 'msg-out' : 'msg-in'}">
+      <strong>${msg.fromName}</strong><br>
+      ${msg.text}
+    </div>
+  `).join('');
+
+  messagesContainer.scrollTop = messagesContainer.scrollHeight;
+}
 
 /**
  * Initialize Application Lifecycle Hooks
  */
 document.addEventListener('DOMContentLoaded', () => {
+  // 0. Initialize login state and user preferences
+  initializeLoginState();
+  
   // 1. Initial view components render templates
   renderCategories();
   renderHomeProducts();
@@ -239,6 +476,7 @@ window.viewProductDetails = function(productId) {
         <div style="display:flex; gap:10px;">
           <button class="btn-submit" onclick="addToCart(${product.id})" style="flex:1; height:44px;">🛒 Add to Cart</button>
           <button class="btn-wa-small" onclick="openWhatsAppInquiry(${product.id})" style="width:44px; height:44px; font-size:20px;">💬</button>
+          ${AppState.currentUser ? `<button class="btn-submit" onclick="startChat('${product.sellerId}')" style="flex:1; height:44px;">💬 Chat</button>` : ''}
         </div>
       </div>
     </div>
@@ -336,7 +574,36 @@ function handleCheckoutSubmit(e) {
   }
 
   const clientName = document.getElementById('del-name').value;
+  const clientPhone = document.getElementById('del-phone').value;
+  const clientAddress = document.getElementById('del-address').value;
   const paymentMethod = document.getElementById('del-payment').value;
+
+  // Save delivery address if logged in
+  if (AppState.currentUser) {
+    const address = {
+      name: clientName,
+      phone: clientPhone,
+      address: clientAddress,
+      savedAt: new Date().toISOString()
+    };
+    saveDeliveryAddress(address);
+
+    // Save order to user orders
+    const order = {
+      id: Date.now(),
+      items: [...AppState.cart],
+      total: AppState.cart.reduce((acc, curr) => acc + (curr.price * curr.quantity), 0) + 5000,
+      deliveryInfo: address,
+      paymentMethod: paymentMethod,
+      status: 'pending',
+      createdAt: new Date().toISOString()
+    };
+    
+    const orders = JSON.parse(localStorage.getItem('kagaOrders') || '[]');
+    orders.push(order);
+    localStorage.setItem('kagaOrders', JSON.stringify(orders));
+    AppState.userOrders.push(order);
+  }
 
   alert(`Asante sana ${clientName}! Your order has been registered via ${paymentMethod}.`);
   
@@ -362,9 +629,20 @@ window.openWhatsAppInquiry = function(productId) {
 };
 
 /**
- * Vendor User Operations: Add custom product properties
+ * Vendor User Operations: Add custom product properties with seller info
  */
 window.submitProduct = function() {
+  // Check if user is logged in and is a seller
+  if (!AppState.currentUser) {
+    alert('Tafadhali ingia kwanza ili kuuza bidhaa!');
+    return;
+  }
+
+  if (AppState.currentUser.role !== 'seller' && !AppState.currentUser.isSeller) {
+    alert('Huwezi kuuza bila akaunti ya muuzaji. Tafadhali andika upya kama muuzaji.');
+    return;
+  }
+
   const name = document.getElementById('prod-name').value.trim();
   const category = document.getElementById('prod-category').value;
   const price = parseFloat(document.getElementById('prod-price').value);
@@ -383,14 +661,26 @@ window.submitProduct = function() {
     category: category,
     price: price,
     rating: 5.0,
-    seller: 'My Shop',
+    seller: AppState.currentUser.name || AppState.currentUser.firstName,
+    sellerId: AppState.currentUser.id,
+    sellerCity: AppState.currentUser.city,
     desc: desc || 'No description provided.',
     img: 'placeholder',
     whatsapp: whatsapp,
-    location: location
+    location: location,
+    postedAt: new Date().toISOString(),
+    postedBy: AppState.currentUser.id
   };
 
   AppState.products.unshift(newProduct); // Add straight to top of stack lists
+  
+  // Save to localStorage
+  const userProducts = JSON.parse(localStorage.getItem('kagaUserProducts') || '{}');
+  if (!userProducts[AppState.currentUser.id]) {
+    userProducts[AppState.currentUser.id] = [];
+  }
+  userProducts[AppState.currentUser.id].push(newProduct);
+  localStorage.setItem('kagaUserProducts', JSON.stringify(userProducts));
   
   // Refresh rendering state pipelines
   renderHomeProducts();
