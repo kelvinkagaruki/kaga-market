@@ -9,7 +9,7 @@
   <link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Sans:wght@400;500&display=swap" rel="stylesheet" />
   <style>
     :root {
-      --brand:        #0F6E56;
+      --brand:         #0F6E56;
       --brand-light:  #E1F5EE;
       --brand-mid:    #1D9E75;
       --brand-dark:   #085041;
@@ -321,6 +321,14 @@
     .cart-total-main { display: flex; justify-content: space-between; font-size: 15px; font-weight: 700; margin-top: 8px; padding-top: 8px; border-top: 1px solid var(--border); }
     .btn-checkout { width: 100%; height: 46px; background: var(--brand); color: #fff; border: none; border-radius: var(--radius-sm); font-size: 13px; font-weight: 600; margin-top: 10px; cursor: pointer; }
 
+    /* ===== DASHBOARDS ===== */
+    .dashboard-container { padding: 12px; }
+    .dashboard-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(130px, 1fr)); gap: 10px; margin-top: 12px; }
+    .dash-card { background: var(--surface); padding: 16px; border-radius: var(--radius-md); border: 1px solid var(--border); text-align: center; cursor: pointer; }
+    .dash-card:active { background: var(--surface2); }
+    .dash-card-icon { font-size: 24px; margin-bottom: 6px; }
+    .dash-card-title { font-size: 12px; font-weight: 600; }
+
     /* ===== MOBILE RESPONSIVE DROPDOWN ===== */
     @media (max-width: 767px) {
       .dropdown-menu { right: -12px; left: auto; min-width: 260px; }
@@ -352,13 +360,21 @@
       .section-title { font-size: 18px; }
       .section:nth-child(even) { background: transparent; }
     }
+    
+    /* Utility Navbar item buttons style */
+    .nav-btn {
+      background: none; border: none; padding: 6px 12px; font-size: 13px; font-weight: 500;
+      color: var(--text-muted); border-radius: var(--radius-sm); cursor: pointer; transition: background 0.1s;
+    }
+    .nav-btn:hover { background: var(--surface2); }
+    .nav-btn.active { background: var(--brand-light); color: var(--brand-dark); font-weight: 600; }
   </style>
 </head>
 <body>
 
   <!-- HEADER -->
   <header class="site-header">
-    <div class="brand">
+    <div class="brand" onclick="switchView('home')" style="cursor: pointer;">
       <div class="brand-logo">K</div>
       <div class="brand-text">
         <h1 data-i18n="brand-title">Kaga's Market</h1>
@@ -367,19 +383,20 @@
     </div>
     <div class="header-search">
       <span class="search-icon">🔍</span>
-      <input id="global-search-input" type="search" data-i18n-ph="hero-search-placeholder" placeholder="Search..." />
+      <input id="global-search-input" type="search" data-i18n-ph="hero-search-placeholder" placeholder="Search..." oninput="doGlobalSearch(this.value)" />
     </div>
     <nav class="header-nav">
-      <button class="nav-btn active" onclick="switchView('home')">🏠 Home</button>
-      <button class="nav-btn" onclick="switchView('shop')">🛍️ Shop</button>
-      <button class="nav-btn" onclick="switchView('businesses')">🏪 Businesses</button>
+      <button class="nav-btn active" data-view="home" onclick="switchView('home')">🏠 Home</button>
+      <button class="nav-btn" data-view="shop" onclick="switchView('shop')">🛍️ Shop</button>
+      <button class="nav-btn" data-view="businesses" onclick="switchView('businesses')">🏪 Businesses</button>
     </nav>
     <div class="header-actions">
       <button class="icon-btn" onclick="switchView('cart')">🛒<span class="cart-badge" id="cart-count">0</span></button>
-      <select id="language-switcher" class="lang-select">
+      <select id="language-switcher" class="lang-select" onchange="changeLanguage(this.value)">
         <option value="en">EN</option>
         <option value="sw">SW</option>
       </select>
+      
       <!-- Account button for guests (shown when NOT logged in) -->
       <button class="login-btn" id="header-login-btn" onclick="switchView('account')">👤 Account</button>
       
@@ -407,17 +424,23 @@
               <span class="dropdown-item-icon">👤</span>
               <span class="dropdown-item-label">My Profile</span>
             </div>
-            <div class="dropdown-item" onclick="switchView('customer-dashboard'); closeDropdown()">
+            
+            <!-- Dynamic Hub / Dashboard Buttons based on User Role -->
+            <div class="dropdown-item" id="dropdown-orders-item" onclick="switchView('customer-dashboard'); closeDropdown()">
               <span class="dropdown-item-icon">📦</span>
               <span class="dropdown-item-label">My Orders</span>
             </div>
-            <div class="dropdown-item" onclick="switchView('customer-dashboard'); closeDropdown()">
+            <div class="dropdown-item" id="dropdown-wishlist-item" onclick="switchView('customer-dashboard'); closeDropdown()">
               <span class="dropdown-item-icon">❤️</span>
               <span class="dropdown-item-label">Wishlist</span>
             </div>
             <div class="dropdown-item" id="my-store-item" style="display: none;" onclick="switchView('business-dashboard'); closeDropdown()">
               <span class="dropdown-item-icon">🏪</span>
               <span class="dropdown-item-label">My Store</span>
+            </div>
+            <div class="dropdown-item" id="admin-panel-item" style="display: none;" onclick="switchView('admin-dashboard'); closeDropdown()">
+              <span class="dropdown-item-icon">🛡️</span>
+              <span class="dropdown-item-label">Admin Panel</span>
             </div>
             
             <div class="dropdown-divider"></div>
@@ -542,15 +565,15 @@
             <a href="#">Cookies</a>
           </div>
         </div>
-        <div class="footer-bottom">© 2025 Kaga's Market 🇹🇿</div>
+        <div class="footer-bottom">© 2026 Kaga's Market 🇹🇿</div>
       </footer>
     </section>
 
     <!-- SHOP PANEL -->
     <section class="panel" id="shop-panel">
       <div style="padding: 12px;">
-        <input type="search" placeholder="Search products..." id="shop-search-input" style="width: 100%; height: 40px; padding: 0 12px; border: 1px solid var(--border); border-radius: 8px; margin-bottom: 12px; font-size: 13px;" />
-        <div id="shop-products-container"></div>
+        <input type="search" placeholder="Search products..." id="shop-search-input" oninput="renderShopCatalog(this.value)" style="width: 100%; height: 40px; padding: 0 12px; border: 1px solid var(--border); border-radius: 8px; margin-bottom: 12px; font-size: 13px;" />
+        <div class="products-grid" id="shop-products-container"></div>
       </div>
     </section>
 
@@ -579,72 +602,86 @@
             <p>Reviewed within 24 hours</p>
           </div>
           <div class="form-card-body">
-            <div class="form-group">
-              <label class="form-label">Product Images</label>
-              <input type="file" id="product-images-input" multiple accept="image/*" style="width: 100%; padding: 8px; border: 1px solid var(--border); border-radius: 8px;" />
-            </div>
-            <div class="form-group">
-              <label class="form-label">Name</label>
-              <input type="text" class="form-input" id="prod-name" placeholder="e.g. Samsung Galaxy A15" maxlength="80" />
-            </div>
-            <div class="form-row">
+            <form id="add-product-form" onsubmit="handleProductCreation(event)">
               <div class="form-group">
-                <label class="form-label">Category</label>
-                <select class="form-input" id="prod-category">
-                  <option>Electronics</option>
-                  <option>Fashion</option>
-                  <option>Groceries</option>
-                  <option>Home</option>
-                  <option>Beauty</option>
-                  <option>Sports</option>
-                  <option>Books</option>
-                  <option>Tools</option>
-                </select>
+                <label class="form-label">Product Name <span>*</span></label>
+                <input type="text" class="form-input" id="new-prod-name" required placeholder="e.g. Organic Avocados">
+              </div>
+              <div class="form-row">
+                <div class="form-group">
+                  <label class="form-label">Price (TZS) <span>*</span></label>
+                  <input type="number" class="form-input" id="new-prod-price" required placeholder="5000">
+                </div>
+                <div class="form-group">
+                  <label class="form-label">Category <span>*</span></label>
+                  <select class="form-input" id="new-prod-category" required>
+                    <option value="Fresh Produce">Fresh Produce</option>
+                    <option value="Electronics">Electronics</option>
+                    <option value="Fashion">Fashion</option>
+                    <option value="Home Goods">Home Goods</option>
+                  </select>
+                </div>
               </div>
               <div class="form-group">
-                <label class="form-label">Condition</label>
-                <select class="form-input" id="prod-condition">
-                  <option>New</option>
-                  <option>Used - Like New</option>
-                  <option>Used - Good</option>
-                  <option>Used - Fair</option>
-                </select>
+                <label class="form-label">Description</label>
+                <textarea class="form-textarea" id="new-prod-desc" placeholder="Provide extra details..."></textarea>
               </div>
-            </div>
-            <div class="form-row">
-              <div class="form-group">
-                <label class="form-label">Price (TZS)</label>
-                <input type="number" class="form-input" id="prod-price" placeholder="45000" min="0" />
-              </div>
-              <div class="form-group">
-                <label class="form-label">Stock</label>
-                <input type="number" class="form-input" id="prod-stock" placeholder="10" min="1" value="1" />
-              </div>
-            </div>
-            <div class="form-group">
-              <label class="form-label">Description</label>
-              <textarea class="form-textarea" id="prod-desc" placeholder="Describe your product..." maxlength="500"></textarea>
-            </div>
-            <div class="form-row">
-              <div class="form-group">
-                <label class="form-label">City</label>
-                <select class="form-input" id="prod-location">
-                  <option>Dar es Salaam</option>
-                  <option>Arusha</option>
-                  <option>Mwanza</option>
-                  <option>Dodoma</option>
-                  <option>Mbeya</option>
-                  <option>Zanzibar</option>
-                  <option>Tanga</option>
-                </select>
-              </div>
-              <div class="form-group">
-                <label class="form-label">WhatsApp</label>
-                <input type="tel" class="form-input" id="prod-whatsapp" placeholder="0754 000 000" />
-              </div>
-            </div>
-            <button class="btn-submit" onclick="submitProduct()">📤 Post Product</button>
+              <button type="submit" class="btn-submit">Submit Product for Review</button>
+            </form>
           </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ACCOUNT / AUTHENTICATION PANEL -->
+    <section class="panel" id="account-panel">
+      <div style="padding: 12px; max-width: 420px; margin: 0 auto;">
+        <!-- Toggle auth flows dynamically inside a container -->
+        <div id="auth-box-container"></div>
+      </div>
+    </section>
+
+    <!-- BUYER / CUSTOMER DASHBOARD PANEL -->
+    <section class="panel" id="customer-dashboard-panel">
+      <div class="dashboard-container">
+        <h2 style="font-family: var(--font-head); font-size: 18px; margin-bottom: 4px;">Buyer Dashboard</h2>
+        <p style="font-size: 12px; color: var(--text-muted);">Manage your grocery items, wishlists, and configurations.</p>
+        <div class="dashboard-grid">
+          <div class="dash-card"><div class="dash-card-icon">📦</div><div class="dash-card-title">My Orders</div></div>
+          <div class="dash-card"><div class="dash-card-icon">❤️</div><div class="dash-card-title">Wishlist</div></div>
+          <div class="dash-card"><div class="dash-card-icon">💬</div><div class="dash-card-title">Messages</div></div>
+          <div class="dash-card" onclick="toggleDropdownMenu()"><div class="dash-card-icon">⚙️</div><div class="dash-card-title">Settings</div></div>
+        </div>
+      </div>
+    </section>
+
+    <!-- MERCHANT / SELLER DASHBOARD PANEL -->
+    <section class="panel" id="business-dashboard-panel">
+      <div class="dashboard-container">
+        <h2 style="font-family: var(--font-head); font-size: 18px; margin-bottom: 4px;">Seller Operations</h2>
+        <p style="font-size: 12px; color: var(--text-muted);">Configure digital store products, analyze requests and metrics.</p>
+        <div class="dashboard-grid">
+          <div class="dash-card" onclick="switchView('shop')"><div class="dash-card-icon">🏪</div><div class="dash-card-title">My Store</div></div>
+          <div class="dash-card" onclick="switchView('add-product')"><div class="dash-card-icon">➕</div><div class="dash-card-title">Add Product</div></div>
+          <div class="dash-card"><div class="dash-card-icon">✏️</div><div class="dash-card-title">Edit Product</div></div>
+          <div class="dash-card"><div class="dash-card-icon">🗑️</div><div class="dash-card-title">Delete Product</div></div>
+          <div class="dash-card"><div class="dash-card-icon">📋</div><div class="dash-card-title">Orders</div></div>
+          <div class="dash-card"><div class="dash-card-icon">💬</div><div class="dash-card-title">Messages</div></div>
+        </div>
+      </div>
+    </section>
+
+    <!-- PLATFORM ADMIN DASHBOARD PANEL -->
+    <section class="panel" id="admin-dashboard-panel">
+      <div class="dashboard-container">
+        <h2 style="font-family: var(--font-head); font-size: 18px; margin-bottom: 4px;">System Administration</h2>
+        <p style="font-size: 12px; color: var(--text-muted);">Root capabilities for system auditing and operational management.</p>
+        <div class="dashboard-grid">
+          <div class="dash-card"><div class="dash-card-icon">🛡️</div><div class="dash-card-title">Admin Dashboard</div></div>
+          <div class="dash-card"><div class="dash-card-icon">👥</div><div class="dash-card-title">Manage Users</div></div>
+          <div class="dash-card"><div class="dash-card-icon">🏢</div><div class="dash-card-title">Manage Sellers</div></div>
+          <div class="dash-card"><div class="dash-card-icon">🛍️</div><div class="dash-card-title">Manage Products</div></div>
+          <div class="dash-card"><div class="dash-card-icon">📦</div><div class="dash-card-title">Manage Orders</div></div>
         </div>
       </div>
     </section>
@@ -652,58 +689,30 @@
     <!-- CART PANEL -->
     <section class="panel" id="cart-panel">
       <div style="padding: 12px;">
-        <h2 style="font-size: 16px; font-weight: 700; margin-bottom: 12px;">My Cart</h2>
-        <div id="cart-list"></div>
-        <div class="cart-total-bar" id="cart-total-bar" style="display: none;">
-          <div class="cart-total-row"><span>Subtotal</span><span id="cart-subtotal">TZS 0</span></div>
-          <div class="cart-total-row"><span>Delivery</span><span>TZS 5,000</span></div>
-          <div class="cart-total-main"><span>Total</span><span id="cart-grand-total">TZS 0</span></div>
-          <button class="btn-checkout" onclick="switchView('delivery')">Checkout</button>
-        </div>
+        <h2 style="font-family: var(--font-head); font-size: 18px; margin-bottom: 12px;">Your Shopping Basket</h2>
+        <div id="cart-items-wrapper"></div>
+        <div id="cart-summary-wrapper"></div>
       </div>
     </section>
 
     <!-- DELIVERY PANEL -->
     <section class="panel" id="delivery-panel">
       <div style="padding: 12px;">
-        <button onclick="switchView('cart')" style="background: none; border: none; font-size: 13px; color: var(--brand); margin-bottom: 12px; cursor: pointer;">← Back to Cart</button>
-        <h2 style="font-size: 16px; font-weight: 700; margin-bottom: 12px;">Delivery Details</h2>
-        <form id="delivery-form">
-          <div class="form-group"><label class="form-label">Full Name</label><input type="text" class="form-input" id="del-name" placeholder="Juma Ally" required /></div>
-          <div class="form-group"><label class="form-label">Phone</label><input type="tel" class="form-input" id="del-phone" placeholder="0754 000 000" required /></div>
-          <div class="form-group"><label class="form-label">Address</label><input type="text" class="form-input" id="del-address" placeholder="Street, Area, City" required /></div>
-          <div class="form-group"><label class="form-label">Landmark</label><input type="text" class="form-input" id="del-landmark" placeholder="Near Shoprite..." /></div>
-          <div class="form-group">
-            <label class="form-label">Payment</label>
-            <select class="form-input" id="del-payment">
-              <option>M-Pesa</option>
-              <option>Tigo Pesa</option>
-              <option>Airtel Money</option>
-              <option>Cash on Delivery</option>
-            </select>
+        <div class="form-card">
+          <div class="form-card-header">
+            <h2>📍 Address Profile</h2>
+            <p>Set up coordinates for delivery agents</p>
           </div>
-          <button type="submit" class="btn-submit">📦 Place Order</button>
-        </form>
-      </div>
-    </section>
-
-    <!-- ACCOUNT PANEL -->
-    <section class="panel" id="account-panel">
-      <div style="padding: 12px;">
-        <div class="form-card" style="margin-bottom: 12px;">
-          <div style="background: linear-gradient(135deg, var(--brand-dark), var(--brand)); color: #fff; padding: 20px; text-align: center;">
-            <div style="font-size: 32px; margin-bottom: 8px;">👤</div>
-            <div style="font-size: 16px; font-weight: 700;" id="account-name">Guest User</div>
-            <div style="font-size: 12px; opacity: 0.8;" id="account-role">Not logged in</div>
-          </div>
-          <div>
-            <div style="padding: 12px; border-bottom: 1px solid var(--border); cursor: pointer;" onclick="switchView('customer-dashboard')">📦 My Orders</div>
-            <div style="padding: 12px; border-bottom: 1px solid var(--border); cursor: pointer;" onclick="switchView('customer-dashboard')">❤️ Saved Items</div>
-            <div style="padding: 12px; border-bottom: 1px solid var(--border); cursor: pointer;" onclick="switchView('add-product')">➕ Sell Product</div>
-            <div style="padding: 12px; border-bottom: 1px solid var(--border); cursor: pointer;" onclick="switchView('business-dashboard')">🏪 My Business</div>
-            <div style="padding: 12px; border-bottom: 1px solid var(--border); cursor: pointer;" onclick="switchView('messenger')">💬 Messages</div>
-            <div style="padding: 12px; border-bottom: 1px solid var(--border); cursor: pointer; display: none;" id="admin-menu-item" onclick="switchView('admin')">🛡️ Admin</div>
-            <div style="padding: 12px; color: var(--accent); cursor: pointer;" id="logout-menu-item" onclick="logoutUser()">🚪 Log Out</div>
+          <div class="form-card-body">
+            <div class="form-group">
+              <label class="form-label">City Region</label>
+              <input type="text" class="form-input" placeholder="e.g. Dar es Salaam, Arusha">
+            </div>
+            <div class="form-group">
+              <label class="form-label">Street Info / House Number</label>
+              <input type="text" class="form-input" placeholder="e.g. Block 4, Masaki">
+            </div>
+            <button class="btn-submit" onclick="alert('Address records registered.'); switchView('home')">Update Location Details</button>
           </div>
         </div>
       </div>
@@ -712,289 +721,679 @@
   </main>
 
   <!-- MOBILE BOTTOM NAV -->
-  <nav class="mobile-bottom-nav">
-    <button class="mob-nav-btn active" onclick="switchView('home')"><span class="m-icon">🏠</span><span>Home</span></button>
-    <button class="mob-nav-btn" onclick="switchView('shop')"><span class="m-icon">🛍️</span><span>Shop</span></button>
-    <button class="mob-nav-btn" onclick="switchView('add-product')"><span class="m-icon">➕</span><span>Sell</span></button>
-    <button class="mob-nav-btn" onclick="switchView('messenger')"><span class="m-icon">💬</span><span>Chat</span></button>
-    <button class="mob-nav-btn" onclick="switchView('account')"><span class="m-icon">👤</span><span>Account</span></button>
-  </nav>
+  <div class="mobile-bottom-nav">
+    <button class="mob-nav-btn active" data-mob-view="home" onclick="switchView('home')">
+      <span class="m-icon">🏠</span>
+      <span>Home</span>
+    </button>
+    <button class="mob-nav-btn" data-mob-view="shop" onclick="switchView('shop')">
+      <span class="m-icon">🛍️</span>
+      <span>Shop</span>
+    </button>
+    <button class="mob-nav-btn" data-mob-view="businesses" onclick="switchView('businesses')">
+      <span class="m-icon">🏪</span>
+      <span>Businesses</span>
+    </button>
+    <button class="mob-nav-btn" data-mob-view="cart" onclick="switchView('cart')">
+      <span class="m-icon">🛒</span>
+      <span>Cart</span>
+    </button>
+    <button class="mob-nav-btn" data-mob-view="account" onclick="switchView('account')">
+      <span class="m-icon">👤</span>
+      <span>Account</span>
+    </button>
+  </div>
 
-  <script src="i18n.js"></script>
+  <!-- STATE & APPLICATION LOGIC ENGINE -->
   <script>
-    /**
-     * ===== LOGIN STATE MANAGEMENT =====
-     * Handles visibility of Account button vs My Market dropdown
-     */
-    function updateLoginState() {
-      const currentUser = localStorage.getItem('kagaCurrentUser');
-      const headerLoginBtn = document.getElementById('header-login-btn');
-      const myMarketContainer = document.getElementById('my-market-container');
-      const myStoreItem = document.getElementById('my-store-item');
-      const bottomAccountBtn = document.querySelector('.mob-nav-btn[onclick*="account"]');
-      
-      if (currentUser) {
-        try {
-          const user = JSON.parse(currentUser);
-          if (!user.loginStatus) throw new Error('Not logged in');
-          
-          // HIDE top Account button for guests
-          if (headerLoginBtn) headerLoginBtn.style.display = 'none';
-          
-          // SHOW My Market dropdown
-          if (myMarketContainer) {
-            myMarketContainer.classList.add('logged-in');
-            myMarketContainer.style.display = 'flex';
-          }
-          
-          // Update user display info
-          const displayName = user.firstName || user.name || 'User';
-          const displayInitial = displayName.charAt(0).toUpperCase();
-          
-          const headerName = document.getElementById('header-user-name');
-          const headerAvatar = document.getElementById('header-avatar');
-          const dropdownName = document.getElementById('dropdown-user-name');
-          const dropdownEmail = document.getElementById('dropdown-user-email');
-          const dropdownAvatar = document.getElementById('dropdown-header-avatar');
-          
-          if (headerName) headerName.textContent = displayName;
-          if (headerAvatar) headerAvatar.textContent = displayInitial;
-          if (dropdownName) dropdownName.textContent = displayName;
-          if (dropdownEmail) dropdownEmail.textContent = user.email || 'user@kaga.market';
-          if (dropdownAvatar) dropdownAvatar.textContent = displayInitial;
-          
-          // Show My Store ONLY for sellers
-          if (myStoreItem) {
-            if (user.role === 'seller' || user.isSeller) {
-              myStoreItem.style.display = 'flex';
-            } else {
-              myStoreItem.style.display = 'none';
-            }
-          }
-          
-          // Show Admin Panel ONLY for admin
-          const adminMenuItem = document.getElementById('admin-menu-item');
-          if (adminMenuItem) {
-            if (user.role === 'admin' || user.isAdmin) {
-              adminMenuItem.style.display = 'block';
-            } else {
-              adminMenuItem.style.display = 'none';
-            }
-          }
-          
-          // Hide bottom Account button, show My Market indicator in mobile nav
-          if (bottomAccountBtn) bottomAccountBtn.style.display = 'none';
-          
-        } catch (e) {
-          console.error('Login state error:', e);
-          // Invalid user data, treat as logged out
-          logoutUser();
+    // Constants
+    const SESSION_KEY = "kagaCurrentUser";
+
+    // Application Data state
+    let state = {
+      currentUser: null,
+      activeView: "home",
+      selectedCategory: "All",
+      currentLanguage: "en",
+      cart: [],
+      categories: ["All", "Fresh Produce", "Electronics", "Fashion", "Home Goods"],
+      products: [
+        { id: 1, name: "Fresh Tanzanian Mangoes", price: 4500, category: "Fresh Produce", seller: "Kilimanjaro Orchards", icon: "🥭" },
+        { id: 2, name: "Premium Cashew Nuts (1kg)", price: 18000, category: "Fresh Produce", seller: "Mtwara Nuts Ltd", icon: "🥜" },
+        { id: 3, name: "Wireless Bluetooth Earbuds", price: 35000, category: "Electronics", seller: "Kariakoo Tech Hub", icon: "🎧" },
+        { id: 4, name: "Handwoven Maasai Blanket", price: 25000, category: "Fashion", seller: "Arusha Cultural Crafts", icon: "🧣" },
+        { id: 5, name: "Safari Leather Sandals", price: 30000, category: "Fashion", seller: "Zanzibar Leatherworks", icon: "🩴" },
+        { id: 6, name: "Pure Organic Honey", price: 12000, category: "Fresh Produce", seller: "Tabora Bee Keepers", icon: "🍯" }
+      ],
+      businesses: [
+        { id: 101, name: "Kilimanjaro Orchards", type: "Fresh Goods & Agriculture", verified: true, logo: "🍏" },
+        { id: 102, name: "Kariakoo Tech Hub", type: "Consumer Electronics Wholesale", verified: true, logo: "⚡" },
+        { id: 103, name: "Arusha Cultural Crafts", type: "Apparel & Traditional Heritage", verified: false, logo: "🎨" },
+        { id: 104, name: "Zanzibar Leatherworks", type: "Handcrafted Luxury Apparel", verified: true, logo: "💼" }
+      ],
+      localization: {
+        en: {
+          "brand-title": "Kaga's Market",
+          "brand-subtitle": "Marketplace & Delivery",
+          "hero-search-placeholder": "Search what you need...",
+          "footer-about-us": "About Us",
+          "footer-how": "How It Works",
+          "footer-contact": "Contact Us",
+          "footer-track": "Track Order",
+          "footer-returns": "Returns Policy",
+          "footer-seller-guide": "Seller Guide",
+          "footer-pricing": "Platform Fee Structure"
+        },
+        sw: {
+          "brand-title": "Soko la Kaga",
+          "brand-subtitle": "Soko na Uwasilishaji",
+          "hero-search-placeholder": "Tafuta unachohitaji...",
+          "footer-about-us": "Kuhusu Sisi",
+          "footer-how": "Inavyofanya Kazi",
+          "footer-contact": "Wasiliana Nasi",
+          "footer-track": "Fuatilia Mzigo",
+          "footer-returns": "Sera ya Kurudisha",
+          "footer-seller-guide": "Mwongozo wa Muuzaji",
+          "footer-pricing": "Gharama za Soko"
         }
-      } else {
-        // NO USER LOGGED IN
-        
-        // SHOW top Account button
-        if (headerLoginBtn) headerLoginBtn.style.display = 'block';
-        
-        // HIDE My Market dropdown
-        if (myMarketContainer) {
-          myMarketContainer.classList.remove('logged-in');
-          myMarketContainer.style.display = 'none';
-        }
-        
-        // SHOW bottom Account button
-        if (bottomAccountBtn) bottomAccountBtn.style.display = 'flex';
       }
-    }
+    };
 
-    /**
-     * ===== DROPDOWN MENU FUNCTIONS =====
-     */
-    function toggleMyMarketMenu() {
-      const container = document.getElementById('my-market-container');
-      if (!container) return;
-      container.classList.toggle('open');
-    }
-    
-    function closeDropdown() {
-      const container = document.getElementById('my-market-container');
-      if (container) {
-        container.classList.remove('open');
-        // Close all submenus
-        document.querySelectorAll('.dropdown-item.submenu-toggle').forEach(item => {
-          item.classList.remove('open');
-        });
+    // Initialization lifecycle hooks
+    document.addEventListener("DOMContentLoaded", () => {
+      // 1. Session parsing
+      const storedSession = localStorage.getItem(SESSION_KEY);
+      if (storedSession) {
+        try { state.currentUser = JSON.parse(storedSession); } catch(e) { state.currentUser = null; }
       }
-    }
-    
-    function toggleSubmenu(event) {
-      event.stopPropagation();
-      const item = event.currentTarget;
-      item.classList.toggle('open');
-    }
-
-    /**
-     * ===== SETTINGS MANAGEMENT =====
-     */
-    function changeLanguage(lang) {
-      localStorage.setItem('kagaLanguage', lang);
-      const switcher = document.getElementById('language-switcher');
-      if (switcher) switcher.value = lang;
-      if (window.setLanguage) window.setLanguage(lang);
-      alert('Language changed to ' + (lang === 'en' ? 'English' : 'Kiswahili'));
-    }
-    
-    function setAppearance(mode) {
-      localStorage.setItem('kagaTheme', mode);
-      if (mode === 'dark') {
-        document.documentElement.style.filter = 'invert(1) hue-rotate(180deg)';
-      } else {
-        document.documentElement.style.filter = 'none';
-      }
-      alert('Theme changed to ' + (mode === 'dark' ? 'Dark' : 'Light') + ' Mode');
-    }
-    
-    function saveDeliveryAddress(address) {
-      localStorage.setItem('kagaDeliveryAddress', JSON.stringify(address));
-      alert('Delivery address saved');
-      closeDropdown();
-    }
-    
-    function removeAddress() {
-      localStorage.removeItem('kagaDeliveryAddress');
-      alert('Address removed');
-      closeDropdown();
-    }
-    
-    function setDefaultAddress() {
-      const address = localStorage.getItem('kagaDeliveryAddress');
-      if (address) {
-        localStorage.setItem('kagaDefaultDeliveryAddress', address);
-        alert('Default address updated');
-      } else {
-        alert('Please add an address first');
-      }
-      closeDropdown();
-    }
-
-    /**
-     * ===== LOGOUT =====
-     */
-    function logoutUser() {
-      if (!confirm('Are you sure you want to log out?')) return;
       
-      localStorage.removeItem('kagaCurrentUser');
-      localStorage.removeItem('kagaUserRole');
-      
+      // 2. Setup structural UI elements
+      renderCategoryChips();
+      renderHomeCatalogs();
       updateLoginState();
-      closeDropdown();
-      switchView('home');
-      alert('Logged out successfully');
+      
+      // 3. Setup event interceptors
+      setupDropdownInterceptors();
+    });
+
+    // Session State Management Core Functions
+    function updateLoginState() {
+      const user = state.currentUser;
+      const loginBtn = document.getElementById("header-login-btn");
+      const marketContainer = document.getElementById("my-market-container");
+
+      if (!user) {
+        // Guest mode parameters
+        if (loginBtn) loginBtn.style.display = "block";
+        if (marketContainer) marketContainer.classList.remove("logged-in");
+        
+        // Hide structural dashboards elements inside the generic UI items
+        document.getElementById("my-store-item").style.display = "none";
+        document.getElementById("admin-panel-item").style.display = "none";
+      } else {
+        // Logged-in profile mode parameters
+        if (loginBtn) loginBtn.style.display = "none";
+        if (marketContainer) marketContainer.classList.add("logged-in");
+
+        // UI Header bindings
+        document.getElementById("header-user-name").textContent = user.firstName || user.username || "User";
+        document.getElementById("dropdown-user-name").textContent = (user.firstName && user.lastName) ? `${user.firstName} ${user.lastName}` : (user.username || "User Profile");
+        document.getElementById("dropdown-user-email").textContent = user.email || `${user.username || "user"}@kagamarket.co.tz`;
+        
+        // Conditional structural link visibility adjustments depending on Role
+        const role = (user.role || "Buyer").toLowerCase();
+        
+        const myStoreItem = document.getElementById("my-store-item");
+        const adminPanelItem = document.getElementById("admin-panel-item");
+        const ordersItem = document.getElementById("dropdown-orders-item");
+        const wishlistItem = document.getElementById("dropdown-wishlist-item");
+
+        // Reset display parameters
+        myStoreItem.style.display = "none";
+        adminPanelItem.style.display = "none";
+        ordersItem.style.display = "flex";
+        wishlistItem.style.display = "flex";
+
+        if (role === "seller") {
+          myStoreItem.style.display = "flex";
+        } else if (role === "admin") {
+          adminPanelItem.style.display = "flex";
+        }
+      }
+      
+      // Re-evaluate profile block layout parameters if user views authentication tab
+      if (state.activeView === "account") {
+        renderProfileOrAuthPanel();
+      }
     }
 
-    /**
-     * ===== CHAT INTEGRATION =====
-     */
-    function startChat(sellerId) {
-      const currentUser = localStorage.getItem('kagaCurrentUser');
-      if (!currentUser) {
-        alert('Please log in to start a chat');
+    function processUserLogin(username, password) {
+      if (!username || !password) {
+        alert("Please enter values in both fields.");
         return;
       }
-      
-      if (window.startChat) {
-        window.startChat(sellerId);
-      } else {
-        alert('Chat feature coming soon');
-      }
-    }
 
-    /**
-     * ===== LOAD USER PREFERENCES =====
-     */
-    function loadUserPreferences() {
-      // Load language
-      const savedLang = localStorage.getItem('kagaLanguage') || 'en';
-      const langSwitcher = document.getElementById('language-switcher');
-      if (langSwitcher) langSwitcher.value = savedLang;
-      
-      // Load theme
-      const savedTheme = localStorage.getItem('kagaTheme') || 'light';
-      if (savedTheme === 'dark') {
-        document.documentElement.style.filter = 'invert(1) hue-rotate(180deg)';
-      }
-      
-      // Load delivery address (will be used in checkout)
-      const savedAddress = localStorage.getItem('kagaDeliveryAddress');
-      if (savedAddress && typeof window.loadDeliveryAddress === 'function') {
-        window.loadDeliveryAddress(JSON.parse(savedAddress));
-      }
-    }
+      // Map dynamic mock definitions or administrative profiles
+      let assignedRole = "Buyer";
+      let matchedUsername = username.trim();
+      let fName = "Mgeni";
+      let lName = "Mteja";
 
-    /**
-     * ===== INITIALIZATION ON PAGE LOAD =====
-     */
-    document.addEventListener('DOMContentLoaded', function() {
-      console.log('Index.html loaded - Initializing...');
+      if (matchedUsername.toLowerCase().includes("admin")) {
+        assignedRole = "Admin";
+        fName = "Mkuu";
+        lName = "Msimamizi";
+      } else if (matchedUsername.toLowerCase().includes("sell") || matchedUsername.toLowerCase().includes("duka")) {
+        assignedRole = "Seller";
+        fName = "Muuzaji";
+        lName = "Mshirika";
+      }
+
+      const generatedProfile = {
+        username: matchedUsername,
+        firstName: fName,
+        lastName: lName,
+        role: assignedRole,
+        email: `${matchedUsername.toLowerCase()}@kagamarket.co.tz`,
+        authenticatedAt: new Date().toISOString()
+      };
+
+      // Save records inside storage contexts requested by platform standard API parameters
+      state.currentUser = generatedProfile;
+      localStorage.setItem(SESSION_KEY, JSON.stringify(generatedProfile));
       
-      // 1. Load user preferences (language, theme, address)
-      loadUserPreferences();
-      
-      // 2. Check login state and update navigation
+      // Synchronize layouts and reload home view standard parameters
       updateLoginState();
+      switchView("home");
+      alert(`Karibu tena / Welcome back, ${fName}! Logged in as ${assignedRole}.`);
+    }
+
+    function logoutUser() {
+      state.currentUser = null;
+      localStorage.removeItem(SESSION_KEY);
+      closeDropdown();
+      updateLoginState();
+      switchView("home");
+    }
+
+    // View Routing Management
+    function switchView(viewTarget) {
+      state.activeView = viewTarget;
       
-      // 3. Render categories
-      const cats = [
-        '📱 Electronics', '👗 Fashion', '🍎 Groceries', '🏠 Home',
-        '💄 Beauty', '⚽ Sports', '📚 Books', '🔧 Tools'
-      ];
-      const scroll = document.getElementById('categories-scroll');
-      if (scroll) {
-        scroll.innerHTML = cats.map(c => 
-          `<div class="category-chip" onclick="filterShopByCategory('${c.split(' ')[1]}')">${c}</div>`
-        ).join('');
+      // Hide all standard views
+      document.querySelectorAll(".panel").forEach(panel => panel.classList.remove("active"));
+      
+      // Resolve dynamic custom view bindings
+      let actualTarget = viewTarget;
+      if (viewTarget === "account") {
+        renderProfileOrAuthPanel();
+      } else if (viewTarget === "shop") {
+        renderShopCatalog();
+      } else if (viewTarget === "businesses") {
+        renderBusinessDirectory();
+      } else if (viewTarget === "cart") {
+        renderCartLayout();
       }
       
-      // 4. Setup dropdown toggle
-      const profileToggle = document.getElementById('user-profile-toggle');
+      // Enable viewport panels active class records
+      const selectedPanel = document.getElementById(`${actualTarget}-panel`);
+      if (selectedPanel) {
+        selectedPanel.classList.add("active");
+      } else {
+        // Fallback context routing mechanism safeguard
+        document.getElementById("home-panel").classList.add("active");
+      }
+
+      // Sync header action menu highlighters
+      document.querySelectorAll(".nav-btn").forEach(btn => {
+        if (btn.getAttribute("data-view") === viewTarget) btn.classList.add("active");
+        else btn.classList.remove("active");
+      });
+
+      // Sync bottom standard navigation bar structural buttons
+      document.querySelectorAll(".mob-nav-btn").forEach(btn => {
+        if (btn.getAttribute("data-mob-view") === viewTarget) btn.classList.add("active");
+        else btn.classList.remove("active");
+      });
+
+      window.scrollTo(0, 0);
+    }
+
+    // Dynamic Render Compilation Scripts
+    function renderCategoryChips() {
+      const container = document.getElementById("categories-scroll");
+      if (!container) return;
+      container.innerHTML = state.categories.map(cat => `
+        <div class="category-chip ${state.selectedCategory === cat ? 'active' : ''}" onclick="filterCategory('${cat}')">
+          ${cat}
+        </div>
+      `).join("");
+    }
+
+    function filterCategory(cat) {
+      state.selectedCategory = cat;
+      renderCategoryChips();
+      switchView("shop");
+      renderShopCatalog();
+    }
+
+    function renderHomeCatalogs() {
+      // 1. Populate top initial marketplace items
+      const productContainer = document.getElementById("home-products-container");
+      if (productContainer) {
+        const slicedProducts = state.products.slice(0, 4);
+        productContainer.innerHTML = slicedProducts.map(p => generateProductCardMarkup(p)).join("");
+      }
+
+      // 2. Populate corporate directory records
+      const businessContainer = document.getElementById("home-businesses-container");
+      if (businessContainer) {
+        const slicedBiz = state.businesses.slice(0, 2);
+        businessContainer.innerHTML = slicedBiz.map(b => generateBusinessCardMarkup(b)).join("");
+      }
+    }
+
+    function renderShopCatalog(searchQuery = "") {
+      const container = document.getElementById("shop-products-container");
+      if (!container) return;
+
+      let filtered = state.products;
+      if (state.selectedCategory !== "All") {
+        filtered = filtered.filter(p => p.category === state.selectedCategory);
+      }
+      if (searchQuery.trim() !== "") {
+        const q = searchQuery.toLowerCase();
+        filtered = filtered.filter(p => p.name.toLowerCase().includes(q) || p.seller.toLowerCase().includes(q));
+      }
+
+      if (filtered.length === 0) {
+        container.innerHTML = `
+          <div class="empty-state" style="grid-column: 1/-1; width:100%;">
+            <div class="empty-icon">🍃</div>
+            <div class="empty-title">No items found</div>
+            <div class="empty-desc">We couldn't track matching inventory records. Try checking other categories or keywords.</div>
+            <button class="btn-empty" onclick="filterCategory('All')">Reset Category Filters</button>
+          </div>`;
+      } else {
+        container.innerHTML = filtered.map(p => generateProductCardMarkup(p)).join("");
+      }
+    }
+
+    function renderBusinessDirectory() {
+      const container = document.getElementById("all-businesses-container");
+      if (!container) return;
+      container.innerHTML = state.businesses.map(b => generateBusinessCardMarkup(b)).join("");
+    }
+
+    function generateProductCardMarkup(p) {
+      return `
+        <div class="product-card">
+          <div class="product-img" onclick="viewProductDetails(${p.id})">
+            <span>${p.icon || '📦'}</span>
+          </div>
+          <div class="product-info" onclick="viewProductDetails(${p.id})">
+            <div class="product-name">${p.name}</div>
+            <div class="product-price">${p.price.toLocaleString()} TZS</div>
+            <div class="product-seller">🏪 ${p.seller}</div>
+          </div>
+          <div class="product-actions">
+            <button class="btn-cart" onclick="addItemToCart(${p.id})">Add to Cart</button>
+            <button class="btn-wa-small" onclick="initiateWhatsAppInquiry('${p.name}', '${p.seller}')">💬</button>
+          </div>
+        </div>`;
+    }
+
+    function generateBusinessCardMarkup(b) {
+      return `
+        <div class="business-card" onclick="filterCategory('All')">
+          <div class="biz-header">
+            <div class="biz-logo">${b.logo || '🏪'}</div>
+            <div>
+              <div class="biz-name">${b.name}</div>
+              <div class="biz-type">${b.type}</div>
+              ${b.verified ? '<span class="verified-badge">✓ Verified</span>' : ''}
+            </div>
+          </div>
+        </div>`;
+    }
+
+    function viewProductDetails(productId) {
+      const p = state.products.find(item => item.id === productId);
+      if (!p) return;
+      
+      switchView("product");
+      const container = document.getElementById("product-details");
+      if (!container) return;
+
+      container.innerHTML = `
+        <div style="background: var(--surface); padding: 16px; border-radius: var(--radius-lg); border: 1px solid var(--border);">
+          <div style="font-size: 72px; text-align: center; background: var(--surface2); padding: 32px; border-radius: var(--radius-md); margin-bottom: 16px;">
+            ${p.icon || '📦'}
+          </div>
+          <h2 style="font-family: var(--font-head); font-size: 20px; margin-bottom: 8px;">${p.name}</h2>
+          <div style="font-size: 18px; font-weight: 700; color: var(--brand); margin-bottom: 12px;">${p.price.toLocaleString()} TZS</div>
+          <p style="font-size: 13px; color: var(--text-muted); line-height: 1.5; margin-bottom: 16px;">
+            High-quality local stock verified by Kaga's delivery verification officers. Support domestic merchants with reliable transport execution safeguards directly to your compound.
+          </p>
+          <table style="width: 100%; font-size: 12px; border-collapse: collapse; margin-bottom: 20px;">
+            <tr style="border-bottom: 1px solid var(--border);"><td style="padding: 6px 0; color: var(--text-light);">Fulfillment Merchant</td><td style="font-weight:500; text-align:right;">${p.seller}</td></tr>
+            <tr style="border-bottom: 1px solid var(--border);"><td style="padding: 6px 0; color: var(--text-light);">Inventory Category</td><td style="font-weight:500; text-align:right;">${p.category}</td></tr>
+            <tr><td style="padding: 6px 0; color: var(--text-light);">Transit Duration</td><td style="font-weight:500; text-align:right; color: var(--brand-mid);">Within 24 Hours Max</td></tr>
+          </table>
+          <div style="display:flex; gap:10px;">
+            <button class="btn-submit" style="flex:1;" onclick="addItemToCart(${p.id})">Add Item to Basket</button>
+            <button class="btn-wa-small" style="width:46px; height:46px; font-size:18px;" onclick="initiateWhatsAppInquiry('${p.name}', '${p.seller}')">💬</button>
+          </div>
+        </div>`;
+    }
+
+    // Secondary UI view orchestration for user profiles or sign-in structures
+    function renderProfileOrAuthPanel() {
+      const container = document.getElementById("auth-box-container");
+      if (!container) return;
+
+      if (state.currentUser) {
+        // Logged-in view presentation block
+        const user = state.currentUser;
+        const mappedRole = user.role || "Buyer";
+        let functionalDashboardTarget = "customer-dashboard";
+        
+        if (mappedRole === "Seller") functionalDashboardTarget = "business-dashboard";
+        if (mappedRole === "Admin") functionalDashboardTarget = "admin-dashboard";
+
+        container.innerHTML = `
+          <div class="form-card" style="text-align: center;">
+            <div class="form-card-header">
+              <h2>Active Session Identity</h2>
+              <p>Security role authorization clearances</p>
+            </div>
+            <div class="form-card-body" style="padding: 24px 16px;">
+              <div style="width: 64px; height: 64px; border-radius: 50%; background: var(--brand-light); color: var(--brand-dark); font-size: 28px; font-weight:700; display:flex; align-items:center; justify-content:center; margin: 0 auto 12px;">
+                ${user.firstName ? user.firstName.charAt(0) : '👤'}
+              </div>
+              <h3 style="font-family: var(--font-head); font-size: 16px;">${user.firstName} ${user.lastName}</h3>
+              <p style="font-size: 12px; color: var(--text-light); margin-bottom: 12px;">${user.email}</p>
+              
+              <div style="display:inline-block; padding: 4px 12px; background: var(--surface2); border-radius:999px; font-size:11px; font-weight:600; color:var(--brand-dark); margin-bottom: 24px;">
+                Security Role: ${mappedRole}
+              </div>
+
+              <button class="btn-submit" style="margin-bottom: 10px;" onclick="switchView('${functionalDashboardTarget}')">
+                Open ${mappedRole} Hub Panel
+              </button>
+              <button class="btn-submit" style="background: #fff; border: 1px solid var(--accent); color: var(--accent);" onclick="logoutUser()">
+                Disconnect Profile (Log Out)
+              </button>
+            </div>
+          </div>`;
+      } else {
+        // Fallback fallback / Unified rendering inside index workspace container
+        container.innerHTML = `
+          <div class="form-card">
+            <div class="form-card-header">
+              <h2>🔐 Welcome to Kaga's Market</h2>
+              <p>Access your local account profile updates</p>
+            </div>
+            <div class="form-card-body">
+              <form id="spa-login-form" onsubmit="event.preventDefault(); processUserLogin(document.getElementById('auth-user').value, document.getElementById('auth-pass').value);">
+                <div class="form-group">
+                  <label class="form-items-label" style="font-size:12px; font-weight:600; margin-bottom:4px; display:block;">Profile Username / Email</label>
+                  <input type="text" id="auth-user" class="form-input" required placeholder="e.g. JohnMuuzaji or buyer123">
+                  <p style="font-size:9px; color:var(--text-light); margin-top:2px;">Tip: include 'sell' for merchant mode, or 'admin' for system tools.</p>
+                </div>
+                <div class="form-group">
+                  <label class="form-items-label" style="font-size:12px; font-weight:600; margin-bottom:4px; display:block;">Access Phrase Password</label>
+                  <input type="password" id="auth-pass" class="form-input" required placeholder="••••••••">
+                </div>
+                <button type="submit" class="btn-submit" style="margin-top:8px;">Authorize Session</button>
+              </form>
+            </div>
+          </div>`;
+      }
+    }
+
+    // Input Capture & Global Field Evaluators
+    function doHeroSearch() {
+      const input = document.getElementById("hero-search-input");
+      const val = input ? input.value : "";
+      const shopInput = document.getElementById("shop-search-input");
+      if (shopInput) shopInput.value = val;
+      
+      switchView("shop");
+      renderShopCatalog(val);
+    }
+
+    function doGlobalSearch(val) {
+      if (state.activeView !== "shop") {
+        switchView("shop");
+        const shopInput = document.getElementById("shop-search-input");
+        if (shopInput) shopInput.value = val;
+      }
+      renderShopCatalog(val);
+    }
+
+    function handleProductCreation(e) {
+      e.preventDefault();
+      const name = document.getElementById("new-prod-name").value;
+      const price = parseFloat(document.getElementById("new-prod-price").value) || 0;
+      const category = document.getElementById("new-prod-category").value;
+      const desc = document.getElementById("new-prod-desc").value;
+
+      const newId = state.products.length + 1;
+      const sellerName = state.currentUser ? (state.currentUser.username || "My Store") : "Independent Merchant";
+
+      state.products.unshift({
+        id: newId,
+        name: name,
+        price: price,
+        category: category,
+        seller: sellerName,
+        icon: "📦"
+      });
+
+      document.getElementById("add-product-form").reset();
+      alert("Product batch sent to catalog system. It is currently under fast-track moderation review.");
+      switchView("shop");
+    }
+
+    // Shopping Basket Management logic
+    function addItemToCart(id) {
+      const p = state.products.find(item => item.id === id);
+      if (!p) return;
+
+      const existing = state.cart.find(cartItem => cartItem.product.id === id);
+      if (existing) {
+        existing.quantity += 1;
+      } else {
+        state.cart.push({ product: p, quantity: 1 });
+      }
+
+      syncCartBadgeCounters();
+      alert(`Added "${p.name}" to your tracking summary cart.`);
+    }
+
+    function modifyCartQty(id, modifier) {
+      const cartItem = state.cart.find(item => item.product.id === id);
+      if (!cartItem) return;
+
+      cartItem.quantity += modifier;
+      if (cartItem.quantity <= 0) {
+        state.cart = state.cart.filter(item => item.product.id !== id);
+      }
+      syncCartBadgeCounters();
+      renderCartLayout();
+    }
+
+    function syncCartBadgeCounters() {
+      const totalCount = state.cart.reduce((sum, item) => sum + item.quantity, 0);
+      const countElement = document.getElementById("cart-count");
+      if (countElement) countElement.textContent = totalCount;
+    }
+
+    function renderCartLayout() {
+      const itemsWrapper = document.getElementById("cart-items-wrapper");
+      const summaryWrapper = document.getElementById("cart-summary-wrapper");
+      if (!itemsWrapper || !summaryWrapper) return;
+
+      if (state.cart.length === 0) {
+        itemsWrapper.innerHTML = `
+          <div class="empty-state">
+            <div class="empty-icon">🛒</div>
+            <div class="empty-title">Your cart is empty</div>
+            <div class="empty-desc">Add premium fresh items or goods from local Tanzanian businesses.</div>
+            <button class="btn-empty" onclick="switchView('shop')">Browse Marketplace</button>
+          </div>`;
+        summaryWrapper.innerHTML = "";
+        return;
+      }
+
+      itemsWrapper.innerHTML = state.cart.map(item => `
+        <div class="cart-item">
+          <div class="cart-item-img">${item.product.icon || '🛍️'}</div>
+          <div class="cart-item-info">
+            <div class="cart-item-name">${item.product.name}</div>
+            <div class="cart-item-price">${item.product.price.toLocaleString()} TZS</div>
+            <div class="qty-control">
+              <button class="qty-btn" onclick="modifyCartQty(${item.product.id}, -1)">-</button>
+              <span class="qty-num">${item.quantity}</span>
+              <button class="qty-btn" onclick="modifyCartQty(${item.product.id}, 1)">+</button>
+            </div>
+          </div>
+        </div>
+      `).join("");
+
+      const subtotal = state.cart.reduce((sum, item) => sum + (item.product.price * item.quantity), 0);
+      const logisticsFee = subtotal > 0 ? 3000 : 0;
+      const totalAmount = subtotal + logisticsFee;
+
+      summaryWrapper.innerHTML = `
+        <div class="cart-total-bar">
+          <div class="cart-total-row"><span>Basket Subtotal</span><span>${subtotal.toLocaleString()} TZS</span></div>
+          <div class="cart-total-row"><span>Logistics Delivery</span><span>${logisticsFee.toLocaleString()} TZS</span></div>
+          <div class="cart-total-main"><span>Total Invoice</span><span>${totalAmount.toLocaleString()} TZS</span></div>
+          <button class="btn-checkout" onclick="executeCheckoutFlow()">Proceed to WhatsApp Checkout</button>
+        </div>`;
+    }
+
+    function executeCheckoutFlow() {
+      if (state.cart.length === 0) return;
+      
+      let messageText = "Habari Kaga Market, I want to confirm order details:\n\n";
+      state.cart.forEach(item => {
+        messageText += `• ${item.product.name} [x${item.quantity}] - ${(item.product.price * item.quantity).toLocaleString()} TZS\n`;
+      });
+      
+      const subtotal = state.cart.reduce((sum, item) => sum + (item.product.price * item.quantity), 0);
+      messageText += `\nEstimated Total: ${(subtotal + 3000).toLocaleString()} TZS (with shipping)`;
+      
+      const whatsappUrl = `https://wa.me/255000000000?text=${encodeURIComponent(messageText)}`;
+      window.open(whatsappUrl, '_blank');
+      
+      // Flush transaction metrics post routing dispatch execution
+      state.cart = [];
+      syncCartBadgeCounters();
+      switchView('home');
+    }
+
+    function initiateWhatsAppInquiry(productName, sellerName) {
+      const text = `Habari, I am interested in purchasing "${productName}" listed by merchant "${sellerName}" on Kaga's Market platform. Is it available for delivery?`;
+      window.open(`https://wa.me/255000000000?text=${encodeURIComponent(text)}`, '_blank');
+    }
+
+    // Interactivity Menu Event handlers and dropdown toggle bindings
+    function setupDropdownInterceptors() {
+      const profileToggle = document.getElementById("user-profile-toggle");
       if (profileToggle) {
-        profileToggle.addEventListener('click', toggleMyMarketMenu);
-      }
-      
-      // 5. Setup submenu toggles
-      document.querySelectorAll('.dropdown-item.submenu-toggle').forEach(item => {
-        item.addEventListener('click', toggleSubmenu);
-      });
-      
-      // 6. Close dropdown when clicking outside
-      document.addEventListener('click', function(e) {
-        const container = document.getElementById('my-market-container');
-        const toggle = document.getElementById('user-profile-toggle');
-        if (container && toggle && !container.contains(e.target)) {
-          container.classList.remove('open');
-        }
-      });
-      
-      // 7. Setup language switcher
-      const langSwitcher = document.getElementById('language-switcher');
-      if (langSwitcher) {
-        langSwitcher.addEventListener('change', function() {
-          changeLanguage(this.value);
+        profileToggle.addEventListener("click", (e) => {
+          e.stopPropagation();
+          toggleDropdownMenu();
         });
       }
-      
-      // 8. Auto-update login state every 2 seconds (in case app.js or login.html updates it)
-      setInterval(updateLoginState, 2000);
-      
-      console.log('Index.html initialization complete');
-    });
-    
-    // Expose functions globally for app.js and external use
-    window.updateLoginState = updateLoginState;
-    window.closeDropdown = closeDropdown;
-    window.startChat = startChat;
-  </script>
-  <script src="app.js"></script>
 
+      // Context selector settings submenu interaction toggle callbacks
+      setupSubmenuToggler("settings-toggle", "settings-submenu");
+      setupSubmenuToggler("language-toggle", "language-submenu");
+      setupSubmenuToggler("appearance-toggle", "appearance-submenu");
+      setupSubmenuToggler("address-toggle", "address-submenu");
+
+      // Global window viewport pointer clicks down-dismiss elements interceptors
+      document.addEventListener("click", () => {
+        closeDropdown();
+      });
+
+      const menuWrapper = document.getElementById("my-market-menu");
+      if (menuWrapper) {
+        menuWrapper.addEventListener("click", (e) => {
+          e.stopPropagation(); // Avoid accidental dismiss when tweaking internals
+        });
+      }
+    }
+
+    function toggleDropdownMenu() {
+      const container = document.getElementById("my-market-container");
+      if (container) {
+        container.classList.toggle("open");
+      }
+    }
+
+    function closeDropdown() {
+      const container = document.getElementById("my-market-container");
+      if (container) {
+        container.classList.remove("open");
+      }
+      // Reset submenus open class styling rules
+      document.querySelectorAll(".submenu-toggle").forEach(el => el.classList.remove("open"));
+    }
+
+    function setupSubmenuToggler(toggleId, submenuId) {
+      const toggleElement = document.getElementById(toggleId);
+      if (toggleElement) {
+        toggleElement.addEventListener("click", (e) => {
+          e.stopPropagation();
+          toggleElement.classList.toggle("open");
+          const sub = document.getElementById(submenuId);
+          if (sub) {
+            sub.style.display = toggleElement.classList.contains("open") ? "flex" : "none";
+          }
+        });
+      }
+    }
+
+    // Dynamic Localization Engine Switcher 
+    function changeLanguage(langCode) {
+      state.currentLanguage = langCode;
+      const switcher = document.getElementById("language-switcher");
+      if (switcher) switcher.value = langCode;
+
+      const vocabulary = state.localization[langCode] || state.localization.en;
+      
+      // Cycle elements specifying dictionary translation properties
+      document.querySelectorAll("[data-i18n]").forEach(el => {
+        const key = el.getAttribute("data-i18n");
+        if (vocabulary[key]) el.textContent = vocabulary[key];
+      });
+
+      document.querySelectorAll("[data-i18n-ph]").forEach(el => {
+        const key = el.getAttribute("data-i18n-ph");
+        if (vocabulary[key]) el.setAttribute("placeholder", vocabulary[key]);
+      });
+    }
+
+    // Auxiliary Placeholder Methods requested by configuration menu contexts
+    function setAppearance(mode) {
+      if (mode === 'dark') {
+        document.body.style.background = "#1A1A18";
+        document.body.style.color = "#F7F6F2";
+        alert("Dark tone overlay applied template-wide.");
+      } else {
+        document.body.style.background = "var(--bg)";
+        document.body.style.color = "var(--text)";
+        alert("Standard light color baseline configured.");
+      }
+    }
+
+    function removeAddress() { alert("Delivery coordinates pipeline cleared."); }
+    function setDefaultAddress() { alert("Primary geographical transport destination locked."); }
+  </script>
 </body>
 </html>
