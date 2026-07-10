@@ -703,7 +703,7 @@
             <div style="padding: 12px; border-bottom: 1px solid var(--border); cursor: pointer;" onclick="switchView('business-dashboard')">🏪 My Business</div>
             <div style="padding: 12px; border-bottom: 1px solid var(--border); cursor: pointer;" onclick="switchView('messenger')">💬 Messages</div>
             <div style="padding: 12px; border-bottom: 1px solid var(--border); cursor: pointer; display: none;" id="admin-menu-item" onclick="switchView('admin')">🛡️ Admin</div>
-            <div style="padding: 12px; color: var(--accent); cursor: pointer;" id="logout-menu-item">🚪 Log Out</div>
+            <div style="padding: 12px; color: var(--accent); cursor: pointer;" id="logout-menu-item" onclick="logoutUser()">🚪 Log Out</div>
           </div>
         </div>
       </div>
@@ -722,138 +722,228 @@
 
   <script src="i18n.js"></script>
   <script>
-    // ===== MY MARKET DROPDOWN MENU FUNCTIONS =====
-    
-    // Toggle dropdown menu open/close
-    function toggleMyMarketMenu() {
-      const container = document.getElementById('my-market-container');
-      container.classList.toggle('open');
-    }
-    
-    // Close dropdown menu
-    function closeDropdown() {
-      const container = document.getElementById('my-market-container');
-      container.classList.remove('open');
-      // Close all submenus
-      document.querySelectorAll('.dropdown-item.submenu-toggle').forEach(item => {
-        item.classList.remove('open');
-      });
-    }
-    
-    // Toggle submenu
-    function toggleSubmenu(event) {
-      event.stopPropagation();
-      const item = event.currentTarget;
-      item.classList.toggle('open');
-    }
-    
-    // Close dropdown when clicking outside
-    document.addEventListener('click', function(e) {
-      const container = document.getElementById('my-market-container');
-      const toggle = document.getElementById('user-profile-toggle');
-      if (container && toggle && !container.contains(e.target)) {
-        container.classList.remove('open');
-      }
-    });
-    
-    // Add click handler to profile toggle
-    document.addEventListener('DOMContentLoaded', function() {
-      const profileToggle = document.getElementById('user-profile-toggle');
-      if (profileToggle) {
-        profileToggle.addEventListener('click', toggleMyMarketMenu);
-      }
-      
-      // Add click handlers to submenu toggles
-      document.querySelectorAll('.dropdown-item.submenu-toggle').forEach(item => {
-        item.addEventListener('click', toggleSubmenu);
-      });
-    });
-    
-    // ===== LOGIN STATE MANAGEMENT =====
-    
-    // Update UI based on login state (call this after login)
+    /**
+     * ===== LOGIN STATE MANAGEMENT =====
+     * Handles visibility of Account button vs My Market dropdown
+     */
     function updateLoginState() {
       const currentUser = localStorage.getItem('kagaCurrentUser');
       const headerLoginBtn = document.getElementById('header-login-btn');
       const myMarketContainer = document.getElementById('my-market-container');
       const myStoreItem = document.getElementById('my-store-item');
+      const bottomAccountBtn = document.querySelector('.mob-nav-btn[onclick*="account"]');
       
       if (currentUser) {
         try {
           const user = JSON.parse(currentUser);
+          if (!user.loginStatus) throw new Error('Not logged in');
           
-          // Hide guest Account button, show My Market
+          // HIDE top Account button for guests
           if (headerLoginBtn) headerLoginBtn.style.display = 'none';
-          if (myMarketContainer) myMarketContainer.classList.add('logged-in');
           
-          // Update user info in dropdown
-          document.getElementById('header-user-name').textContent = user.name || 'User';
-          document.getElementById('header-avatar').textContent = (user.name || 'U').charAt(0).toUpperCase();
-          document.getElementById('dropdown-user-name').textContent = user.name || 'User';
-          document.getElementById('dropdown-user-email').textContent = user.email || 'user@kaga.market';
-          document.getElementById('dropdown-avatar').textContent = (user.name || 'U').charAt(0).toUpperCase();
-          
-          // Show My Store for sellers only
-          if (user.role === 'seller' || user.isSeller) {
-            if (myStoreItem) myStoreItem.style.display = 'flex';
+          // SHOW My Market dropdown
+          if (myMarketContainer) {
+            myMarketContainer.classList.add('logged-in');
+            myMarketContainer.style.display = 'flex';
           }
+          
+          // Update user display info
+          const displayName = user.firstName || user.name || 'User';
+          const displayInitial = displayName.charAt(0).toUpperCase();
+          
+          const headerName = document.getElementById('header-user-name');
+          const headerAvatar = document.getElementById('header-avatar');
+          const dropdownName = document.getElementById('dropdown-user-name');
+          const dropdownEmail = document.getElementById('dropdown-user-email');
+          const dropdownAvatar = document.getElementById('dropdown-header-avatar');
+          
+          if (headerName) headerName.textContent = displayName;
+          if (headerAvatar) headerAvatar.textContent = displayInitial;
+          if (dropdownName) dropdownName.textContent = displayName;
+          if (dropdownEmail) dropdownEmail.textContent = user.email || 'user@kaga.market';
+          if (dropdownAvatar) dropdownAvatar.textContent = displayInitial;
+          
+          // Show My Store ONLY for sellers
+          if (myStoreItem) {
+            if (user.role === 'seller' || user.isSeller) {
+              myStoreItem.style.display = 'flex';
+            } else {
+              myStoreItem.style.display = 'none';
+            }
+          }
+          
+          // Show Admin Panel ONLY for admin
+          const adminMenuItem = document.getElementById('admin-menu-item');
+          if (adminMenuItem) {
+            if (user.role === 'admin' || user.isAdmin) {
+              adminMenuItem.style.display = 'block';
+            } else {
+              adminMenuItem.style.display = 'none';
+            }
+          }
+          
+          // Hide bottom Account button, show My Market indicator in mobile nav
+          if (bottomAccountBtn) bottomAccountBtn.style.display = 'none';
+          
         } catch (e) {
-          console.error('Error parsing user data:', e);
+          console.error('Login state error:', e);
+          // Invalid user data, treat as logged out
+          logoutUser();
         }
       } else {
-        // Show guest Account button, hide My Market
+        // NO USER LOGGED IN
+        
+        // SHOW top Account button
         if (headerLoginBtn) headerLoginBtn.style.display = 'block';
-        if (myMarketContainer) myMarketContainer.classList.remove('logged-in');
+        
+        // HIDE My Market dropdown
+        if (myMarketContainer) {
+          myMarketContainer.classList.remove('logged-in');
+          myMarketContainer.style.display = 'none';
+        }
+        
+        // SHOW bottom Account button
+        if (bottomAccountBtn) bottomAccountBtn.style.display = 'flex';
+      }
+    }
+
+    /**
+     * ===== DROPDOWN MENU FUNCTIONS =====
+     */
+    function toggleMyMarketMenu() {
+      const container = document.getElementById('my-market-container');
+      if (!container) return;
+      container.classList.toggle('open');
+    }
+    
+    function closeDropdown() {
+      const container = document.getElementById('my-market-container');
+      if (container) {
+        container.classList.remove('open');
+        // Close all submenus
+        document.querySelectorAll('.dropdown-item.submenu-toggle').forEach(item => {
+          item.classList.remove('open');
+        });
       }
     }
     
-    // ===== DROPDOWN MENU ACTIONS =====
-    
-    function logoutUser() {
-      localStorage.removeItem('kagaCurrentUser');
-      localStorage.removeItem('kagaUserRole');
-      updateLoginState();
-      closeDropdown();
-      switchView('home');
+    function toggleSubmenu(event) {
+      event.stopPropagation();
+      const item = event.currentTarget;
+      item.classList.toggle('open');
     }
-    
+
+    /**
+     * ===== SETTINGS MANAGEMENT =====
+     */
     function changeLanguage(lang) {
-      localStorage.setItem('language', lang);
-      document.getElementById('language-switcher').value = lang;
-      if (window.setLanguage) {
-        window.setLanguage(lang);
-      }
+      localStorage.setItem('kagaLanguage', lang);
+      const switcher = document.getElementById('language-switcher');
+      if (switcher) switcher.value = lang;
+      if (window.setLanguage) window.setLanguage(lang);
+      alert('Language changed to ' + (lang === 'en' ? 'English' : 'Kiswahili'));
     }
     
     function setAppearance(mode) {
-      localStorage.setItem('appearance', mode);
+      localStorage.setItem('kagaTheme', mode);
       if (mode === 'dark') {
         document.documentElement.style.filter = 'invert(1) hue-rotate(180deg)';
       } else {
         document.documentElement.style.filter = 'none';
       }
+      alert('Theme changed to ' + (mode === 'dark' ? 'Dark' : 'Light') + ' Mode');
+    }
+    
+    function saveDeliveryAddress(address) {
+      localStorage.setItem('kagaDeliveryAddress', JSON.stringify(address));
+      alert('Delivery address saved');
+      closeDropdown();
     }
     
     function removeAddress() {
-      localStorage.removeItem('deliveryAddress');
+      localStorage.removeItem('kagaDeliveryAddress');
       alert('Address removed');
       closeDropdown();
     }
     
     function setDefaultAddress() {
-      const address = localStorage.getItem('deliveryAddress');
+      const address = localStorage.getItem('kagaDeliveryAddress');
       if (address) {
-        localStorage.setItem('defaultDeliveryAddress', address);
+        localStorage.setItem('kagaDefaultDeliveryAddress', address);
         alert('Default address updated');
       } else {
         alert('Please add an address first');
       }
       closeDropdown();
     }
-    
-    // ===== INITIALIZE ON PAGE LOAD =====
+
+    /**
+     * ===== LOGOUT =====
+     */
+    function logoutUser() {
+      if (!confirm('Are you sure you want to log out?')) return;
+      
+      localStorage.removeItem('kagaCurrentUser');
+      localStorage.removeItem('kagaUserRole');
+      
+      updateLoginState();
+      closeDropdown();
+      switchView('home');
+      alert('Logged out successfully');
+    }
+
+    /**
+     * ===== CHAT INTEGRATION =====
+     */
+    function startChat(sellerId) {
+      const currentUser = localStorage.getItem('kagaCurrentUser');
+      if (!currentUser) {
+        alert('Please log in to start a chat');
+        return;
+      }
+      
+      if (window.startChat) {
+        window.startChat(sellerId);
+      } else {
+        alert('Chat feature coming soon');
+      }
+    }
+
+    /**
+     * ===== LOAD USER PREFERENCES =====
+     */
+    function loadUserPreferences() {
+      // Load language
+      const savedLang = localStorage.getItem('kagaLanguage') || 'en';
+      const langSwitcher = document.getElementById('language-switcher');
+      if (langSwitcher) langSwitcher.value = savedLang;
+      
+      // Load theme
+      const savedTheme = localStorage.getItem('kagaTheme') || 'light';
+      if (savedTheme === 'dark') {
+        document.documentElement.style.filter = 'invert(1) hue-rotate(180deg)';
+      }
+      
+      // Load delivery address (will be used in checkout)
+      const savedAddress = localStorage.getItem('kagaDeliveryAddress');
+      if (savedAddress && typeof window.loadDeliveryAddress === 'function') {
+        window.loadDeliveryAddress(JSON.parse(savedAddress));
+      }
+    }
+
+    /**
+     * ===== INITIALIZATION ON PAGE LOAD =====
+     */
     document.addEventListener('DOMContentLoaded', function() {
-      // Render categories
+      console.log('Index.html loaded - Initializing...');
+      
+      // 1. Load user preferences (language, theme, address)
+      loadUserPreferences();
+      
+      // 2. Check login state and update navigation
+      updateLoginState();
+      
+      // 3. Render categories
       const cats = [
         '📱 Electronics', '👗 Fashion', '🍎 Groceries', '🏠 Home',
         '💄 Beauty', '⚽ Sports', '📚 Books', '🔧 Tools'
@@ -865,10 +955,27 @@
         ).join('');
       }
       
-      // Check login state on page load
-      updateLoginState();
+      // 4. Setup dropdown toggle
+      const profileToggle = document.getElementById('user-profile-toggle');
+      if (profileToggle) {
+        profileToggle.addEventListener('click', toggleMyMarketMenu);
+      }
       
-      // Set up language switcher
+      // 5. Setup submenu toggles
+      document.querySelectorAll('.dropdown-item.submenu-toggle').forEach(item => {
+        item.addEventListener('click', toggleSubmenu);
+      });
+      
+      // 6. Close dropdown when clicking outside
+      document.addEventListener('click', function(e) {
+        const container = document.getElementById('my-market-container');
+        const toggle = document.getElementById('user-profile-toggle');
+        if (container && toggle && !container.contains(e.target)) {
+          container.classList.remove('open');
+        }
+      });
+      
+      // 7. Setup language switcher
       const langSwitcher = document.getElementById('language-switcher');
       if (langSwitcher) {
         langSwitcher.addEventListener('change', function() {
@@ -876,12 +983,16 @@
         });
       }
       
-      // Auto-update login state every 1 second (in case app.js updates localStorage)
-      setInterval(updateLoginState, 1000);
+      // 8. Auto-update login state every 2 seconds (in case app.js or login.html updates it)
+      setInterval(updateLoginState, 2000);
+      
+      console.log('Index.html initialization complete');
     });
     
-    // Expose updateLoginState globally so app.js can call it if needed
+    // Expose functions globally for app.js and external use
     window.updateLoginState = updateLoginState;
+    window.closeDropdown = closeDropdown;
+    window.startChat = startChat;
   </script>
   <script src="app.js"></script>
 
