@@ -86,6 +86,50 @@
     }
     .login-btn:active { background: var(--brand-dark); }
 
+    /* ===== MY MARKET DROPDOWN ===== */
+    .my-market-container { position: relative; display: none; }
+    .my-market-container.logged-in { display: flex; }
+    .user-profile-section { display: flex; align-items: center; gap: 8px; padding: 6px 12px; border-radius: var(--radius-sm); background: var(--surface2); cursor: pointer; transition: background 0.15s; }
+    .user-profile-section:active { background: var(--border); }
+    .user-avatar { width: 32px; height: 32px; border-radius: 50%; background: var(--brand); display: flex; align-items: center; justify-content: center; color: #fff; font-size: 14px; font-weight: 700; flex-shrink: 0; }
+    .user-avatar img { width: 100%; height: 100%; border-radius: 50%; object-fit: cover; }
+    .user-name { font-size: 12px; font-weight: 600; color: var(--text); max-width: 120px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+    .dropdown-toggle { font-size: 14px; color: var(--text-muted); }
+
+    /* ===== DROPDOWN MENU ===== */
+    .dropdown-menu { position: absolute; top: calc(100% + 8px); right: 0; background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius-md); box-shadow: var(--shadow-lg); min-width: 220px; z-index: 200; display: none; flex-direction: column; }
+    .my-market-container.open .dropdown-menu { display: flex; }
+    .dropdown-header { padding: 12px 14px; border-bottom: 1px solid var(--border); display: flex; align-items: center; gap: 10px; }
+    .dropdown-header-avatar { width: 40px; height: 40px; border-radius: 50%; background: var(--brand-light); display: flex; align-items: center; justify-content: center; font-size: 18px; flex-shrink: 0; }
+    .dropdown-header-avatar img { width: 100%; height: 100%; border-radius: 50%; object-fit: cover; }
+    .dropdown-header-info { flex: 1; }
+    .dropdown-header-name { font-size: 12px; font-weight: 600; color: var(--text); }
+    .dropdown-header-email { font-size: 10px; color: var(--text-light); }
+    .dropdown-items { display: flex; flex-direction: column; max-height: 400px; overflow-y: auto; }
+    .dropdown-item { padding: 12px 14px; font-size: 12px; color: var(--text-muted); cursor: pointer; display: flex; align-items: center; gap: 10px; transition: background 0.15s; border-bottom: 1px solid var(--border); }
+    .dropdown-item:hover { background: var(--surface2); }
+    .dropdown-item:active { background: var(--brand-light); }
+    .dropdown-item:last-child { border-bottom: none; }
+    .dropdown-item-icon { font-size: 16px; }
+    .dropdown-item-label { flex: 1; font-weight: 500; }
+    .dropdown-item-arrow { font-size: 12px; color: var(--text-light); }
+    .dropdown-submenu { display: none; flex-direction: column; background: var(--surface2); }
+    .dropdown-item.submenu-toggle.open ~ .dropdown-submenu { display: flex; }
+    .dropdown-submenu-item { padding: 10px 14px 10px 40px; font-size: 11px; color: var(--text-light); cursor: pointer; transition: background 0.15s; }
+    .dropdown-submenu-item:hover { background: var(--surface); color: var(--text); }
+    .dropdown-divider { height: 1px; background: var(--border); margin: 4px 0; }
+    
+    /* Submenu visibility */
+    #settings-submenu { display: none; }
+    #language-submenu { display: none; }
+    #appearance-submenu { display: none; }
+    #address-submenu { display: none; }
+    
+    #settings-toggle.open ~ #settings-submenu { display: flex; }
+    #language-toggle.open ~ #language-submenu { display: flex; }
+    #appearance-toggle.open ~ #appearance-submenu { display: flex; }
+    #address-toggle.open ~ #address-submenu { display: flex; }
+
     /* ===== MAIN ===== */
     main { flex: 1; padding-bottom: var(--mob-nav-h); }
     .panel { display: none; }
@@ -277,6 +321,12 @@
     .cart-total-main { display: flex; justify-content: space-between; font-size: 15px; font-weight: 700; margin-top: 8px; padding-top: 8px; border-top: 1px solid var(--border); }
     .btn-checkout { width: 100%; height: 46px; background: var(--brand); color: #fff; border: none; border-radius: var(--radius-sm); font-size: 13px; font-weight: 600; margin-top: 10px; cursor: pointer; }
 
+    /* ===== MOBILE RESPONSIVE DROPDOWN ===== */
+    @media (max-width: 767px) {
+      .dropdown-menu { right: -12px; left: auto; min-width: 260px; }
+      .user-name { display: none; }
+    }
+    
     /* ===== RESPONSIVE (DESKTOP) ===== */
     @media (min-width: 768px) {
       :root { --nav-h: 64px; --mob-nav-h: 0; }
@@ -330,7 +380,95 @@
         <option value="en">EN</option>
         <option value="sw">SW</option>
       </select>
+      <!-- Account button for guests (shown when NOT logged in) -->
       <button class="login-btn" id="header-login-btn" onclick="switchView('account')">👤 Account</button>
+      
+      <!-- My Market dropdown for logged-in users (shown when logged in) -->
+      <div class="my-market-container" id="my-market-container">
+        <div class="user-profile-section" id="user-profile-toggle">
+          <div class="user-avatar" id="header-avatar">👤</div>
+          <span class="user-name" id="header-user-name">User</span>
+          <span class="dropdown-toggle">▼</span>
+        </div>
+        
+        <div class="dropdown-menu" id="my-market-menu">
+          <!-- Profile Header -->
+          <div class="dropdown-header">
+            <div class="dropdown-header-avatar" id="dropdown-avatar">👤</div>
+            <div class="dropdown-header-info">
+              <div class="dropdown-header-name" id="dropdown-user-name">User Name</div>
+              <div class="dropdown-header-email" id="dropdown-user-email">user@example.com</div>
+            </div>
+          </div>
+          
+          <!-- Menu Items -->
+          <div class="dropdown-items">
+            <div class="dropdown-item" onclick="switchView('account'); closeDropdown()">
+              <span class="dropdown-item-icon">👤</span>
+              <span class="dropdown-item-label">My Profile</span>
+            </div>
+            <div class="dropdown-item" onclick="switchView('customer-dashboard'); closeDropdown()">
+              <span class="dropdown-item-icon">📦</span>
+              <span class="dropdown-item-label">My Orders</span>
+            </div>
+            <div class="dropdown-item" onclick="switchView('customer-dashboard'); closeDropdown()">
+              <span class="dropdown-item-icon">❤️</span>
+              <span class="dropdown-item-label">Wishlist</span>
+            </div>
+            <div class="dropdown-item" id="my-store-item" style="display: none;" onclick="switchView('business-dashboard'); closeDropdown()">
+              <span class="dropdown-item-icon">🏪</span>
+              <span class="dropdown-item-label">My Store</span>
+            </div>
+            
+            <div class="dropdown-divider"></div>
+            
+            <!-- Settings Submenu -->
+            <div class="dropdown-item submenu-toggle" id="settings-toggle">
+              <span class="dropdown-item-icon">⚙️</span>
+              <span class="dropdown-item-label">Settings</span>
+              <span class="dropdown-item-arrow">›</span>
+            </div>
+            
+            <div class="dropdown-submenu" id="settings-submenu">
+              <div class="dropdown-submenu-item submenu-toggle" id="language-toggle">
+                <span>🌐 Language</span>
+                <span class="dropdown-item-arrow">›</span>
+              </div>
+              <div class="dropdown-submenu" id="language-submenu">
+                <div class="dropdown-submenu-item" onclick="changeLanguage('en'); closeDropdown()">English 🇬🇧</div>
+                <div class="dropdown-submenu-item" onclick="changeLanguage('sw'); closeDropdown()">Kiswahili 🇹🇿</div>
+              </div>
+              
+              <div class="dropdown-submenu-item submenu-toggle" id="appearance-toggle">
+                <span>🎨 Appearance</span>
+                <span class="dropdown-item-arrow">›</span>
+              </div>
+              <div class="dropdown-submenu" id="appearance-submenu">
+                <div class="dropdown-submenu-item" onclick="setAppearance('light'); closeDropdown()">☀️ Light Mode</div>
+                <div class="dropdown-submenu-item" onclick="setAppearance('dark'); closeDropdown()">🌙 Dark Mode</div>
+              </div>
+              
+              <div class="dropdown-submenu-item submenu-toggle" id="address-toggle">
+                <span>📍 Delivery Address</span>
+                <span class="dropdown-item-arrow">›</span>
+              </div>
+              <div class="dropdown-submenu" id="address-submenu">
+                <div class="dropdown-submenu-item" onclick="switchView('delivery'); closeDropdown()">➕ Add Address</div>
+                <div class="dropdown-submenu-item" onclick="switchView('delivery'); closeDropdown()">✏️ Edit Address</div>
+                <div class="dropdown-submenu-item" onclick="removeAddress(); closeDropdown()">🗑️ Remove Address</div>
+                <div class="dropdown-submenu-item" onclick="setDefaultAddress(); closeDropdown()">⭐ Set Default</div>
+              </div>
+            </div>
+            
+            <div class="dropdown-divider"></div>
+            
+            <div class="dropdown-item" id="logout-btn" onclick="logoutUser()">
+              <span class="dropdown-item-icon">🚪</span>
+              <span class="dropdown-item-label">Log Out</span>
+            </div>
+          </div>
+        </div>
+      </div>
     </div>
   </header>
 
@@ -584,8 +722,138 @@
 
   <script src="i18n.js"></script>
   <script>
-    // Render categories on home
-    function renderCategories() {
+    // ===== MY MARKET DROPDOWN MENU FUNCTIONS =====
+    
+    // Toggle dropdown menu open/close
+    function toggleMyMarketMenu() {
+      const container = document.getElementById('my-market-container');
+      container.classList.toggle('open');
+    }
+    
+    // Close dropdown menu
+    function closeDropdown() {
+      const container = document.getElementById('my-market-container');
+      container.classList.remove('open');
+      // Close all submenus
+      document.querySelectorAll('.dropdown-item.submenu-toggle').forEach(item => {
+        item.classList.remove('open');
+      });
+    }
+    
+    // Toggle submenu
+    function toggleSubmenu(event) {
+      event.stopPropagation();
+      const item = event.currentTarget;
+      item.classList.toggle('open');
+    }
+    
+    // Close dropdown when clicking outside
+    document.addEventListener('click', function(e) {
+      const container = document.getElementById('my-market-container');
+      const toggle = document.getElementById('user-profile-toggle');
+      if (container && toggle && !container.contains(e.target)) {
+        container.classList.remove('open');
+      }
+    });
+    
+    // Add click handler to profile toggle
+    document.addEventListener('DOMContentLoaded', function() {
+      const profileToggle = document.getElementById('user-profile-toggle');
+      if (profileToggle) {
+        profileToggle.addEventListener('click', toggleMyMarketMenu);
+      }
+      
+      // Add click handlers to submenu toggles
+      document.querySelectorAll('.dropdown-item.submenu-toggle').forEach(item => {
+        item.addEventListener('click', toggleSubmenu);
+      });
+    });
+    
+    // ===== LOGIN STATE MANAGEMENT =====
+    
+    // Update UI based on login state (call this after login)
+    function updateLoginState() {
+      const currentUser = localStorage.getItem('kagaCurrentUser');
+      const headerLoginBtn = document.getElementById('header-login-btn');
+      const myMarketContainer = document.getElementById('my-market-container');
+      const myStoreItem = document.getElementById('my-store-item');
+      
+      if (currentUser) {
+        try {
+          const user = JSON.parse(currentUser);
+          
+          // Hide guest Account button, show My Market
+          if (headerLoginBtn) headerLoginBtn.style.display = 'none';
+          if (myMarketContainer) myMarketContainer.classList.add('logged-in');
+          
+          // Update user info in dropdown
+          document.getElementById('header-user-name').textContent = user.name || 'User';
+          document.getElementById('header-avatar').textContent = (user.name || 'U').charAt(0).toUpperCase();
+          document.getElementById('dropdown-user-name').textContent = user.name || 'User';
+          document.getElementById('dropdown-user-email').textContent = user.email || 'user@kaga.market';
+          document.getElementById('dropdown-avatar').textContent = (user.name || 'U').charAt(0).toUpperCase();
+          
+          // Show My Store for sellers only
+          if (user.role === 'seller' || user.isSeller) {
+            if (myStoreItem) myStoreItem.style.display = 'flex';
+          }
+        } catch (e) {
+          console.error('Error parsing user data:', e);
+        }
+      } else {
+        // Show guest Account button, hide My Market
+        if (headerLoginBtn) headerLoginBtn.style.display = 'block';
+        if (myMarketContainer) myMarketContainer.classList.remove('logged-in');
+      }
+    }
+    
+    // ===== DROPDOWN MENU ACTIONS =====
+    
+    function logoutUser() {
+      localStorage.removeItem('kagaCurrentUser');
+      localStorage.removeItem('kagaUserRole');
+      updateLoginState();
+      closeDropdown();
+      switchView('home');
+    }
+    
+    function changeLanguage(lang) {
+      localStorage.setItem('language', lang);
+      document.getElementById('language-switcher').value = lang;
+      if (window.setLanguage) {
+        window.setLanguage(lang);
+      }
+    }
+    
+    function setAppearance(mode) {
+      localStorage.setItem('appearance', mode);
+      if (mode === 'dark') {
+        document.documentElement.style.filter = 'invert(1) hue-rotate(180deg)';
+      } else {
+        document.documentElement.style.filter = 'none';
+      }
+    }
+    
+    function removeAddress() {
+      localStorage.removeItem('deliveryAddress');
+      alert('Address removed');
+      closeDropdown();
+    }
+    
+    function setDefaultAddress() {
+      const address = localStorage.getItem('deliveryAddress');
+      if (address) {
+        localStorage.setItem('defaultDeliveryAddress', address);
+        alert('Default address updated');
+      } else {
+        alert('Please add an address first');
+      }
+      closeDropdown();
+    }
+    
+    // ===== INITIALIZE ON PAGE LOAD =====
+    document.addEventListener('DOMContentLoaded', function() {
+      // Render categories
       const cats = [
         '📱 Electronics', '👗 Fashion', '🍎 Groceries', '🏠 Home',
         '💄 Beauty', '⚽ Sports', '📚 Books', '🔧 Tools'
@@ -596,8 +864,24 @@
           `<div class="category-chip" onclick="filterShopByCategory('${c.split(' ')[1]}')">${c}</div>`
         ).join('');
       }
-    }
-    window.addEventListener('DOMContentLoaded', renderCategories);
+      
+      // Check login state on page load
+      updateLoginState();
+      
+      // Set up language switcher
+      const langSwitcher = document.getElementById('language-switcher');
+      if (langSwitcher) {
+        langSwitcher.addEventListener('change', function() {
+          changeLanguage(this.value);
+        });
+      }
+      
+      // Auto-update login state every 1 second (in case app.js updates localStorage)
+      setInterval(updateLoginState, 1000);
+    });
+    
+    // Expose updateLoginState globally so app.js can call it if needed
+    window.updateLoginState = updateLoginState;
   </script>
   <script src="app.js"></script>
 
