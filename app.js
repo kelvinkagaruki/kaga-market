@@ -3,18 +3,18 @@
  */
 const AppState = {
   currentView: 'home',
-  language: 'en',
+  language: localStorage.getItem('kagaLanguage') || 'en',
   cart: [],
   products: [
-    { id: 1, name: 'Samsung Galaxy A15', category: 'Electronics', price: 450000, rating: 4.7, seller: 'Kaga Tech', sellerId: 'seller-001', desc: '128GB Storage, 4GB RAM, Brand New.', img: 'https://images.unsplash.com/photo-1610945265064-0e34e5519bbf?w=400', whatsapp: '0754000000', location: 'Dar es Salaam' },
-    { id: 2, name: 'Smart Watch Ultra', category: 'Electronics', price: 120000, rating: 4.5, seller: 'Kaga Tech', sellerId: 'seller-001', desc: 'Waterproof sports smartwatch with heart rate monitoring.', img: 'https://images.unsplash.com/photo-1523275335684-37898b6baf30?w=400', whatsapp: '0754000000', location: 'Arusha' },
-    { id: 3, name: 'Classic Leather Sneakers', category: 'Fashion', price: 65000, rating: 4.4, seller: 'Mwanza Trendy Walks', sellerId: 'seller-002', desc: 'Durable white street fashion wear sneakers.', img: 'https://images.unsplash.com/photo-1549298916-b41d501d3772?w=400', whatsapp: '0713000000', location: 'Mwanza' },
-    { id: 4, name: 'Premium Coffee Beans Bag', category: 'Groceries', price: 25000, rating: 4.9, seller: 'Kilimanjaro Harvest', sellerId: 'seller-003', desc: 'Organic roasted medium blend robusta coffee.', img: 'https://images.unsplash.com/photo-1559056199-641a0ac8b55e?w=400', whatsapp: '0784000000', location: 'Dodoma' }
+    { id: 1, name: 'Fresh Avocados', category: 'Groceries', price: 5000, rating: 4.8, seller: 'Asha Fresh Market', sellerId: 'seller-verified', desc: 'Fresh avocados sourced from Mbeya farms.', img: 'https://images.unsplash.com/photo-1574484284002-952d92456975?w=400', whatsapp: '0754000001', location: 'Mbeya', status: 'live', sellerVerified: true },
+    { id: 2, name: 'Wireless Earbuds', category: 'Electronics', price: 35000, rating: 4.7, seller: 'Kaga Tech', sellerId: 'seller-001', desc: 'Bluetooth earbuds with clear sound and long battery life.', img: 'https://images.unsplash.com/photo-1606225457115-9b7f4b8f2b1e?w=400', whatsapp: '0754000002', location: 'Dar es Salaam', status: 'live', sellerVerified: true },
+    { id: 3, name: 'Handmade Basket', category: 'Home', price: 22000, rating: 4.6, seller: 'Khalid Fashion House', sellerId: 'seller-pending', desc: 'Beautiful woven basket for home storage.', img: 'https://images.unsplash.com/photo-1517705008128-361805f42e86?w=400', whatsapp: '0715000003', location: 'Arusha', status: 'pending', sellerVerified: false },
+    { id: 4, name: 'Organic Coffee Beans', category: 'Groceries', price: 18000, rating: 4.9, seller: 'Kilimanjaro Harvest', sellerId: 'seller-003', desc: 'Roasted organic coffee beans from Kilimanjaro.', img: 'https://images.unsplash.com/photo-1495474472287-4d71bcdd2085?w=400', whatsapp: '0784000000', location: 'Dodoma', status: 'live', sellerVerified: true }
   ],
   businesses: [
-    { id: 1, name: 'Kaga Tech', type: 'Electronics & Gadgets', emoji: '📱', verified: true },
-    { id: 2, name: 'Mwanza Trendy Walks', type: 'Fashion & Shoes', emoji: '👗', verified: true },
-    { id: 3, name: 'Kilimanjaro Harvest', type: 'Groceries & Organics', emoji: '☕', verified: false }
+    { id: 1, name: 'Asha Fresh Market', type: 'Groceries & Produce', emoji: '🥑', verified: true, sellerId: 'seller-verified' },
+    { id: 2, name: 'Kaga Tech', type: 'Electronics & Gadgets', emoji: '📱', verified: true, sellerId: 'seller-001' },
+    { id: 3, name: 'Khalid Fashion House', type: 'Fashion & Home Decor', emoji: '🧺', verified: false, sellerId: 'seller-pending' }
   ],
   activeCategory: 'All',
   searchQuery: '',
@@ -27,19 +27,54 @@ const AppState = {
 /**
  * ===== LOGIN SESSION MANAGEMENT =====
  */
+function normalizeUser(rawUser) {
+  if (!rawUser) return null;
+
+  const role = String(rawUser.role || rawUser.accountType || 'buyer').toLowerCase();
+  return {
+    ...rawUser,
+    role,
+    isSeller: role === 'seller' || rawUser.isSeller === true,
+    isAdmin: role === 'admin',
+    businessVerified: rawUser.businessVerified !== undefined ? rawUser.businessVerified : role === 'seller' ? false : true,
+    loginStatus: rawUser.loginStatus === true
+  };
+}
+
+function seedDemoUsers() {
+  const users = JSON.parse(localStorage.getItem('kagaUsers') || '[]');
+  const emails = users.map(u => (u.email || '').toLowerCase());
+
+  if (!emails.includes('kelvinkagaruki10@gmail.com')) {
+    users.push({ id: 'admin-001', firstName: 'Kelvin', lastName: 'Kagaruki', name: 'Kelvin Kagaruki', email: 'kelvinkagaruki10@gmail.com', phone: '+255 756 000 001', city: 'Arusha', password: 'mgisha05@K', role: 'admin', status: 'active', businessVerified: true });
+  }
+  if (!emails.includes('verified.seller@kaga.com')) {
+    users.push({ id: 'seller-verified', firstName: 'Asha', lastName: 'Msemo', name: 'Asha Msemo', email: 'verified.seller@kaga.com', phone: '+255 712 111 111', city: 'Dar es Salaam', password: 'seller123', role: 'seller', status: 'active', businessName: 'Asha Fresh Market', businessCategory: 'Groceries', businessVerified: true });
+  }
+  if (!emails.includes('pending.seller@kaga.com')) {
+    users.push({ id: 'seller-pending', firstName: 'Juma', lastName: 'Khalid', name: 'Juma Khalid', email: 'pending.seller@kaga.com', phone: '+255 715 222 222', city: 'Arusha', password: 'seller123', role: 'seller', status: 'active', businessName: 'Khalid Fashion House', businessCategory: 'Fashion', businessVerified: false });
+  }
+  if (!emails.includes('buyer@kaga.com')) {
+    users.push({ id: 'buyer-001', firstName: 'Mariam', lastName: 'Salum', name: 'Mariam Salum', email: 'buyer@kaga.com', phone: '+255 754 333 333', city: 'Mwanza', password: 'buyer123', role: 'buyer', status: 'active', businessVerified: true });
+  }
+
+  localStorage.setItem('kagaUsers', JSON.stringify(users));
+}
+
 function initializeLoginState() {
+  seedDemoUsers();
+
   const storedUser = localStorage.getItem('kagaCurrentUser');
   if (storedUser) {
     try {
-      AppState.currentUser = JSON.parse(storedUser);
+      AppState.currentUser = normalizeUser(JSON.parse(storedUser));
       updateNavigationForLoggedInUser();
     } catch (e) {
       console.error('Error parsing user data:', e);
       AppState.currentUser = null;
     }
   }
-  
-  // Load user preferences
+
   loadUserPreferences();
 }
 
@@ -48,7 +83,6 @@ function updateNavigationForLoggedInUser() {
     return;
   }
 
-  // Call the index.html function to update UI
   if (typeof window.updateLoginState === 'function') {
     window.updateLoginState();
   }
@@ -73,10 +107,15 @@ function loadUserPreferences() {
   }
 }
 
+function t(key, fallback) {
+  const lang = AppState.language || 'en';
+  const table = (window.translations && window.translations[lang]) ? window.translations[lang] : null;
+  return table && table[key] ? table[key] : (fallback || key);
+}
+
 function saveLanguage(lang) {
   AppState.language = lang;
   localStorage.setItem('kagaLanguage', lang);
-  // Reload to apply language changes
   location.reload();
 }
 
@@ -359,8 +398,7 @@ function renderHomeProducts() {
   const container = document.getElementById('home-products-container');
   if (!container) return;
 
-  // Take the top 2 items to show on the main homepage
-  const featured = AppState.products.slice(0, 2);
+  const featured = AppState.products.filter(isProductVisible).slice(0, 4);
   container.innerHTML = generateProductGridHTML(featured);
 }
 
@@ -368,7 +406,7 @@ function renderShopProducts() {
   const container = document.getElementById('shop-products-container');
   if (!container) return;
 
-  let filtered = AppState.products;
+  let filtered = AppState.products.filter(isProductVisible);
   if (AppState.activeCategory !== 'All') {
     filtered = filtered.filter(p => p.category === AppState.activeCategory);
   }
@@ -389,6 +427,12 @@ function renderShopProducts() {
   container.innerHTML = `<div class="products-grid">${generateProductGridHTML(filtered)}</div>`;
 }
 
+function isProductVisible(product) {
+  if (product.status === 'live') return true;
+  if (!AppState.currentUser) return false;
+  return AppState.currentUser.id === product.sellerId || AppState.currentUser.role === 'admin';
+}
+
 function generateProductGridHTML(productArray) {
   return productArray.map(product => `
     <div class="product-card">
@@ -398,7 +442,7 @@ function generateProductGridHTML(productArray) {
       <div class="product-info" onclick="viewProductDetails(${product.id})">
         <div class="product-name">${product.name}</div>
         <div class="product-price">${product.price.toLocaleString()} TZS</div>
-        <div class="product-seller">Shop: ${product.seller}</div>
+        <div class="product-seller">Shop: ${product.seller}${product.status === 'pending' ? ' • Pending Review' : ''}</div>
       </div>
       <div class="product-actions">
         <button class="btn-cart" onclick="addToCart(${product.id})">🛒 Add</button>
@@ -419,13 +463,13 @@ function renderBusinesses() {
         <div>
           <div class="biz-name">${b.name}</div>
           <div class="biz-type">${b.type}</div>
-          ${b.verified ? '<span class="verified-badge">✓ Verified</span>' : ''}
+          <span class="verified-badge">${b.verified ? '✓ Verified' : '⏳ Pending Verification'}</span>
         </div>
       </div>
     </div>
   `).join('');
 
-  if (homeContainer) homeContainer.innerHTML = generateHTML(AppState.businesses.slice(0, 2));
+  if (homeContainer) homeContainer.innerHTML = generateHTML(AppState.businesses.slice(0, 3));
   if (allContainer) allContainer.innerHTML = generateHTML(AppState.businesses);
 }
 
@@ -632,14 +676,13 @@ window.openWhatsAppInquiry = function(productId) {
  * Vendor User Operations: Add custom product properties with seller info
  */
 window.submitProduct = function() {
-  // Check if user is logged in and is a seller
   if (!AppState.currentUser) {
-    alert('Tafadhali ingia kwanza ili kuuza bidhaa!');
+    alert(t('toast-login-first', 'Please log in first to sell a product.'));
     return;
   }
 
   if (AppState.currentUser.role !== 'seller' && !AppState.currentUser.isSeller) {
-    alert('Huwezi kuuza bila akaunti ya muuzaji. Tafadhali andika upya kama muuzaji.');
+    alert(t('toast-seller-only', 'Only seller accounts can list products.'));
     return;
   }
 
@@ -665,11 +708,13 @@ window.submitProduct = function() {
     sellerId: AppState.currentUser.id,
     sellerCity: AppState.currentUser.city,
     desc: desc || 'No description provided.',
-    img: 'placeholder',
+    img: 'https://images.unsplash.com/photo-1512436991641-6745cdb1723f?w=400',
     whatsapp: whatsapp,
     location: location,
     postedAt: new Date().toISOString(),
-    postedBy: AppState.currentUser.id
+    postedBy: AppState.currentUser.id,
+    status: AppState.currentUser.businessVerified ? 'live' : 'pending',
+    sellerVerified: AppState.currentUser.businessVerified === true
   };
 
   AppState.products.unshift(newProduct); // Add straight to top of stack lists
@@ -686,7 +731,7 @@ window.submitProduct = function() {
   renderHomeProducts();
   renderShopProducts();
   
-  alert('Bidhaa yako imepokelewa! Itahakikiwa ndani ya saa 24.');
+  alert(AppState.currentUser.businessVerified ? t('toast-product-live', 'Your product is now live for buyers.') : t('toast-product-pending', 'Your product has been submitted for review because your business is still pending verification.'));
   
   // Reset form strings
   document.getElementById('prod-name').value = '';

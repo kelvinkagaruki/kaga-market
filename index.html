@@ -240,7 +240,7 @@
     }
     .product-img img { width: 100%; height: 100%; object-fit: cover; }
     .product-info { padding: 8px 10px; }
-    .product-name { font-size: 12px; font-weight: 500; line-height: 1.3; margin-bottom: 4px; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
+    .product-name { font-size: 12px; font-weight: 500; line-height: 1.3; margin-bottom: 4px; display: -webkit-box; -webkit-line-clamp: 2; line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
     .product-price { font-size: 13px; font-weight: 700; color: var(--brand-dark); margin-bottom: 4px; }
     .product-seller { font-size: 10px; color: var(--text-light); }
     .product-actions { display: flex; gap: 4px; padding: 6px 10px; }
@@ -386,9 +386,9 @@
       <input id="global-search-input" type="search" data-i18n-ph="hero-search-placeholder" placeholder="Search..." oninput="doGlobalSearch(this.value)" />
     </div>
     <nav class="header-nav">
-      <button class="nav-btn active" data-view="home" onclick="switchView('home')">🏠 Home</button>
-      <button class="nav-btn" data-view="shop" onclick="switchView('shop')">🛍️ Shop</button>
-      <button class="nav-btn" data-view="businesses" onclick="switchView('businesses')">🏪 Businesses</button>
+      <button class="nav-btn active" data-view="home" onclick="switchView('home')" data-i18n="nav-home">🏠 Home</button>
+      <button class="nav-btn" data-view="shop" onclick="switchView('shop')" data-i18n="nav-shop">🛍️ Shop</button>
+      <button class="nav-btn" data-view="businesses" onclick="switchView('businesses')" data-i18n="nav-businesses">🏪 Businesses</button>
     </nav>
     <div class="header-actions">
       <button class="icon-btn" onclick="switchView('cart')">🛒<span class="cart-badge" id="cart-count">0</span></button>
@@ -398,7 +398,7 @@
       </select>
       
       <!-- Account button for guests (shown when NOT logged in) -->
-      <button class="login-btn" id="header-login-btn" onclick="switchView('account')">👤 Account</button>
+      <button class="login-btn" id="header-login-btn" onclick="switchView('account')" data-i18n="nav-account">👤 Account</button>
       
       <!-- My Market dropdown for logged-in users (shown when logged in) -->
       <div class="my-market-container" id="my-market-container">
@@ -501,15 +501,15 @@
     <section class="panel active" id="home-panel">
       <!-- HERO SECTION -->
       <div class="hero">
-        <div class="hero-badge">📍 Tanzania's Marketplace</div>
-        <h2>Buy & Sell Locally</h2>
-        <p>Fast delivery • Verified sellers</p>
+        <div class="hero-badge" data-i18n="hero-badge">📍 Tanzania's Marketplace</div>
+        <h2 data-i18n="hero-title">Buy & Sell Locally</h2>
+        <p data-i18n="hero-subtitle">Fast delivery • Verified sellers</p>
         <div class="hero-search">
-          <input type="search" placeholder="What do you need?" id="hero-search-input" />
-          <button onclick="doHeroSearch()">Search</button>
+          <input type="search" data-i18n-ph="hero-search-placeholder" placeholder="What do you need?" id="hero-search-input" />
+          <button onclick="doHeroSearch()" data-i18n="hero-search-btn">Search</button>
         </div>
         <div class="hero-actions">
-          <button class="btn-primary" onclick="switchView('shop')">Browse</button>
+          <button class="btn-primary" onclick="switchView('shop')" data-i18n="hero-btn-browse">Browse</button>
           <button class="btn-secondary" id="sell-btn" onclick="switchView('add-product')">🏪 Sell</button>
         </div>
       </div>
@@ -522,7 +522,7 @@
       <!-- FEATURED PRODUCTS -->
       <div class="section">
         <div class="section-header">
-          <h2 class="section-title">✨ Featured</h2>
+          <h2 class="section-title" data-i18n="section-featured">✨ Featured</h2>
           <button class="see-all" onclick="switchView('shop')">View all →</button>
         </div>
         <div class="products-grid" id="home-products-container"></div>
@@ -531,7 +531,7 @@
       <!-- VERIFIED BUSINESSES -->
       <div class="section">
         <div class="section-header">
-          <h2 class="section-title">🏢 Businesses</h2>
+          <h2 class="section-title" data-i18n="section-businesses">🏢 Businesses</h2>
           <button class="see-all" onclick="switchView('businesses')">View all →</button>
         </div>
         <div class="businesses-grid" id="home-businesses-container"></div>
@@ -744,6 +744,8 @@
     </button>
   </div>
 
+  <script src="translations.js"></script>
+
   <!-- STATE & APPLICATION LOGIC ENGINE -->
   <script>
     // Constants
@@ -758,18 +760,15 @@
       cart: [],
       categories: ["All", "Fresh Produce", "Electronics", "Fashion", "Home Goods"],
       products: [
-        { id: 1, name: "Fresh Tanzanian Mangoes", price: 4500, category: "Fresh Produce", seller: "Kilimanjaro Orchards", icon: "🥭" },
-        { id: 2, name: "Premium Cashew Nuts (1kg)", price: 18000, category: "Fresh Produce", seller: "Mtwara Nuts Ltd", icon: "🥜" },
-        { id: 3, name: "Wireless Bluetooth Earbuds", price: 35000, category: "Electronics", seller: "Kariakoo Tech Hub", icon: "🎧" },
-        { id: 4, name: "Handwoven Maasai Blanket", price: 25000, category: "Fashion", seller: "Arusha Cultural Crafts", icon: "🧣" },
-        { id: 5, name: "Safari Leather Sandals", price: 30000, category: "Fashion", seller: "Zanzibar Leatherworks", icon: "🩴" },
-        { id: 6, name: "Pure Organic Honey", price: 12000, category: "Fresh Produce", seller: "Tabora Bee Keepers", icon: "🍯" }
+        { id: 1, name: "Fresh Avocados", price: 5000, category: "Groceries", seller: "Asha Fresh Market", icon: "🥑", sellerVerified: true, status: "live" },
+        { id: 2, name: "Wireless Earbuds", price: 35000, category: "Electronics", seller: "Kaga Tech", icon: "🎧", sellerVerified: true, status: "live" },
+        { id: 3, name: "Handmade Basket", price: 22000, category: "Home", seller: "Khalid Fashion House", icon: "🧺", sellerVerified: false, status: "pending" },
+        { id: 4, name: "Organic Coffee Beans", price: 18000, category: "Groceries", seller: "Kilimanjaro Harvest", icon: "☕", sellerVerified: true, status: "live" }
       ],
       businesses: [
-        { id: 101, name: "Kilimanjaro Orchards", type: "Fresh Goods & Agriculture", verified: true, logo: "🍏" },
-        { id: 102, name: "Kariakoo Tech Hub", type: "Consumer Electronics Wholesale", verified: true, logo: "⚡" },
-        { id: 103, name: "Arusha Cultural Crafts", type: "Apparel & Traditional Heritage", verified: false, logo: "🎨" },
-        { id: 104, name: "Zanzibar Leatherworks", type: "Handcrafted Luxury Apparel", verified: true, logo: "💼" }
+        { id: 101, name: "Asha Fresh Market", type: "Groceries & Produce", verified: true, logo: "🥑" },
+        { id: 102, name: "Kaga Tech", type: "Electronics & Gadgets", verified: true, logo: "📱" },
+        { id: 103, name: "Khalid Fashion House", type: "Fashion & Home Decor", verified: false, logo: "🧺" }
       ],
       localization: {
         en: {
@@ -801,18 +800,21 @@
 
     // Initialization lifecycle hooks
     document.addEventListener("DOMContentLoaded", () => {
-      // 1. Session parsing
       const storedSession = localStorage.getItem(SESSION_KEY);
       if (storedSession) {
-        try { state.currentUser = JSON.parse(storedSession); } catch(e) { state.currentUser = null; }
+        try {
+          const rawUser = JSON.parse(storedSession);
+          state.currentUser = rawUser && rawUser.loginStatus === true ? rawUser : null;
+        } catch(e) {
+          state.currentUser = null;
+        }
       }
-      
-      // 2. Setup structural UI elements
+
+      const savedLang = localStorage.getItem('kagaLanguage') || 'en';
+      changeLanguage(savedLang);
       renderCategoryChips();
       renderHomeCatalogs();
       updateLoginState();
-      
-      // 3. Setup event interceptors
       setupDropdownInterceptors();
     });
 
@@ -823,32 +825,25 @@
       const marketContainer = document.getElementById("my-market-container");
 
       if (!user) {
-        // Guest mode parameters
         if (loginBtn) loginBtn.style.display = "block";
         if (marketContainer) marketContainer.classList.remove("logged-in");
-        
-        // Hide structural dashboards elements inside the generic UI items
+
         document.getElementById("my-store-item").style.display = "none";
         document.getElementById("admin-panel-item").style.display = "none";
       } else {
-        // Logged-in profile mode parameters
         if (loginBtn) loginBtn.style.display = "none";
         if (marketContainer) marketContainer.classList.add("logged-in");
 
-        // UI Header bindings
         document.getElementById("header-user-name").textContent = user.firstName || user.username || "User";
         document.getElementById("dropdown-user-name").textContent = (user.firstName && user.lastName) ? `${user.firstName} ${user.lastName}` : (user.username || "User Profile");
         document.getElementById("dropdown-user-email").textContent = user.email || `${user.username || "user"}@kagamarket.co.tz`;
-        
-        // Conditional structural link visibility adjustments depending on Role
+
         const role = (user.role || "Buyer").toLowerCase();
-        
         const myStoreItem = document.getElementById("my-store-item");
         const adminPanelItem = document.getElementById("admin-panel-item");
         const ordersItem = document.getElementById("dropdown-orders-item");
         const wishlistItem = document.getElementById("dropdown-wishlist-item");
 
-        // Reset display parameters
         myStoreItem.style.display = "none";
         adminPanelItem.style.display = "none";
         ordersItem.style.display = "flex";
@@ -860,52 +855,14 @@
           adminPanelItem.style.display = "flex";
         }
       }
-      
-      // Re-evaluate profile block layout parameters if user views authentication tab
+
       if (state.activeView === "account") {
         renderProfileOrAuthPanel();
       }
     }
 
     function processUserLogin(username, password) {
-      if (!username || !password) {
-        alert("Please enter values in both fields.");
-        return;
-      }
-
-      // Map dynamic mock definitions or administrative profiles
-      let assignedRole = "Buyer";
-      let matchedUsername = username.trim();
-      let fName = "Mgeni";
-      let lName = "Mteja";
-
-      if (matchedUsername.toLowerCase().includes("admin")) {
-        assignedRole = "Admin";
-        fName = "Mkuu";
-        lName = "Msimamizi";
-      } else if (matchedUsername.toLowerCase().includes("sell") || matchedUsername.toLowerCase().includes("duka")) {
-        assignedRole = "Seller";
-        fName = "Muuzaji";
-        lName = "Mshirika";
-      }
-
-      const generatedProfile = {
-        username: matchedUsername,
-        firstName: fName,
-        lastName: lName,
-        role: assignedRole,
-        email: `${matchedUsername.toLowerCase()}@kagamarket.co.tz`,
-        authenticatedAt: new Date().toISOString()
-      };
-
-      // Save records inside storage contexts requested by platform standard API parameters
-      state.currentUser = generatedProfile;
-      localStorage.setItem(SESSION_KEY, JSON.stringify(generatedProfile));
-      
-      // Synchronize layouts and reload home view standard parameters
-      updateLoginState();
-      switchView("home");
-      alert(`Karibu tena / Welcome back, ${fName}! Logged in as ${assignedRole}.`);
+      window.location.href = 'login.html';
     }
 
     function logoutUser() {
@@ -978,17 +935,16 @@
     }
 
     function renderHomeCatalogs() {
-      // 1. Populate top initial marketplace items
       const productContainer = document.getElementById("home-products-container");
       if (productContainer) {
-        const slicedProducts = state.products.slice(0, 4);
+        const visibleProducts = state.products.filter(p => p.status !== "pending" || (state.currentUser && (state.currentUser.role === "seller" || state.currentUser.role === "admin")));
+        const slicedProducts = visibleProducts.slice(0, 4);
         productContainer.innerHTML = slicedProducts.map(p => generateProductCardMarkup(p)).join("");
       }
 
-      // 2. Populate corporate directory records
       const businessContainer = document.getElementById("home-businesses-container");
       if (businessContainer) {
-        const slicedBiz = state.businesses.slice(0, 2);
+        const slicedBiz = state.businesses.slice(0, 3);
         businessContainer.innerHTML = slicedBiz.map(b => generateBusinessCardMarkup(b)).join("");
       }
     }
@@ -997,7 +953,7 @@
       const container = document.getElementById("shop-products-container");
       if (!container) return;
 
-      let filtered = state.products;
+      let filtered = state.products.filter(p => p.status !== "pending" || (state.currentUser && (state.currentUser.role === "seller" || state.currentUser.role === "admin")));
       if (state.selectedCategory !== "All") {
         filtered = filtered.filter(p => p.category === state.selectedCategory);
       }
@@ -1034,7 +990,7 @@
           <div class="product-info" onclick="viewProductDetails(${p.id})">
             <div class="product-name">${p.name}</div>
             <div class="product-price">${p.price.toLocaleString()} TZS</div>
-            <div class="product-seller">🏪 ${p.seller}</div>
+            <div class="product-seller">🏪 ${p.seller}${p.status === 'pending' ? ' • Pending Review' : ''}</div>
           </div>
           <div class="product-actions">
             <button class="btn-cart" onclick="addItemToCart(${p.id})">Add to Cart</button>
@@ -1051,7 +1007,7 @@
             <div>
               <div class="biz-name">${b.name}</div>
               <div class="biz-type">${b.type}</div>
-              ${b.verified ? '<span class="verified-badge">✓ Verified</span>' : ''}
+              <span class="verified-badge">${b.verified ? '✓ Verified' : '⏳ Pending Verification'}</span>
             </div>
           </div>
         </div>`;
@@ -1093,60 +1049,46 @@
       if (!container) return;
 
       if (state.currentUser) {
-        // Logged-in view presentation block
         const user = state.currentUser;
-        const mappedRole = user.role || "Buyer";
+        const mappedRole = (user.role || "Buyer").charAt(0).toUpperCase() + (user.role || "Buyer").slice(1);
         let functionalDashboardTarget = "customer-dashboard";
-        
-        if (mappedRole === "Seller") functionalDashboardTarget = "business-dashboard";
-        if (mappedRole === "Admin") functionalDashboardTarget = "admin-dashboard";
+
+        if ((user.role || "").toLowerCase() === "seller") functionalDashboardTarget = "business-dashboard";
+        if ((user.role || "").toLowerCase() === "admin") functionalDashboardTarget = "admin-dashboard";
 
         container.innerHTML = `
           <div class="form-card" style="text-align: center;">
             <div class="form-card-header">
-              <h2>Active Session Identity</h2>
-              <p>Security role authorization clearances</p>
+              <h2>Active Session</h2>
+              <p>Signed in with your Kaga's Market account</p>
             </div>
             <div class="form-card-body" style="padding: 24px 16px;">
               <div style="width: 64px; height: 64px; border-radius: 50%; background: var(--brand-light); color: var(--brand-dark); font-size: 28px; font-weight:700; display:flex; align-items:center; justify-content:center; margin: 0 auto 12px;">
                 ${user.firstName ? user.firstName.charAt(0) : '👤'}
               </div>
-              <h3 style="font-family: var(--font-head); font-size: 16px;">${user.firstName} ${user.lastName}</h3>
+              <h3 style="font-family: var(--font-head); font-size: 16px;">${user.firstName || ''} ${user.lastName || ''}</h3>
               <p style="font-size: 12px; color: var(--text-light); margin-bottom: 12px;">${user.email}</p>
-              
               <div style="display:inline-block; padding: 4px 12px; background: var(--surface2); border-radius:999px; font-size:11px; font-weight:600; color:var(--brand-dark); margin-bottom: 24px;">
-                Security Role: ${mappedRole}
+                Role: ${mappedRole}
               </div>
-
               <button class="btn-submit" style="margin-bottom: 10px;" onclick="switchView('${functionalDashboardTarget}')">
-                Open ${mappedRole} Hub Panel
+                Open ${mappedRole} Hub
               </button>
               <button class="btn-submit" style="background: #fff; border: 1px solid var(--accent); color: var(--accent);" onclick="logoutUser()">
-                Disconnect Profile (Log Out)
+                Log Out
               </button>
             </div>
           </div>`;
       } else {
-        // Fallback fallback / Unified rendering inside index workspace container
         container.innerHTML = `
           <div class="form-card">
             <div class="form-card-header">
               <h2>🔐 Welcome to Kaga's Market</h2>
-              <p>Access your local account profile updates</p>
+              <p>Use the login page to access your account</p>
             </div>
             <div class="form-card-body">
-              <form id="spa-login-form" onsubmit="event.preventDefault(); processUserLogin(document.getElementById('auth-user').value, document.getElementById('auth-pass').value);">
-                <div class="form-group">
-                  <label class="form-items-label" style="font-size:12px; font-weight:600; margin-bottom:4px; display:block;">Profile Username / Email</label>
-                  <input type="text" id="auth-user" class="form-input" required placeholder="e.g. JohnMuuzaji or buyer123">
-                  <p style="font-size:9px; color:var(--text-light); margin-top:2px;">Tip: include 'sell' for merchant mode, or 'admin' for system tools.</p>
-                </div>
-                <div class="form-group">
-                  <label class="form-items-label" style="font-size:12px; font-weight:600; margin-bottom:4px; display:block;">Access Phrase Password</label>
-                  <input type="password" id="auth-pass" class="form-input" required placeholder="••••••••">
-                </div>
-                <button type="submit" class="btn-submit" style="margin-top:8px;">Authorize Session</button>
-              </form>
+              <p style="font-size:12px; color:var(--text-muted); line-height:1.6; margin-bottom:12px;">The storefront now follows the same admin, seller, and buyer roles that are used in the login form.</p>
+              <button class="btn-submit" onclick="window.location.href='login.html'">Go to Login</button>
             </div>
           </div>`;
       }
@@ -1362,21 +1304,28 @@
     // Dynamic Localization Engine Switcher 
     function changeLanguage(langCode) {
       state.currentLanguage = langCode;
-      const switcher = document.getElementById("language-switcher");
-      if (switcher) switcher.value = langCode;
+      localStorage.setItem('kagaLanguage', langCode);
 
-      const vocabulary = state.localization[langCode] || state.localization.en;
-      
-      // Cycle elements specifying dictionary translation properties
-      document.querySelectorAll("[data-i18n]").forEach(el => {
-        const key = el.getAttribute("data-i18n");
-        if (vocabulary[key]) el.textContent = vocabulary[key];
-      });
+      if (window.setLanguage) {
+        window.setLanguage(langCode);
+      } else {
+        const switcher = document.getElementById("language-switcher");
+        if (switcher) switcher.value = langCode;
 
-      document.querySelectorAll("[data-i18n-ph]").forEach(el => {
-        const key = el.getAttribute("data-i18n-ph");
-        if (vocabulary[key]) el.setAttribute("placeholder", vocabulary[key]);
-      });
+        const vocabulary = (window.translations && window.translations[langCode]) ? window.translations[langCode] : (window.translations && window.translations.en ? window.translations.en : state.localization[langCode] || state.localization.en);
+
+        document.querySelectorAll("[data-i18n]").forEach(el => {
+          const key = el.getAttribute("data-i18n");
+          if (vocabulary[key]) el.textContent = vocabulary[key];
+        });
+
+        document.querySelectorAll("[data-i18n-ph]").forEach(el => {
+          const key = el.getAttribute("data-i18n-ph");
+          if (vocabulary[key]) el.setAttribute("placeholder", vocabulary[key]);
+        });
+      }
+
+      document.documentElement.lang = langCode === 'sw' ? 'sw' : 'en';
     }
 
     // Auxiliary Placeholder Methods requested by configuration menu contexts

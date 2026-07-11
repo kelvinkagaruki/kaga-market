@@ -538,6 +538,91 @@
 
     var SESSION_KEY = 'kagaCurrentUser';
 
+    function seedDemoUsers() {
+      var users = JSON.parse(localStorage.getItem('kagaUsers') || '[]');
+      var emails = users.map(function(u) { return (u.email || '').toLowerCase(); });
+
+      if (!emails.includes(ADMIN.email.toLowerCase())) {
+        users.push({
+          id: ADMIN.id,
+          firstName: ADMIN.firstName,
+          lastName: ADMIN.lastName,
+          name: ADMIN.name,
+          email: ADMIN.email,
+          phone: ADMIN.phone,
+          city: ADMIN.city,
+          password: ADMIN.password,
+          role: 'admin',
+          status: 'active',
+          businessVerified: true,
+          joinDate: new Date().toLocaleDateString(),
+          profilePhoto: null
+        });
+      }
+
+      if (!emails.includes('verified.seller@kaga.com')) {
+        users.push({
+          id: 'seller-verified',
+          firstName: 'Asha',
+          lastName: 'Msemo',
+          name: 'Asha Msemo',
+          email: 'verified.seller@kaga.com',
+          phone: '+255 712 111 111',
+          city: 'Dar es Salaam',
+          password: 'seller123',
+          role: 'seller',
+          status: 'active',
+          businessName: 'Asha Fresh Market',
+          businessCategory: 'Groceries',
+          businessVerified: true,
+          joinDate: new Date().toLocaleDateString(),
+          profilePhoto: null
+        });
+      }
+
+      if (!emails.includes('pending.seller@kaga.com')) {
+        users.push({
+          id: 'seller-pending',
+          firstName: 'Juma',
+          lastName: 'Khalid',
+          name: 'Juma Khalid',
+          email: 'pending.seller@kaga.com',
+          phone: '+255 715 222 222',
+          city: 'Arusha',
+          password: 'seller123',
+          role: 'seller',
+          status: 'active',
+          businessName: 'Khalid Fashion House',
+          businessCategory: 'Fashion',
+          businessVerified: false,
+          joinDate: new Date().toLocaleDateString(),
+          profilePhoto: null
+        });
+      }
+
+      if (!emails.includes('buyer@kaga.com')) {
+        users.push({
+          id: 'buyer-001',
+          firstName: 'Mariam',
+          lastName: 'Salum',
+          name: 'Mariam Salum',
+          email: 'buyer@kaga.com',
+          phone: '+255 754 333 333',
+          city: 'Mwanza',
+          password: 'buyer123',
+          role: 'buyer',
+          status: 'active',
+          businessVerified: true,
+          joinDate: new Date().toLocaleDateString(),
+          profilePhoto: null
+        });
+      }
+
+      localStorage.setItem('kagaUsers', JSON.stringify(users));
+    }
+
+    seedDemoUsers();
+
     // AUTO-REDIRECT (If already logged in, go straight to index.html)
     (function checkIfLoggedIn() {
       var user = JSON.parse(localStorage.getItem(SESSION_KEY) || 'null');

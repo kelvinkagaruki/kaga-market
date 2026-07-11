@@ -1,5 +1,5 @@
-// ===============================
-// KAGA'S MARKET — i18n.js
+﻿// ===============================
+// KAGA'S MARKET â€” i18n.js
 // Full Translation System
 // English (en) + Kiswahili (sw)
 // ===============================
@@ -37,7 +37,7 @@ const translations = {
     'section-categories':     'Categories',
     'section-featured':       'Featured Products',
     'section-businesses':     'Verified Businesses',
-    'see-all':                'See all →',
+    'see-all':                'See all â†’',
 
     // --- CATEGORIES ---
     'cat-electronics':        'Electronics',
@@ -53,8 +53,8 @@ const translations = {
     'shop-title':             'Shop',
     'shop-search-placeholder':'Search products...',
     'sort-newest':            'Sort: Newest',
-    'sort-low-high':          'Price: Low–High',
-    'sort-high-low':          'Price: High–Low',
+    'sort-low-high':          'Price: Lowâ€“High',
+    'sort-high-low':          'Price: Highâ€“Low',
     'sort-popular':           'Most Popular',
     'filter-title':           'Filters',
     'filter-category':        'Category',
@@ -68,16 +68,16 @@ const translations = {
     'results-count':          'products',
 
     // --- PRODUCT PAGE ---
-    'back-to-shop':           '← Back to Shop',
+    'back-to-shop':           'â† Back to Shop',
     'product-reviews':        'reviews',
     'seller-label':           'Verified Seller',
-    'btn-wa-contact':         '💬 WhatsApp',
-    'btn-add-to-cart':        '🛒 Add to Cart',
-    'btn-save-item':          '❤️',
+    'btn-wa-contact':         'ðŸ’¬ WhatsApp',
+    'btn-add-to-cart':        'ðŸ›’ Add to Cart',
+    'btn-save-item':          'â¤ï¸',
 
     // --- BUSINESSES ---
     'businesses-title':       'Verified Businesses',
-    'verified-badge':         '✅ Verified',
+    'verified-badge':         'âœ… Verified',
 
     // --- SERVICES ---
     'services-title':         'Find Professionals',
@@ -90,13 +90,13 @@ const translations = {
     'services-tutors':        'Tutors',
     'services-caterers':      'Caterers',
     'professionals-title':    'Top Professionals',
-    'btn-contact-wa':         '💬 Contact via WhatsApp',
+    'btn-contact-wa':         'ðŸ’¬ Contact via WhatsApp',
     'professionals-label':    'professionals',
 
     // --- CART ---
     'cart-title':             'My Cart',
     'cart-empty':             'Your cart is empty.',
-    'cart-browse':            'Browse products →',
+    'cart-browse':            'Browse products â†’',
     'cart-subtotal':          'Subtotal',
     'cart-delivery':          'Delivery',
     'cart-total':             'Total',
@@ -104,7 +104,7 @@ const translations = {
 
     // --- DELIVERY ---
     'delivery-title':         'Delivery Details',
-    'back-to-cart':           '← Back to Cart',
+    'back-to-cart':           'â† Back to Cart',
     'form-fullname':          'Full Name',
     'form-fullname-ph':       'e.g. Juma Ally',
     'form-phone':             'Phone Number',
@@ -118,7 +118,7 @@ const translations = {
     'pay-tigo':               'Tigo Pesa',
     'pay-airtel':             'Airtel Money',
     'pay-cash':               'Cash on Delivery',
-    'btn-place-order':        '📦 Place Order',
+    'btn-place-order':        'ðŸ“¦ Place Order',
 
     // --- ACCOUNT ---
     'account-guest':          'Guest User',
@@ -132,11 +132,11 @@ const translations = {
 
     // --- CUSTOMER DASHBOARD ---
     'dashboard-title':        'My Dashboard',
-    'dash-orders':            '📦 Orders',
-    'dash-saved':             '❤️ Saved',
-    'dash-messages':          '💬 Messages',
-    'no-saved':               'No saved items yet. ❤️',
-    'no-messages':            'No messages yet. Go to 💬 Messenger.',
+    'dash-orders':            'ðŸ“¦ Orders',
+    'dash-saved':             'â¤ï¸ Saved',
+    'dash-messages':          'ðŸ’¬ Messages',
+    'no-saved':               'No saved items yet. â¤ï¸',
+    'no-messages':            'No messages yet. Go to ðŸ’¬ Messenger.',
     'order-delivered':        'Delivered',
     'order-shipped':          'Shipped',
     'order-processing':       'Processing',
@@ -182,7 +182,7 @@ const translations = {
     // --- MESSENGER ---
     'messenger-title':        'Messages',
     'chat-placeholder':       'Type a message...',
-    'chat-online':            '● Online',
+    'chat-online':            'â— Online',
 
     // --- FOOTER ---
     'footer-about':           "Kaga's Market",
@@ -201,7 +201,7 @@ const translations = {
     'footer-privacy':         'Privacy Policy',
     'footer-terms':           'Terms of Use',
     'footer-cookie':          'Cookie Policy',
-    'footer-copy':            "© 2025 Kaga's Market · Built for Tanzania 🇹🇿",
+    'footer-copy':            "Â© 2025 Kaga's Market Â· Built for Tanzania ðŸ‡¹ðŸ‡¿",
 
     // --- LOGIN PAGE ---
     'login-tagline':          "Tanzania's Local Marketplace",
@@ -210,9 +210,9 @@ const translations = {
     'login-stat-users':       'Registered Users',
     'login-stat-biz':         'Verified Businesses',
     'login-stat-products':    'Products Listed',
-    'trust-secure':           '🔒 Secure Login',
-    'trust-made':             '🇹🇿 Made for Tanzania',
-    'trust-support':          '💬 WhatsApp Support',
+    'trust-secure':           'ðŸ”’ Secure Login',
+    'trust-made':             'ðŸ‡¹ðŸ‡¿ Made for Tanzania',
+    'trust-support':          'ðŸ’¬ WhatsApp Support',
     'role-buyer':             'Buyer',
     'role-buyer-desc':        'Shop & order',
     'role-seller':            'Seller',
@@ -221,7 +221,7 @@ const translations = {
     'role-admin-desc':        'Manage platform',
     'tab-signin':             'Sign In',
     'tab-register':           'Create Account',
-    'login-title':            'Welcome back 👋',
+    'login-title':            'Welcome back ðŸ‘‹',
     'login-subtitle':         'Sign in to your buyer account',
     'label-email':            'Email Address',
     'email-ph':               'your@email.com',
@@ -245,8 +245,8 @@ const translations = {
     'phone-ph':               'e.g. 0754 000 000',
     'label-location':         'Location',
     'location-ph':            'Select your city',
-    'btn-continue':           'Continue →',
-    'btn-back':               '← Back',
+    'btn-continue':           'Continue â†’',
+    'btn-back':               'â† Back',
     'label-confirm-pass':     'Confirm Password',
     'confirm-ph':             'Repeat your password',
     'label-biz-name':         'Business Name',
@@ -258,7 +258,7 @@ const translations = {
     'terms-and':              'and',
     'privacy-link':           'Privacy Policy',
     'marketing-text':         'Receive updates, promotions and news via email',
-    'btn-create-account':     'Create Account 🎉',
+    'btn-create-account':     'Create Account ðŸŽ‰',
     'have-account':           'Already have an account?',
     'sign-in-link':           'Sign in',
     'forgot-title':           'Reset Password',
@@ -267,11 +267,11 @@ const translations = {
 
     // --- TOAST / ALERTS ---
     'toast-added-cart':       'added to cart!',
-    'toast-order-placed':     "🎉 Order placed! You'll get an SMS confirmation shortly.",
-    'toast-logged-out':       '👋 Logged out successfully',
-    'toast-login-first':      '🔒 Please login first',
-    'toast-admin-only':       '🚫 Admin access only',
-    'toast-seller-only':      '🚫 Seller accounts only',
+    'toast-order-placed':     "ðŸŽ‰ Order placed! You'll get an SMS confirmation shortly.",
+    'toast-logged-out':       'ðŸ‘‹ Logged out successfully',
+    'toast-login-first':      'ðŸ”’ Please login first',
+    'toast-admin-only':       'ðŸš« Admin access only',
+    'toast-seller-only':      'ðŸš« Seller accounts only',
     'toast-coming-soon':      'login coming soon!',
   },
 
@@ -306,7 +306,7 @@ const translations = {
     'section-categories':     'Makundi',
     'section-featured':       'Bidhaa Maarufu',
     'section-businesses':     'Biashara Zilizothibitishwa',
-    'see-all':                'Ona zote →',
+    'see-all':                'Ona zote â†’',
 
     // --- CATEGORIES ---
     'cat-electronics':        'Elektroniki',
@@ -322,8 +322,8 @@ const translations = {
     'shop-title':             'Duka',
     'shop-search-placeholder':'Tafuta bidhaa...',
     'sort-newest':            'Panga: Mpya Zaidi',
-    'sort-low-high':          'Bei: Chini–Juu',
-    'sort-high-low':          'Bei: Juu–Chini',
+    'sort-low-high':          'Bei: Chiniâ€“Juu',
+    'sort-high-low':          'Bei: Juuâ€“Chini',
     'sort-popular':           'Maarufu Zaidi',
     'filter-title':           'Vichujio',
     'filter-category':        'Kundi',
@@ -337,16 +337,16 @@ const translations = {
     'results-count':          'bidhaa',
 
     // --- PRODUCT PAGE ---
-    'back-to-shop':           '← Rudi Dukani',
+    'back-to-shop':           'â† Rudi Dukani',
     'product-reviews':        'maoni',
     'seller-label':           'Muuzaji Aliyethibitishwa',
-    'btn-wa-contact':         '💬 WhatsApp',
-    'btn-add-to-cart':        '🛒 Ongeza Kikapuni',
-    'btn-save-item':          '❤️',
+    'btn-wa-contact':         'ðŸ’¬ WhatsApp',
+    'btn-add-to-cart':        'ðŸ›’ Ongeza Kikapuni',
+    'btn-save-item':          'â¤ï¸',
 
     // --- BUSINESSES ---
     'businesses-title':       'Biashara Zilizothibitishwa',
-    'verified-badge':         '✅ Imethibitishwa',
+    'verified-badge':         'âœ… Imethibitishwa',
 
     // --- SERVICES ---
     'services-title':         'Tafuta Wataalamu',
@@ -359,13 +359,13 @@ const translations = {
     'services-tutors':        'Walimu',
     'services-caterers':      'Wapishi',
     'professionals-title':    'Wataalamu Bora',
-    'btn-contact-wa':         '💬 Wasiliana kupitia WhatsApp',
+    'btn-contact-wa':         'ðŸ’¬ Wasiliana kupitia WhatsApp',
     'professionals-label':    'wataalamu',
 
     // --- CART ---
     'cart-title':             'Kikapu Changu',
     'cart-empty':             'Kikapu chako kiko wazi.',
-    'cart-browse':            'Angalia bidhaa →',
+    'cart-browse':            'Angalia bidhaa â†’',
     'cart-subtotal':          'Jumla Ndogo',
     'cart-delivery':          'Utoaji',
     'cart-total':             'Jumla',
@@ -373,7 +373,7 @@ const translations = {
 
     // --- DELIVERY ---
     'delivery-title':         'Maelezo ya Utoaji',
-    'back-to-cart':           '← Rudi Kikapuni',
+    'back-to-cart':           'â† Rudi Kikapuni',
     'form-fullname':          'Jina Kamili',
     'form-fullname-ph':       'mfano: Juma Ally',
     'form-phone':             'Nambari ya Simu',
@@ -387,7 +387,7 @@ const translations = {
     'pay-tigo':               'Tigo Pesa',
     'pay-airtel':             'Airtel Money',
     'pay-cash':               'Pesa Taslimu',
-    'btn-place-order':        '📦 Weka Agizo',
+    'btn-place-order':        'ðŸ“¦ Weka Agizo',
 
     // --- ACCOUNT ---
     'account-guest':          'Mgeni',
@@ -401,11 +401,11 @@ const translations = {
 
     // --- CUSTOMER DASHBOARD ---
     'dashboard-title':        'Dashibodi Yangu',
-    'dash-orders':            '📦 Maagizo',
-    'dash-saved':             '❤️ Vilivyohifadhiwa',
-    'dash-messages':          '💬 Ujumbe',
-    'no-saved':               'Hakuna vitu vilivyohifadhiwa bado. ❤️',
-    'no-messages':            'Hakuna ujumbe bado. Nenda kwa 💬 Mazungumzo.',
+    'dash-orders':            'ðŸ“¦ Maagizo',
+    'dash-saved':             'â¤ï¸ Vilivyohifadhiwa',
+    'dash-messages':          'ðŸ’¬ Ujumbe',
+    'no-saved':               'Hakuna vitu vilivyohifadhiwa bado. â¤ï¸',
+    'no-messages':            'Hakuna ujumbe bado. Nenda kwa ðŸ’¬ Mazungumzo.',
     'order-delivered':        'Imetolewa',
     'order-shipped':          'Imesafirishwa',
     'order-processing':       'Inashughulikiwa',
@@ -451,7 +451,7 @@ const translations = {
     // --- MESSENGER ---
     'messenger-title':        'Ujumbe',
     'chat-placeholder':       'Andika ujumbe...',
-    'chat-online':            '● Mtandaoni',
+    'chat-online':            'â— Mtandaoni',
 
     // --- FOOTER ---
     'footer-about':           'Soko la Kaga',
@@ -470,7 +470,7 @@ const translations = {
     'footer-privacy':         'Sera ya Faragha',
     'footer-terms':           'Masharti ya Matumizi',
     'footer-cookie':          'Sera ya Vidakuzi',
-    'footer-copy':            "© 2025 Soko la Kaga · Imejengwa kwa Tanzania 🇹🇿",
+    'footer-copy':            "Â© 2025 Soko la Kaga Â· Imejengwa kwa Tanzania ðŸ‡¹ðŸ‡¿",
 
     // --- LOGIN PAGE ---
     'login-tagline':          'Soko la Hapa Tanzania',
@@ -479,9 +479,9 @@ const translations = {
     'login-stat-users':       'Watumiaji Waliojisajili',
     'login-stat-biz':         'Biashara Zilizothibitishwa',
     'login-stat-products':    'Bidhaa Zilizoorodheshwa',
-    'trust-secure':           '🔒 Kuingia Salama',
-    'trust-made':             '🇹🇿 Imefanywa kwa Tanzania',
-    'trust-support':          '💬 Msaada wa WhatsApp',
+    'trust-secure':           'ðŸ”’ Kuingia Salama',
+    'trust-made':             'ðŸ‡¹ðŸ‡¿ Imefanywa kwa Tanzania',
+    'trust-support':          'ðŸ’¬ Msaada wa WhatsApp',
     'role-buyer':             'Mnunuzi',
     'role-buyer-desc':        'Nunua na uagize',
     'role-seller':            'Muuzaji',
@@ -490,7 +490,7 @@ const translations = {
     'role-admin-desc':        'Simamia jukwaa',
     'tab-signin':             'Ingia',
     'tab-register':           'Fungua Akaunti',
-    'login-title':            'Karibu tena 👋',
+    'login-title':            'Karibu tena ðŸ‘‹',
     'login-subtitle':         'Ingia kwenye akaunti yako ya mnunuzi',
     'label-email':            'Anwani ya Barua Pepe',
     'email-ph':               'barua@yako.com',
@@ -514,8 +514,8 @@ const translations = {
     'phone-ph':               'mfano: 0754 000 000',
     'label-location':         'Mahali',
     'location-ph':            'Chagua jiji lako',
-    'btn-continue':           'Endelea →',
-    'btn-back':               '← Rudi',
+    'btn-continue':           'Endelea â†’',
+    'btn-back':               'â† Rudi',
     'label-confirm-pass':     'Thibitisha Neno la Siri',
     'confirm-ph':             'Rudia neno lako la siri',
     'label-biz-name':         'Jina la Biashara',
@@ -527,7 +527,7 @@ const translations = {
     'terms-and':              'na',
     'privacy-link':           'Sera ya Faragha',
     'marketing-text':         'Pokea masasisho, matangazo na habari kupitia barua pepe',
-    'btn-create-account':     'Fungua Akaunti 🎉',
+    'btn-create-account':     'Fungua Akaunti ðŸŽ‰',
     'have-account':           'Una akaunti tayari?',
     'sign-in-link':           'Ingia',
     'forgot-title':           'Rejesha Neno la Siri',
@@ -536,11 +536,11 @@ const translations = {
 
     // --- TOAST / ALERTS ---
     'toast-added-cart':       'imeongezwa kikapuni!',
-    'toast-order-placed':     '🎉 Agizo limewekwa! Utapata uthibitisho kupitia SMS hivi karibuni.',
-    'toast-logged-out':       '👋 Umetoka nje kwa mafanikio',
-    'toast-login-first':      '🔒 Tafadhali ingia kwanza',
-    'toast-admin-only':       '🚫 Msimamizi peke yake',
-    'toast-seller-only':      '🚫 Akaunti za wauzaji peke yake',
+    'toast-order-placed':     'ðŸŽ‰ Agizo limewekwa! Utapata uthibitisho kupitia SMS hivi karibuni.',
+    'toast-logged-out':       'ðŸ‘‹ Umetoka nje kwa mafanikio',
+    'toast-login-first':      'ðŸ”’ Tafadhali ingia kwanza',
+    'toast-admin-only':       'ðŸš« Msimamizi peke yake',
+    'toast-seller-only':      'ðŸš« Akaunti za wauzaji peke yake',
     'toast-coming-soon':      'inakuja hivi karibuni!',
   },
 };
@@ -550,14 +550,14 @@ const translations = {
 // ===============================
 
 // Get saved language or default to English
-let currentLanguage = localStorage.getItem('kagaLang') || 'en';
+let currentLanguage = localStorage.getItem('kagaLanguage') || localStorage.getItem('kagaLang') || 'en';
 
 // ---- Apply translations to entire page ----
 function applyTranslations(lang) {
   const t = translations[lang];
   if (!t) return;
 
-  // 1. data-i18n — text content
+  // 1. data-i18n â€” text content
   document.querySelectorAll('[data-i18n]').forEach(el => {
     const key = el.getAttribute('data-i18n');
     if (!t[key]) return;
@@ -567,19 +567,19 @@ function applyTranslations(lang) {
     }
   });
 
-  // 2. data-i18n-ph — placeholder attribute
+  // 2. data-i18n-ph â€” placeholder attribute
   document.querySelectorAll('[data-i18n-ph]').forEach(el => {
     const key = el.getAttribute('data-i18n-ph');
     if (t[key]) el.setAttribute('placeholder', t[key]);
   });
 
-  // 3. data-i18n-title — title/tooltip attribute
+  // 3. data-i18n-title â€” title/tooltip attribute
   document.querySelectorAll('[data-i18n-title]').forEach(el => {
     const key = el.getAttribute('data-i18n-title');
     if (t[key]) el.setAttribute('title', t[key]);
   });
 
-  // 4. data-i18n-html — innerHTML (for bold/links inside)
+  // 4. data-i18n-html â€” innerHTML (for bold/links inside)
   document.querySelectorAll('[data-i18n-html]').forEach(el => {
     const key = el.getAttribute('data-i18n-html');
     if (t[key]) el.innerHTML = t[key];
@@ -594,6 +594,7 @@ function setLanguage(lang) {
   if (!translations[lang]) return;
   currentLanguage = lang;
   localStorage.setItem('kagaLang', lang);
+  localStorage.setItem('kagaLanguage', lang);
   applyTranslations(lang);
   updateLangSwitcherUI(lang);
 }
@@ -637,10 +638,15 @@ function wireLanguageSwitchers() {
   });
 }
 
+window.translations = translations;
+window.setLanguage = setLanguage;
+window.applyTranslations = applyTranslations;
+window.updateLangSwitcherUI = updateLangSwitcherUI;
+
 // ---- Run on page load ----
 document.addEventListener('DOMContentLoaded', () => {
   wireLanguageSwitchers();
   applyTranslations(currentLanguage);
   updateLangSwitcherUI(currentLanguage);
 });
-export { app };
+
