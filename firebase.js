@@ -1,19 +1,22 @@
 // Firebase initialization and helper bindings for Kaga Market
 import { initializeApp } from 'https://www.gstatic.com/firebasejs/9.23.0/firebase-app.js';
+import { getAnalytics } from 'https://www.gstatic.com/firebasejs/9.23.0/firebase-analytics.js';
 import { getAuth, setPersistence, browserLocalPersistence, signInWithEmailAndPassword, createUserWithEmailAndPassword, sendEmailVerification, sendPasswordResetEmail, onAuthStateChanged, signOut } from 'https://www.gstatic.com/firebasejs/9.23.0/firebase-auth.js';
 import { getFirestore, doc, getDoc, setDoc, addDoc, collection, getDocs, query, where, orderBy, serverTimestamp } from 'https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore.js';
 import { getStorage, ref as storageRef, uploadBytes, getDownloadURL } from 'https://www.gstatic.com/firebasejs/9.23.0/firebase-storage.js';
 
 const firebaseConfig = {
-  apiKey: "AIzaSyCP3P8ZbEMsg6Uv9L8YFxS9iqaMe9h1Y64",
-  authDomain: "kaga-market-83e7e.firebaseapp.com",
-  projectId: "kaga-market-83e7e",
-  storageBucket: "kaga-market-83e7e.firebasestorage.app",
-  messagingSenderId: "441167232133",
-  appId: "1:441167232133:web:f71bb7692e0f45608cfdec"
+  apiKey: "AIzaSyD9aj2BrTGIWxVY4SttUmOuZCdrLi5PzTk",
+  authDomain: "kaga-service.firebaseapp.com",
+  projectId: "kaga-service",
+  storageBucket: "kaga-service.firebasestorage.app",
+  messagingSenderId: "1056071044370",
+  appId: "1:1056071044370:web:2172113c46b52e24d937cb",
+  measurementId: "G-ZDMCE9F8C9"
 };
 
 const app = initializeApp(firebaseConfig);
+const analytics = getAnalytics(app);
 const auth = getAuth(app);
 setPersistence(auth, browserLocalPersistence).catch(() => {});
 const db = getFirestore(app);
