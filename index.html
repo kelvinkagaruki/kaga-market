@@ -615,11 +615,44 @@
                 <div class="form-group">
                   <label class="form-label">Category <span>*</span></label>
                   <select class="form-input" id="new-prod-category" required>
-                    <option value="Fresh Produce">Fresh Produce</option>
-                    <option value="Electronics">Electronics</option>
-                    <option value="Fashion">Fashion</option>
-                    <option value="Home Goods">Home Goods</option>
+                    <option value="electronics">Electronics</option>
+                    <option value="fashion">Fashion</option>
+                    <option value="sportswear">Sportswear</option>
+                    <option value="health-tools">Health Tools</option>
+                    <option value="accessories">Accessories</option>
+                    <option value="vehicles">Vehicles</option>
+                    <option value="furniture">Furniture</option>
+                    <option value="construction">Construction</option>
+                    <option value="computers">Computers</option>
+                    <option value="phones">Phones</option>
                   </select>
+                </div>
+              </div>
+              <div class="form-row">
+                <div class="form-group">
+                  <label class="form-label">Condition <span>*</span></label>
+                  <select class="form-input" id="new-prod-condition" required>
+                    <option value="New (Boxed)">New (Boxed)</option>
+                    <option value="New (Unboxed)">New (Unboxed)</option>
+                    <option value="Used">Used</option>
+                    <option value="Used (Fair Condition)">Used (Fair Condition)</option>
+                  </select>
+                </div>
+                <div class="form-group">
+                  <label class="form-label">Location <span>*</span></label>
+                  <input type="text" class="form-input" id="new-prod-location" required placeholder="e.g. Dar es Salaam">
+                </div>
+              </div>
+              <div class="form-row">
+                <div class="form-group" style="flex:1 1 100%;">
+                  <label class="form-label">Product Images <span>*</span></label>
+                  <input type="file" class="form-input" id="new-prod-images" accept="image/*" multiple required>
+                </div>
+              </div>
+              <div class="form-row">
+                <div class="form-group" style="flex:1 1 100%;">
+                  <label class="form-label">Product Video (Optional)</label>
+                  <input type="file" class="form-input" id="new-prod-video" accept="video/*">
                 </div>
               </div>
               <div class="form-group">
@@ -745,6 +778,7 @@
   </div>
 
   <script src="translations.js"></script>
+  <script type="module" src="firebase.js"></script>
 
   <!-- STATE & APPLICATION LOGIC ENGINE -->
   <script>
@@ -755,21 +789,24 @@
     let state = {
       currentUser: null,
       activeView: "home",
-      selectedCategory: "All",
+      selectedCategory: "all",
       currentLanguage: "en",
       cart: [],
-      categories: ["All", "Fresh Produce", "Electronics", "Fashion", "Home Goods"],
-      products: [
-        { id: 1, name: "Fresh Avocados", price: 5000, category: "Groceries", seller: "Asha Fresh Market", icon: "🥑", sellerVerified: true, status: "live" },
-        { id: 2, name: "Wireless Earbuds", price: 35000, category: "Electronics", seller: "Kaga Tech", icon: "🎧", sellerVerified: true, status: "live" },
-        { id: 3, name: "Handmade Basket", price: 22000, category: "Home", seller: "Khalid Fashion House", icon: "🧺", sellerVerified: false, status: "pending" },
-        { id: 4, name: "Organic Coffee Beans", price: 18000, category: "Groceries", seller: "Kilimanjaro Harvest", icon: "☕", sellerVerified: true, status: "live" }
+      categories: [
+        { id: 'all', label: 'All', icon: '🌍' },
+        { id: 'electronics', label: 'Electronics', icon: '📱' },
+        { id: 'fashion', label: 'Fashion', icon: '👕' },
+        { id: 'sportswear', label: 'Sportswear', icon: '⚽' },
+        { id: 'health-tools', label: 'Health Tools', icon: '🩺' },
+        { id: 'accessories', label: 'Accessories', icon: '⌚' },
+        { id: 'vehicles', label: 'Vehicles', icon: '🚗' },
+        { id: 'furniture', label: 'Furniture', icon: '🛋' },
+        { id: 'construction', label: 'Construction', icon: '🏗' },
+        { id: 'computers', label: 'Computers', icon: '💻' },
+        { id: 'phones', label: 'Phones', icon: '📲' }
       ],
-      businesses: [
-        { id: 101, name: "Asha Fresh Market", type: "Groceries & Produce", verified: true, logo: "🥑" },
-        { id: 102, name: "Kaga Tech", type: "Electronics & Gadgets", verified: true, logo: "📱" },
-        { id: 103, name: "Khalid Fashion House", type: "Fashion & Home Decor", verified: false, logo: "🧺" }
-      ],
+      products: [],
+      businesses: [],
       localization: {
         en: {
           "brand-title": "Kaga's Market",
@@ -813,10 +850,26 @@
       const savedLang = localStorage.getItem('kagaLanguage') || 'en';
       changeLanguage(savedLang);
       renderCategoryChips();
-      renderHomeCatalogs();
+      initMarketplaceData();
       updateLoginState();
       setupDropdownInterceptors();
     });
+
+    async function initMarketplaceData() {
+      if (window.FirebaseAPI) {
+        try {
+          const [products, businesses] = await Promise.all([
+            FirebaseAPI.fetchProducts(),
+            FirebaseAPI.fetchVerifiedBusinesses()
+          ]);
+          state.products = products || [];
+          state.businesses = businesses || [];
+        } catch (err) {
+          console.warn('Unable to load Firebase marketplace data. Using local fallback.', err);
+        }
+      }
+      renderHomeCatalogs();
+    }
 
     // Session State Management Core Functions
     function updateLoginState() {
@@ -921,8 +974,8 @@
       const container = document.getElementById("categories-scroll");
       if (!container) return;
       container.innerHTML = state.categories.map(cat => `
-        <div class="category-chip ${state.selectedCategory === cat ? 'active' : ''}" onclick="filterCategory('${cat}')">
-          ${cat}
+        <div class="category-chip ${state.selectedCategory === cat.id ? 'active' : ''}" onclick="filterCategory('${cat.id}')">
+          <span>${cat.icon}</span> ${cat.label}
         </div>
       `).join("");
     }
@@ -938,14 +991,33 @@
       const productContainer = document.getElementById("home-products-container");
       if (productContainer) {
         const visibleProducts = state.products.filter(p => p.status !== "pending" || (state.currentUser && (state.currentUser.role === "seller" || state.currentUser.role === "admin")));
-        const slicedProducts = visibleProducts.slice(0, 4);
-        productContainer.innerHTML = slicedProducts.map(p => generateProductCardMarkup(p)).join("");
+        if (visibleProducts.length === 0) {
+          productContainer.innerHTML = `
+            <div class="empty-state" style="grid-column: 1/-1; width: 100%;">
+              <div class="empty-icon">📦</div>
+              <div class="empty-title">No products available yet</div>
+              <div class="empty-desc">Be the first seller to post your product. New products will appear here automatically once approved.</div>
+              <button class="btn-empty" onclick="switchView('add-product')">Post a product</button>
+            </div>`;
+        } else {
+          const slicedProducts = visibleProducts.slice(0, 4);
+          productContainer.innerHTML = slicedProducts.map(p => generateProductCardMarkup(p)).join("");
+        }
       }
 
       const businessContainer = document.getElementById("home-businesses-container");
       if (businessContainer) {
-        const slicedBiz = state.businesses.slice(0, 3);
-        businessContainer.innerHTML = slicedBiz.map(b => generateBusinessCardMarkup(b)).join("");
+        if (state.businesses.length === 0) {
+          businessContainer.innerHTML = `
+            <div class="empty-state" style="grid-column: 1/-1; width: 100%;">
+              <div class="empty-icon">🏢</div>
+              <div class="empty-title">No verified businesses yet</div>
+              <div class="empty-desc">Real sellers can create business profiles and appear here when their accounts are approved.</div>
+            </div>`;
+        } else {
+          const slicedBiz = state.businesses.slice(0, 3);
+          businessContainer.innerHTML = slicedBiz.map(b => generateBusinessCardMarkup(b)).join("");
+        }
       }
     }
 
@@ -954,12 +1026,12 @@
       if (!container) return;
 
       let filtered = state.products.filter(p => p.status !== "pending" || (state.currentUser && (state.currentUser.role === "seller" || state.currentUser.role === "admin")));
-      if (state.selectedCategory !== "All") {
-        filtered = filtered.filter(p => p.category === state.selectedCategory);
+      if (state.selectedCategory !== "all") {
+        filtered = filtered.filter(p => p.categoryId === state.selectedCategory);
       }
       if (searchQuery.trim() !== "") {
         const q = searchQuery.toLowerCase();
-        filtered = filtered.filter(p => p.name.toLowerCase().includes(q) || p.seller.toLowerCase().includes(q));
+        filtered = filtered.filter(p => p.name.toLowerCase().includes(q) || p.sellerName.toLowerCase().includes(q) || (p.categoryLabel || '').toLowerCase().includes(q));
       }
 
       if (filtered.length === 0) {
@@ -967,8 +1039,8 @@
           <div class="empty-state" style="grid-column: 1/-1; width:100%;">
             <div class="empty-icon">🍃</div>
             <div class="empty-title">No items found</div>
-            <div class="empty-desc">We couldn't track matching inventory records. Try checking other categories or keywords.</div>
-            <button class="btn-empty" onclick="filterCategory('All')">Reset Category Filters</button>
+            <div class="empty-desc">We couldn't find matching inventory. Try another category, location, or condition.</div>
+            <button class="btn-empty" onclick="filterCategory('all')">Show all categories</button>
           </div>`;
       } else {
         container.innerHTML = filtered.map(p => generateProductCardMarkup(p)).join("");
@@ -982,26 +1054,35 @@
     }
 
     function generateProductCardMarkup(p) {
+      const seller = p.sellerName || p.seller || 'Unknown Seller';
+      const condition = p.condition ? `<div style="font-size:11px;color:var(--text-light); margin-top:4px;">Condition: ${p.condition}</div>` : '';
+      const location = p.location ? `<div style="font-size:11px;color:var(--text-light);">${p.location}</div>` : '';
+      const images = Array.isArray(p.images) && p.images.length ? p.images : [];
+      const thumb = images[0] || p.icon || '📦';
+      const sellerBadge = p.sellerVerified ? '✔️ Verified' : '⏳ Pending';
+
       return `
         <div class="product-card">
-          <div class="product-img" onclick="viewProductDetails(${p.id})">
-            <span>${p.icon || '📦'}</span>
+          <div class="product-img" onclick="viewProductDetails('${p.id}')">
+            ${images.length ? `<img src="${thumb}" alt="${p.name}" loading="lazy" />` : `<span style="font-size: 34px;">${thumb}</span>`}
           </div>
-          <div class="product-info" onclick="viewProductDetails(${p.id})">
+          <div class="product-info" onclick="viewProductDetails('${p.id}')">
             <div class="product-name">${p.name}</div>
-            <div class="product-price">${p.price.toLocaleString()} TZS</div>
-            <div class="product-seller">🏪 ${p.seller}${p.status === 'pending' ? ' • Pending Review' : ''}</div>
+            <div class="product-price">${Number(p.price || 0).toLocaleString()} TZS</div>
+            ${condition}
+            ${location}
+            <div class="product-seller">🏪 ${seller} · ${sellerBadge}</div>
           </div>
           <div class="product-actions">
-            <button class="btn-cart" onclick="addItemToCart(${p.id})">Add to Cart</button>
-            <button class="btn-wa-small" onclick="initiateWhatsAppInquiry('${p.name}', '${p.seller}')">💬</button>
+            <button class="btn-cart" onclick="addItemToCart('${p.id}')">Add to Cart</button>
+            <button class="btn-wa-small" onclick="initiateWhatsAppInquiry('${p.name}', '${seller}')">💬</button>
           </div>
         </div>`;
     }
 
     function generateBusinessCardMarkup(b) {
       return `
-        <div class="business-card" onclick="filterCategory('All')">
+        <div class="business-card" onclick="filterCategory('all')">
           <div class="biz-header">
             <div class="biz-logo">${b.logo || '🏪'}</div>
             <div>
@@ -1014,33 +1095,69 @@
     }
 
     function viewProductDetails(productId) {
-      const p = state.products.find(item => item.id === productId);
+      const p = state.products.find(item => String(item.id) === String(productId));
       if (!p) return;
       
       switchView("product");
       const container = document.getElementById("product-details");
       if (!container) return;
 
+      const images = Array.isArray(p.images) ? p.images : [];
+      const gallery = images.length ? images.map((img, idx) => `
+          <button class="btn-secondary" style="padding:6px 10px;" onclick="showGalleryImage('${img}')">View ${idx + 1}</button>
+        `).join('') : '<div style="font-size: 14px; color: var(--text-light);">No images uploaded</div>';
+
+      const videoBlock = p.videoUrl ? `
+        <div style="margin-top:16px;">
+          <video controls playsinline style="width:100%; height:auto; border-radius:14px; border:1px solid var(--border);">
+            <source src="${p.videoUrl}" type="video/mp4" />
+            Your browser does not support video playback.
+          </video>
+        </div>
+      ` : '';
+
+      const condition = p.condition ? `<div style="font-size: 13px; color: var(--brand-dark); font-weight: 700; margin-bottom: 8px;">Condition: ${p.condition}</div>` : '';
+      const location = p.location ? `<div style="font-size: 12px; color: var(--text-light); margin-bottom: 8px;">Location: ${p.location}</div>` : '';
+      const seller = p.sellerName || p.seller || 'Unknown Seller';
+      const sellerBadge = p.sellerVerified ? '✔️ Verified Seller' : '⏳ Pending Verification';
+      const uploadedAt = p.createdAt ? new Date(p.createdAt.seconds ? p.createdAt.seconds * 1000 : p.createdAt).toLocaleDateString() : 'Unknown';
+
       container.innerHTML = `
-        <div style="background: var(--surface); padding: 16px; border-radius: var(--radius-lg); border: 1px solid var(--border);">
-          <div style="font-size: 72px; text-align: center; background: var(--surface2); padding: 32px; border-radius: var(--radius-md); margin-bottom: 16px;">
-            ${p.icon || '📦'}
+        <div style="display:grid; gap:16px;">
+          <div style="background: var(--surface); padding: 16px; border-radius: var(--radius-lg); border: 1px solid var(--border);">
+            <div style="display:flex; flex-direction:column; gap:14px;">
+              <div style="display:grid; gap:14px;">
+                <div style="font-family: var(--font-head); font-size: 22px; font-weight: 700;">${p.name}</div>
+                <div style="font-size: 20px; font-weight: 700; color: var(--brand-dark);">${Number(p.price || 0).toLocaleString()} TZS</div>
+                ${condition}
+                ${location}
+                <div style="display:flex; align-items:center; justify-content:space-between; gap:10px; flex-wrap:wrap; font-size:12px; color:var(--text-light);">
+                  <span>${sellerBadge}</span>
+                  <span>Uploaded: ${uploadedAt}</span>
+                </div>
+              </div>
+              <div style="font-size: 13px; color: var(--text-muted); line-height:1.6;">${p.description || 'No description provided yet by the seller.'}</div>
+            </div>
           </div>
-          <h2 style="font-family: var(--font-head); font-size: 20px; margin-bottom: 8px;">${p.name}</h2>
-          <div style="font-size: 18px; font-weight: 700; color: var(--brand); margin-bottom: 12px;">${p.price.toLocaleString()} TZS</div>
-          <p style="font-size: 13px; color: var(--text-muted); line-height: 1.5; margin-bottom: 16px;">
-            High-quality local stock verified by Kaga's delivery verification officers. Support domestic merchants with reliable transport execution safeguards directly to your compound.
-          </p>
-          <table style="width: 100%; font-size: 12px; border-collapse: collapse; margin-bottom: 20px;">
-            <tr style="border-bottom: 1px solid var(--border);"><td style="padding: 6px 0; color: var(--text-light);">Fulfillment Merchant</td><td style="font-weight:500; text-align:right;">${p.seller}</td></tr>
-            <tr style="border-bottom: 1px solid var(--border);"><td style="padding: 6px 0; color: var(--text-light);">Inventory Category</td><td style="font-weight:500; text-align:right;">${p.category}</td></tr>
-            <tr><td style="padding: 6px 0; color: var(--text-light);">Transit Duration</td><td style="font-weight:500; text-align:right; color: var(--brand-mid);">Within 24 Hours Max</td></tr>
-          </table>
-          <div style="display:flex; gap:10px;">
-            <button class="btn-submit" style="flex:1;" onclick="addItemToCart(${p.id})">Add Item to Basket</button>
-            <button class="btn-wa-small" style="width:46px; height:46px; font-size:18px;" onclick="initiateWhatsAppInquiry('${p.name}', '${p.seller}')">💬</button>
+
+          <div style="display:grid; gap:12px;">
+            <div style="background: var(--surface); padding: 16px; border-radius: var(--radius-lg); border: 1px solid var(--border);">
+              <div style="font-size: 14px; font-weight: 700; margin-bottom: 10px;">Image Gallery</div>
+              <div style="display:flex; flex-wrap:wrap; gap:8px;">${gallery}</div>
+            </div>
+            ${videoBlock}
+          </div>
+
+          <div style="display:flex; gap:10px; flex-wrap:wrap;">
+            <button class="btn-submit" style="flex:1; min-width:150px;" onclick="addItemToCart('${p.id}')">Buy Now</button>
+            <button class="btn-secondary" style="flex:1; min-width:150px;" onclick="startChat('${p.sellerId || p.seller}')">Contact Seller</button>
+            <button class="btn-secondary" style="flex:1; min-width:150px;" onclick="shareProduct('${p.id}')">Share</button>
           </div>
         </div>`;
+    }
+
+    function showGalleryImage(url) {
+      window.open(url, '_blank');
     }
 
     // Secondary UI view orchestration for user profiles or sign-in structures
@@ -1114,33 +1231,88 @@
       renderShopCatalog(val);
     }
 
-    function handleProductCreation(e) {
+    async function handleProductCreation(e) {
       e.preventDefault();
-      const name = document.getElementById("new-prod-name").value;
+      const name = document.getElementById("new-prod-name").value.trim();
       const price = parseFloat(document.getElementById("new-prod-price").value) || 0;
-      const category = document.getElementById("new-prod-category").value;
-      const desc = document.getElementById("new-prod-desc").value;
+      const categoryInput = document.getElementById("new-prod-category");
+      const categoryId = categoryInput?.value || 'electronics';
+      const categoryLabel = categoryInput?.selectedOptions?.[0]?.text || '';
+      const condition = document.getElementById("new-prod-condition").value;
+      const location = document.getElementById("new-prod-location").value.trim();
+      const desc = document.getElementById("new-prod-desc").value.trim();
+      const imagesInput = document.getElementById("new-prod-images");
+      const videoInput = document.getElementById("new-prod-video");
 
-      const newId = state.products.length + 1;
-      const sellerName = state.currentUser ? (state.currentUser.username || "My Store") : "Independent Merchant";
+      if (!name || price <= 0 || !categoryId || !condition || !location) {
+        alert('Please complete all required fields before submitting your product.');
+        return;
+      }
 
-      state.products.unshift({
-        id: newId,
-        name: name,
-        price: price,
-        category: category,
-        seller: sellerName,
-        icon: "📦"
-      });
+      const sellerName = state.currentUser ? (state.currentUser.name || `${state.currentUser.firstName || ''} ${state.currentUser.lastName || ''}`.trim()) : 'Seller';
+      const sellerLocation = state.currentUser ? state.currentUser.city || '' : '';
+      const sellerId = state.currentUser ? state.currentUser.id || state.currentUser.uid || 'unknown-seller' : 'unknown-seller';
+      const sellerVerified = state.currentUser ? !!state.currentUser.businessVerified : false;
 
-      document.getElementById("add-product-form").reset();
-      alert("Product batch sent to catalog system. It is currently under fast-track moderation review.");
-      switchView("shop");
+      const productData = {
+        name,
+        description: desc,
+        price,
+        categoryId,
+        categoryLabel,
+        condition,
+        location,
+        sellerId,
+        sellerName,
+        sellerLocation,
+        sellerVerified
+      };
+
+      try {
+        if (window.FirebaseAPI && typeof FirebaseAPI.createProduct === 'function') {
+          const created = await FirebaseAPI.createProduct(productData, imagesInput.files, videoInput.files?.[0]);
+          state.products.unshift(created);
+          alert('Product submitted successfully. It will appear on the homepage once approved.');
+        } else {
+          const newItem = {
+            id: Date.now(),
+            ...productData,
+            status: 'pending',
+            images: [],
+            videoUrl: null
+          };
+          state.products.unshift(newItem);
+          alert('Product created locally. It will appear on the marketplace after moderation approval.');
+        }
+        document.getElementById("add-product-form").reset();
+        renderShopCatalog();
+        renderHomeCatalogs();
+        switchView("shop");
+      } catch (error) {
+        console.error('Product upload failed', error);
+        alert('Unable to submit product right now. Please try again later.');
+      }
+    }
+
+    function shareProduct(productId) {
+      const product = state.products.find(p => String(p.id) === String(productId));
+      if (!product) return;
+      const url = window.location.href;
+      const text = `Check out this product on Kaga's Market: ${product.name} - ${product.price.toLocaleString()} TZS. ${url}`;
+      if (navigator.share) {
+        navigator.share({
+          title: product.name,
+          text,
+          url
+        }).catch(() => {});
+      } else {
+        prompt('Share this link', url);
+      }
     }
 
     // Shopping Basket Management logic
     function addItemToCart(id) {
-      const p = state.products.find(item => item.id === id);
+      const p = state.products.find(item => String(item.id) === String(id));
       if (!p) return;
 
       const existing = state.cart.find(cartItem => cartItem.product.id === id);
