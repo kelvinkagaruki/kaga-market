@@ -716,6 +716,7 @@
           <div class="dash-card"><div class="dash-card-icon">🛍️</div><div class="dash-card-title">Manage Products</div></div>
           <div class="dash-card"><div class="dash-card-icon">📦</div><div class="dash-card-title">Manage Orders</div></div>
         </div>
+        <div id="admin-dashboard-content" style="margin-top: 18px;"></div>
       </div>
     </section>
 
@@ -807,6 +808,7 @@
       ],
       products: [],
       businesses: [],
+      users: [],
       localization: {
         en: {
           "brand-title": "Kaga's Market",
@@ -858,12 +860,14 @@
     async function initMarketplaceData() {
       if (window.FirebaseAPI) {
         try {
-          const [products, businesses] = await Promise.all([
+          const [products, businesses, users] = await Promise.all([
             FirebaseAPI.fetchProducts(),
-            FirebaseAPI.fetchVerifiedBusinesses()
+            FirebaseAPI.fetchVerifiedBusinesses(),
+            FirebaseAPI.fetchUsers()
           ]);
           state.products = products || [];
           state.businesses = businesses || [];
+          state.users = users || [];
         } catch (err) {
           console.warn('Unable to load Firebase marketplace data. Using local fallback.', err);
         }
@@ -943,6 +947,8 @@
         renderBusinessDirectory();
       } else if (viewTarget === "cart") {
         renderCartLayout();
+      } else if (viewTarget === "admin-dashboard") {
+        renderAdminDashboard();
       }
       
       // Enable viewport panels active class records
@@ -1211,6 +1217,157 @@
       }
     }
 
+    // ADMIN DASHBOARD MANAGEMENT
+    function renderAdminDashboard() {
+      const content = document.getElementById('admin-dashboard-content');
+      if (!content) return;
+      if (!state.currentUser || (state.currentUser.role || '').toLowerCase() !== 'admin') {
+        content.innerHTML = `
+          <div class="empty-state">
+            <div class="empty-icon">?</div>
+            <div class="empty-title">Access denied</div>
+            <div class="empty-desc">Please sign in with the admin account to manage products and users.</div>
+          </div>`;
+        return;
+      }
+
+      loadLocalUsersIfNeeded();
+
+      const productRows = state.products.length > 0 ? state.products.map(p => `
+        <tr>
+          <td style="padding:8px 12px; border-bottom:1px solid var(--border);">${p.name || 'Untitled'}</td>
+          <td style="padding:8px 12px; border-bottom:1px solid var(--border);">${Number(p.price || 0).toLocaleString()} TZS</td>
+          <td style="padding:8px 12px; border-bottom:1px solid var(--border);">${p.sellerName || p.seller || 'Unknown'}</td>
+          <td style="padding:8px 12px; border-bottom:1px solid var(--border);">${p.status || 'pending'}</td>
+          <td style="padding:8px 12px; border-bottom:1px solid var(--border);"><button class="btn-submit" style="padding:8px 12px; font-size:12px;" onclick="deleteProductAdmin('${p.id}')">Delete</button></td>
+        </tr>`).join('') : '';
+
+      const userRows = state.users.length > 0 ? state.users.map(u => {
+        const userName = u.name || [u.firstName, u.lastName].filter(Boolean).join(' ') || 'Unknown';
+        return `
+          <tr>
+            <td style="padding:8px 12px; border-bottom:1px solid var(--border);">${userName}</td>
+            <td style="padding:8px 12px; border-bottom:1px solid var(--border);">${u.email || 'unknown'}</td>
+            <td style="padding:8px 12px; border-bottom:1px solid var(--border);">${(u.role || 'buyer').toUpperCase()}</td>
+            <td style="padding:8px 12px; border-bottom:1px solid var(--border);">${u.status || 'active'}</td>
+            <td style="padding:8px 12px; border-bottom:1px solid var(--border);"><button class="btn-submit" style="padding:8px 12px; font-size:12px; background:#D85A30;" onclick="banUserAdmin('${u.id || u.uid}')">Ban</button></td>
+          </tr>`;
+      }).join('') : '';
+
+      content.innerHTML = `
+        <div style="display:flex; flex-wrap:wrap; gap:14px; margin-bottom:20px;">
+          <div style="flex:1 1 220px; background:var(--surface); border:1px solid var(--border); border-radius:var(--radius-md); padding:16px;">
+            <div style="font-size:12px; color:var(--text-light); margin-bottom:10px;">Total Products</div>
+            <div style="font-size:24px; font-weight:700;">${state.products.length}</div>
+          </div>
+          <div style="flex:1 1 220px; background:var(--surface); border:1px solid var(--border); border-radius:var(--radius-md); padding:16px;">
+            <div style="font-size:12px; color:var(--text-light); margin-bottom:10px;">Total Users</div>
+            <div style="font-size:24px; font-weight:700;">${state.users.length}</div>
+          </div>
+        </div>
+        <div style="display:grid; gap:20px;">
+          <div class="form-card" style="padding:0;">
+            <div class="form-card-header" style="border-bottom:1px solid var(--border);">
+              <h2 style="font-size:16px; margin-bottom:4px;">Manage Product Listings</h2>
+              <p style="font-size:12px; color:var(--text-light);">Remove fake products or clear old listings from the marketplace.</p>
+            </div>
+            <div class="form-card-body" style="padding:16px; overflow-x:auto;">
+              <table style="width:100%; border-collapse:collapse;">
+                <thead>
+                  <tr style="text-align:left; font-size:12px; color:var(--text-light);">
+                    <th style="padding:8px 12px; border-bottom:1px solid var(--border);">Product</th>
+                    <th style="padding:8px 12px; border-bottom:1px solid var(--border);">Price</th>
+                    <th style="padding:8px 12px; border-bottom:1px solid var(--border);">Seller</th>
+                    <th style="padding:8px 12px; border-bottom:1px solid var(--border);">Status</th>
+                    <th style="padding:8px 12px; border-bottom:1px solid var(--border);">Action</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  ${productRows || '<tr><td colspan="5" style="padding:14px 12px; text-align:center; color:var(--text-muted);">No product listings available</td></tr>'}
+                </tbody>
+              </table>
+            </div>
+          </div>
+          <div class="form-card" style="padding:0;">
+            <div class="form-card-header" style="border-bottom:1px solid var(--border);">
+              <h2 style="font-size:16px; margin-bottom:4px;">Manage User Accounts</h2>
+              <p style="font-size:12px; color:var(--text-light);">Lock or ban suspicious accounts from the marketplace.</p>
+            </div>
+            <div class="form-card-body" style="padding:16px; overflow-x:auto;">
+              <table style="width:100%; border-collapse:collapse;">
+                <thead>
+                  <tr style="text-align:left; font-size:12px; color:var(--text-light);">
+                    <th style="padding:8px 12px; border-bottom:1px solid var(--border);">User</th>
+                    <th style="padding:8px 12px; border-bottom:1px solid var(--border);">Email</th>
+                    <th style="padding:8px 12px; border-bottom:1px solid var(--border);">Role</th>
+                    <th style="padding:8px 12px; border-bottom:1px solid var(--border);">Status</th>
+                    <th style="padding:8px 12px; border-bottom:1px solid var(--border);">Action</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  ${userRows || '<tr><td colspan="5" style="padding:14px 12px; text-align:center; color:var(--text-muted);">No users found in system</td></tr>'}
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </div>`;
+    }
+
+    async function deleteProductAdmin(productId) {
+      if (!productId) return;
+      if (window.FirebaseAPI && typeof FirebaseAPI.deleteProduct === 'function') {
+        try {
+          await FirebaseAPI.deleteProduct(productId);
+        } catch (err) {
+          console.warn('Firebase delete error', err);
+        }
+      }
+      state.products = state.products.filter(p => String(p.id) !== String(productId));
+      renderShopCatalog();
+      renderHomeCatalogs();
+      renderAdminDashboard();
+      alert('Product removed successfully.');
+    }
+
+    async function banUserAdmin(userId) {
+      if (!userId) return;
+      if (window.FirebaseAPI && typeof FirebaseAPI.updateUserStatus === 'function') {
+        try {
+          await FirebaseAPI.updateUserStatus(userId, { status: 'banned' });
+        } catch (err) {
+          console.warn('Firebase user update error', err);
+        }
+      }
+      state.users = state.users.map(u => {
+        if (String(u.id) === String(userId) || String(u.uid) === String(userId)) {
+          return { ...u, status: 'banned' };
+        }
+        return u;
+      });
+      const stored = JSON.parse(localStorage.getItem('kagaUsers') || '[]');
+      const updated = stored.map(u => {
+        if (String(u.id) === String(userId) || String(u.uid) === String(userId)) {
+          return { ...u, status: 'banned' };
+        }
+        return u;
+      });
+      localStorage.setItem('kagaUsers', JSON.stringify(updated));
+      renderAdminDashboard();
+      alert('User account has been banned.');
+    }
+
+    function loadLocalUsersIfNeeded() {
+      if (state.users.length === 0) {
+        try {
+          const users = JSON.parse(localStorage.getItem('kagaUsers') || '[]');
+          if (Array.isArray(users)) {
+            state.users = users;
+          }
+        } catch (err) {
+          console.warn('Unable to parse local users', err);
+        }
+      }
+    }
     // Input Capture & Global Field Evaluators
     function doHeroSearch() {
       const input = document.getElementById("hero-search-input");
@@ -1475,6 +1632,8 @@
 
     // Dynamic Localization Engine Switcher 
     function changeLanguage(langCode) {
+      // ensure admin users can see current local users if firebase load failed
+      loadLocalUsersIfNeeded();
       state.currentLanguage = langCode;
       localStorage.setItem('kagaLanguage', langCode);
 
@@ -1518,3 +1677,7 @@
   </script>
 </body>
 </html>
+
+
+
+
