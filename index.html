@@ -602,7 +602,7 @@
             <p>Reviewed within 24 hours</p>
           </div>
           <div class="form-card-body">
-            <form id="add-product-form" onsubmit="handleProductCreation(event)">
+            <form id="add-product-form">
               <div class="form-group">
                 <label class="form-label">Product Name <span>*</span></label>
                 <input type="text" class="form-input" id="new-prod-name" required placeholder="e.g. Organic Avocados">
@@ -867,6 +867,18 @@
       }
     });
 
+    function loadLocalProducts() {
+      try {
+        const stored = localStorage.getItem('products');
+        if (!stored) return [];
+        const parsed = JSON.parse(stored);
+        return Array.isArray(parsed) ? parsed : [];
+      } catch (err) {
+        console.warn('Unable to parse locally stored products', err);
+        return [];
+      }
+    }
+
     async function initMarketplaceData() {
       if (window.FirebaseAPI) {
         try {
@@ -882,6 +894,13 @@
           console.warn('Unable to load Firebase marketplace data. Using local fallback.', err);
         }
       }
+      }
+
+      const persistedProducts = loadLocalProducts();
+      if (Array.isArray(persistedProducts) && persistedProducts.length) {
+        state.products = [...persistedProducts, ...(state.products || [])];
+      }
+
       renderHomeCatalogs();
     }
 
@@ -1481,10 +1500,10 @@
           console.error('Local fallback failed', localErr);
         }
       }
-
-    // Expose handler globally for inline onsubmit attribute compatibility
-    if (typeof window !== 'undefined') window.handleProductCreation = handleProductCreation;
     }
+
+    if (typeof window !== 'undefined') window.handleProductCreation = handleProductCreation;
+
 
     function shareProduct(productId) {
       const product = state.products.find(p => String(p.id) === String(productId));
@@ -1712,6 +1731,10 @@
   </script>
 </body>
 </html>
+
+
+
+
 
 
 
