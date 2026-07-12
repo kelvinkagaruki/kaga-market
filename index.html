@@ -855,6 +855,16 @@
       initMarketplaceData();
       updateLoginState();
       setupDropdownInterceptors();
+      // Ensure the Add Product form is bound to the handler (helps on hosting platforms
+      // that restrict inline event handlers). Keep the existing onsubmit attribute harmless.
+      const addProductForm = document.getElementById('add-product-form');
+      if (addProductForm && typeof handleProductCreation === 'function') {
+        try {
+          addProductForm.addEventListener('submit', handleProductCreation);
+        } catch (e) {
+          console.warn('Failed to attach add-product submit listener', e);
+        }
+      }
     });
 
     async function initMarketplaceData() {
@@ -1447,8 +1457,33 @@
         switchView("shop");
       } catch (error) {
         console.error('Product upload failed', error);
-        alert('Unable to submit product right now. Please try again later.');
+        alert(error && error.message ? error.message : 'Unable to submit product right now. Saving product locally.');
+
+        // Fallback: save the product locally so the shop remains usable even if Firebase fails
+        try {
+          const newItem = {
+            id: Date.now(),
+            ...productData,
+            status: 'pending',
+            images: [],
+            videoUrl: null,
+            createdAt: new Date().toISOString()
+          };
+          state.products.unshift(newItem);
+          localStorage.setItem('products', JSON.stringify(state.products));
+
+          // Reset form and refresh UI so user sees the product immediately
+          document.getElementById('add-product-form').reset();
+          renderShopCatalog();
+          renderHomeCatalogs();
+          switchView('shop');
+        } catch (localErr) {
+          console.error('Local fallback failed', localErr);
+        }
       }
+
+    // Expose handler globally for inline onsubmit attribute compatibility
+    if (typeof window !== 'undefined') window.handleProductCreation = handleProductCreation;
     }
 
     function shareProduct(productId) {
