@@ -837,23 +837,58 @@
       }
     };
 
-    // Initialization lifecycle hooks
-    document.addEventListener("DOMContentLoaded", () => {
+    async function initializeAuthSession() {
+      if (window.FirebaseAPI && typeof window.FirebaseAPI.onAuthStateChanged === 'function') {
+        window.FirebaseAPI.onAuthStateChanged((user) => {
+          if (user) {
+            const normalizedUser = {
+              id: user.uid,
+              uid: user.uid,
+              firstName: user.firstName || '',
+              lastName: user.lastName || '',
+              name: user.name || ((user.firstName || user.lastName) ? `${user.firstName || ''} ${user.lastName || ''}`.trim() : ''),
+              email: user.email,
+              phone: user.phone || '',
+              city: user.city || '',
+              role: user.role || 'buyer',
+              profilePhoto: user.profilePhoto || null,
+              businessName: user.businessName || '',
+              businessVerified: user.businessVerified !== undefined ? user.businessVerified : (user.role === 'seller' ? false : true),
+              isSeller: user.role === 'seller',
+              isAdmin: user.role === 'admin',
+              loginStatus: true,
+              emailVerified: user.emailVerified || false
+            };
+            state.currentUser = normalizedUser;
+            localStorage.setItem(SESSION_KEY, JSON.stringify(normalizedUser));
+          } else {
+            state.currentUser = null;
+            localStorage.removeItem(SESSION_KEY);
+          }
+          updateLoginState();
+        });
+        return;
+      }
+
       const storedSession = localStorage.getItem(SESSION_KEY);
       if (storedSession) {
         try {
           const rawUser = JSON.parse(storedSession);
           state.currentUser = rawUser && rawUser.loginStatus === true ? rawUser : null;
-        } catch(e) {
+        } catch (e) {
           state.currentUser = null;
         }
       }
+      updateLoginState();
+    }
 
+    // Initialization lifecycle hooks
+    document.addEventListener("DOMContentLoaded", () => {
       const savedLang = localStorage.getItem('kagaLanguage') || 'en';
       changeLanguage(savedLang);
       renderCategoryChips();
+      initializeAuthSession();
       initMarketplaceData();
-      updateLoginState();
       setupDropdownInterceptors();
       // Ensure the Add Product form is bound to the handler (helps on hosting platforms
       // that restrict inline event handlers). Keep the existing onsubmit attribute harmless.
@@ -950,7 +985,14 @@
       window.location.href = 'login.html';
     }
 
-    function logoutUser() {
+    async function logoutUser() {
+      if (window.FirebaseAPI && typeof window.FirebaseAPI.signOut === 'function') {
+        try {
+          await window.FirebaseAPI.signOut();
+        } catch (error) {
+          console.warn('Firebase sign-out failed', error);
+        }
+      }
       state.currentUser = null;
       localStorage.removeItem(SESSION_KEY);
       closeDropdown();
