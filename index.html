@@ -510,7 +510,7 @@
         </div>
         <div class="hero-actions">
           <button class="btn-primary" onclick="switchView('shop')" data-i18n="hero-btn-browse">Browse</button>
-          <button class="btn-secondary" id="sell-btn" onclick="switchView('add-product')">🏪 Sell</button>
+          <button class="btn-secondary" id="sell-btn" onclick="requireSellerAccess()">🏪 Sell</button>
         </div>
       </div>
 
@@ -554,7 +554,7 @@
           </div>
           <div class="footer-col">
             <h4>For Sellers</h4>
-            <a href="#" onclick="switchView('add-product')">Sell</a>
+            <a href="#" onclick="requireSellerAccess()">Sell</a>
             <a href="#" data-i18n="footer-seller-guide">Guide</a>
             <a href="#" data-i18n="footer-pricing">Pricing</a>
           </div>
@@ -679,6 +679,7 @@
       <div class="dashboard-container">
         <h2 style="font-family: var(--font-head); font-size: 18px; margin-bottom: 4px;">Buyer Dashboard</h2>
         <p style="font-size: 12px; color: var(--text-muted);">Manage your grocery items, wishlists, and configurations.</p>
+        <div id="customer-dashboard-stats"></div>
         <div class="dashboard-grid">
           <div class="dash-card"><div class="dash-card-icon">📦</div><div class="dash-card-title">My Orders</div></div>
           <div class="dash-card"><div class="dash-card-icon">❤️</div><div class="dash-card-title">Wishlist</div></div>
@@ -693,9 +694,10 @@
       <div class="dashboard-container">
         <h2 style="font-family: var(--font-head); font-size: 18px; margin-bottom: 4px;">Seller Operations</h2>
         <p style="font-size: 12px; color: var(--text-muted);">Configure digital store products, analyze requests and metrics.</p>
+        <div id="business-dashboard-stats"></div>
         <div class="dashboard-grid">
           <div class="dash-card" onclick="switchView('shop')"><div class="dash-card-icon">🏪</div><div class="dash-card-title">My Store</div></div>
-          <div class="dash-card" onclick="switchView('add-product')"><div class="dash-card-icon">➕</div><div class="dash-card-title">Add Product</div></div>
+          <div class="dash-card" onclick="requireSellerAccess()"><div class="dash-card-icon">➕</div><div class="dash-card-title">Add Product</div></div>
           <div class="dash-card"><div class="dash-card-icon">✏️</div><div class="dash-card-title">Edit Product</div></div>
           <div class="dash-card"><div class="dash-card-icon">🗑️</div><div class="dash-card-title">Delete Product</div></div>
           <div class="dash-card"><div class="dash-card-icon">📋</div><div class="dash-card-title">Orders</div></div>
@@ -713,7 +715,7 @@
           <div class="dash-card"><div class="dash-card-icon">🛡️</div><div class="dash-card-title">Admin Dashboard</div></div>
           <div class="dash-card"><div class="dash-card-icon">👥</div><div class="dash-card-title">Manage Users</div></div>
           <div class="dash-card"><div class="dash-card-icon">🏢</div><div class="dash-card-title">Manage Sellers</div></div>
-          <div class="dash-card"><div class="dash-card-icon">🛍️</div><div class="dash-card-title">Manage Products</div></div>
+          <div class="dash-card" onclick="requireSellerAccess()"><div class="dash-card-icon">🛍️</div><div class="dash-card-title">Manage Products</div></div>
           <div class="dash-card"><div class="dash-card-icon">📦</div><div class="dash-card-title">Manage Orders</div></div>
         </div>
         <div id="admin-dashboard-content" style="margin-top: 18px;"></div>
@@ -779,6 +781,7 @@
   </div>
 
   <script src="translations.js"></script>
+  <script src="app.js"></script>
   <script type="module" src="firebase.js"></script>
 
   <!-- STATE & APPLICATION LOGIC ENGINE -->
@@ -866,6 +869,7 @@
             localStorage.removeItem(SESSION_KEY);
           }
           updateLoginState();
+          routeAfterLogin();
         });
         return;
       }
@@ -880,6 +884,39 @@
         }
       }
       updateLoginState();
+      routeAfterLogin();
+    }
+
+    // After a successful login/register, login.html redirects here with
+    // #dashboard in the URL. Once we know who the user is, send them
+    // straight to the dashboard that matches their role.
+    function routeAfterLogin() {
+      if (window.location.hash === "#dashboard" && state.currentUser) {
+        const role = (state.currentUser.role || "buyer").toLowerCase();
+        let target = "customer-dashboard";
+        if (role === "seller") target = "business-dashboard";
+        if (role === "admin") target = "admin-dashboard";
+        switchView(target);
+        if (window.history && window.history.replaceState) {
+          window.history.replaceState(null, "", window.location.pathname);
+        }
+      }
+    }
+
+    // Login/role gate used by every "Sell" entry point on the site.
+    function requireSellerAccess() {
+      if (!state.currentUser) {
+        alert('Please log in to post a product.');
+        window.location.href = 'login.html';
+        return;
+      }
+      const allowed = window.KagaHelpers ? window.KagaHelpers.canPostProduct(state.currentUser) : ['seller', 'admin'].includes((state.currentUser.role || '').toLowerCase());
+      if (!allowed) {
+        alert('Only seller accounts can post products. Please register as a seller to start selling.');
+        window.location.href = 'login.html';
+        return;
+      }
+      switchView('add-product');
     }
 
     // Initialization lifecycle hooks
@@ -1019,6 +1056,10 @@
         renderCartLayout();
       } else if (viewTarget === "admin-dashboard") {
         renderAdminDashboard();
+      } else if (viewTarget === "customer-dashboard") {
+        renderCustomerDashboardStats();
+      } else if (viewTarget === "business-dashboard") {
+        renderBusinessDashboardStats();
       }
       
       // Enable viewport panels active class records
@@ -1043,6 +1084,29 @@
       });
 
       window.scrollTo(0, 0);
+    }
+
+    // Real stats for the buyer dashboard (cart contents today; orders/wishlist
+    // will populate here automatically once those collections exist).
+    function renderCustomerDashboardStats() {
+      const el = document.getElementById('customer-dashboard-stats');
+      if (!el || !window.KagaHelpers) return;
+      const cartCount = state.cart.reduce((sum, item) => sum + item.quantity, 0);
+      el.innerHTML = window.KagaHelpers.renderStatCardsHTML([
+        { label: 'Items in Cart', value: cartCount }
+      ]);
+    }
+
+    // Real stats for the seller dashboard, computed from this seller's
+    // own products in state.products (live vs pending review).
+    function renderBusinessDashboardStats() {
+      const el = document.getElementById('business-dashboard-stats');
+      if (!el || !window.KagaHelpers || !state.currentUser) return;
+      const stats = window.KagaHelpers.computeSellerStats(state.products, state.currentUser);
+      el.innerHTML = window.KagaHelpers.renderStatCardsHTML([
+        { label: 'Live Products', value: stats.live },
+        { label: 'Pending Review', value: stats.pending }
+      ]);
     }
 
     // Dynamic Render Compilation Scripts
@@ -1073,7 +1137,7 @@
               <div class="empty-icon">📦</div>
               <div class="empty-title">No products available yet</div>
               <div class="empty-desc">Be the first seller to post your product. New products will appear here automatically once approved.</div>
-              <button class="btn-empty" onclick="switchView('add-product')">Post a product</button>
+              <button class="btn-empty" onclick="requireSellerAccess()">Post a product</button>
             </div>`;
         } else {
           const slicedProducts = visibleProducts.slice(0, 4);
@@ -1303,6 +1367,8 @@
 
       loadLocalUsersIfNeeded();
 
+      const adminStats = window.KagaHelpers ? window.KagaHelpers.computeAdminStats(state.products, state.users) : null;
+
       const productRows = state.products.length > 0 ? state.products.map(p => `
         <tr>
           <td style="padding:8px 12px; border-bottom:1px solid var(--border);">${p.name || 'Untitled'}</td>
@@ -1334,6 +1400,11 @@
             <div style="font-size:12px; color:var(--text-light); margin-bottom:10px;">Total Users</div>
             <div style="font-size:24px; font-weight:700;">${state.users.length}</div>
           </div>
+          ${adminStats ? `
+          <div style="flex:1 1 220px; background:var(--surface); border:1px solid var(--border); border-radius:var(--radius-md); padding:16px;">
+            <div style="font-size:12px; color:var(--text-light); margin-bottom:10px;">Pending Review</div>
+            <div style="font-size:24px; font-weight:700;">${adminStats.pendingProducts}</div>
+          </div>` : ''}
         </div>
         <div style="display:grid; gap:20px;">
           <div class="form-card" style="padding:0;">
@@ -1460,6 +1531,19 @@
 
     async function handleProductCreation(e) {
       e.preventDefault();
+
+      // Gate: only logged-in sellers/admins may post a product.
+      if (!state.currentUser) {
+        alert('Please log in to post a product.');
+        window.location.href = 'login.html';
+        return;
+      }
+      const canPost = window.KagaHelpers ? window.KagaHelpers.canPostProduct(state.currentUser) : ['seller', 'admin'].includes((state.currentUser.role || '').toLowerCase());
+      if (!canPost) {
+        alert('Only seller accounts can post products. Please register as a seller.');
+        return;
+      }
+
       const name = document.getElementById("new-prod-name").value.trim();
       const price = parseFloat(document.getElementById("new-prod-price").value) || 0;
       const categoryInput = document.getElementById("new-prod-category");
@@ -1772,13 +1856,3 @@
   </script>
 </body>
 </html>
-
-
-
-
-
-
-
-
-
-

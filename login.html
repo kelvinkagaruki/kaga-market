@@ -520,10 +520,33 @@
     </div>
   </div>
 
-  <script type="module" src="firebase.js"></script>
   <script>
+    // ============================================================
+    // ADMIN ACCOUNT — only you know this email & password
+    // ============================================================
+    var ADMIN = {
+      id:        'admin-001',
+      firstName: 'Kelvin',
+      lastName:  'Kagaruki',
+      name:      'Kelvin Kagaruki',
+      email:     'kelvinkagaruki10@gmail.com',
+      password:  'mgisha05@K',
+      role:      'admin',
+      city:      'Arusha',
+      phone:     '+255 756 000 001',
+    };
+
     var SESSION_KEY = 'kagaCurrentUser';
 
+    // AUTO-REDIRECT (If already logged in, go straight to index.html)
+    (function checkIfLoggedIn() {
+      var user = JSON.parse(localStorage.getItem(SESSION_KEY) || 'null');
+      if (user && user.loginStatus === true) {
+        window.location.href = 'index.html';
+      }
+    })();
+
+    // TAB SWITCHER
     function showTab(tab) {
       document.querySelectorAll('.form-panel').forEach(function(p) { p.classList.remove('active'); });
       document.querySelectorAll('.auth-tab').forEach(function(t) { t.classList.remove('active'); });
@@ -532,235 +555,236 @@
       clearErrors();
     }
 
+    // PASSWORD TOGGLE
     function togglePwd(inputId, btn) {
       var input = document.getElementById(inputId);
-      if (input.type === 'password') { input.type = 'text'; btn.textContent = '🙈'; }
-      else { input.type = 'password'; btn.textContent = '👁️'; }
+      if (input.type === 'password') { input.type = 'text';     btn.textContent = '🙈'; }
+      else                           { input.type = 'password'; btn.textContent = '👁️'; }
     }
 
+    // PASSWORD STRENGTH
     function checkStrength(val) {
       var fill  = document.getElementById('strength-fill');
       var label = document.getElementById('strength-label');
       var score = 0;
-      if (val.length >= 6) score++;
-      if (val.length >= 10) score++;
-      if (/[A-Z]/.test(val)) score++;
-      if (/[0-9]/.test(val)) score++;
+      if (val.length >= 6)           score++;
+      if (val.length >= 10)          score++;
+      if (/[A-Z]/.test(val))         score++;
+      if (/[0-9]/.test(val))         score++;
       if (/[^A-Za-z0-9]/.test(val)) score++;
       var levels = [
-        { w: '0%', c: '#ccc', t: 'Enter a password' },
-        { w: '20%', c: '#E74C3C', t: 'Very weak' },
-        { w: '40%', c: '#E67E22', t: 'Weak' },
-        { w: '60%', c: '#F1C40F', t: 'Fair' },
-        { w: '80%', c: '#2ECC71', t: 'Strong' },
+        { w: '0%',   c: '#ccc',    t: 'Enter a password' },
+        { w: '20%',  c: '#E74C3C', t: 'Very weak' },
+        { w: '40%',  c: '#E67E22', t: 'Weak' },
+        { w: '60%',  c: '#F1C40F', t: 'Fair' },
+        { w: '80%',  c: '#2ECC71', t: 'Strong' },
         { w: '100%', c: '#0F6E56', t: 'Very strong ✅' },
       ];
       var lv = val.length === 0 ? levels[0] : levels[Math.min(score, 5)];
-      fill.style.width = lv.w;
+      fill.style.width      = lv.w;
       fill.style.background = lv.c;
-      label.textContent = lv.t;
-      label.style.color = lv.c === '#ccc' ? 'var(--text-light)' : lv.c;
+      label.textContent     = lv.t;
+      label.style.color     = lv.c === '#ccc' ? 'var(--text-light)' : lv.c;
     }
 
+    // ERROR HELPERS
     function showErr(id, msg) {
       var el = document.getElementById(id);
-      if (el) {
-        if (msg) el.textContent = msg;
-        el.classList.add('show');
-      }
+      if (el) { if (msg) el.textContent = msg; el.classList.add('show'); }
     }
-
     function clearErrors() {
       document.querySelectorAll('.field-err').forEach(function(e) { e.classList.remove('show'); });
       document.querySelectorAll('input').forEach(function(i) { i.classList.remove('error'); });
     }
 
+    // TOAST
     function toast(msg, type) {
       var t = document.createElement('div');
-      t.className = 'toast ' + (type || 'success');
+      t.className   = 'toast ' + (type || 'success');
       t.textContent = msg;
       document.body.appendChild(t);
       setTimeout(function() {
-        t.style.opacity = '0';
-        t.style.transition = 'opacity 0.3s';
+        t.style.opacity = '0'; t.style.transition = 'opacity 0.3s';
         setTimeout(function() { t.remove(); }, 300);
       }, 3000);
     }
 
-    function persistSession(user, profile) {
-      var safeProfile = profile || {};
-      var normalized = {
-        id: user.uid || safeProfile.uid || safeProfile.id || Date.now(),
-        uid: user.uid || safeProfile.uid || safeProfile.id || Date.now(),
-        firstName: safeProfile.firstName || '',
-        lastName: safeProfile.lastName || '',
-        name: safeProfile.name || `${safeProfile.firstName || ''} ${safeProfile.lastName || ''}`.trim(),
-        email: user.email || safeProfile.email || '',
-        phone: safeProfile.phone || '',
-        city: safeProfile.city || '',
-        role: safeProfile.role || 'buyer',
-        profilePhoto: safeProfile.profilePhoto || null,
-        businessName: safeProfile.businessName || '',
-        businessVerified: safeProfile.businessVerified !== undefined ? safeProfile.businessVerified : false,
-        isSeller: safeProfile.role === 'seller',
-        isAdmin: safeProfile.role === 'admin',
-        loginStatus: true,
-        emailVerified: user.emailVerified || false
-      };
-      localStorage.setItem(SESSION_KEY, JSON.stringify(normalized));
-      return normalized;
+    // FORGOT MODAL TOGGLES
+    function showForgot() { document.getElementById('forgot-overlay').classList.add('show'); }
+    function hideForgot() { document.getElementById('forgot-overlay').classList.remove('show'); }
+    function sendReset() {
+      var em = document.getElementById('forgot-email').value.trim();
+      if(!em) return alert('Please input an email address.');
+      toast('✉️ Reset instructions sent to your email if registered.', 'info');
+      hideForgot();
     }
 
-    function showForgot() {
-      document.getElementById('forgot-overlay').classList.add('show');
-    }
-
-    function hideForgot() {
-      document.getElementById('forgot-overlay').classList.remove('show');
-    }
-
-    async function sendReset() {
-      var email = document.getElementById('forgot-email').value.trim();
-      if (!email) {
-        toast('⚠️ Please enter an email address.', 'info');
-        return;
-      }
-      try {
-        if (window.FirebaseAPI && typeof window.FirebaseAPI.resetPassword === 'function') {
-          await window.FirebaseAPI.resetPassword(email);
-        }
-        toast('✉️ Password reset instructions sent to your email.', 'success');
-        hideForgot();
-      } catch (error) {
-        console.error(error);
-        toast('❌ Unable to send reset email. Please try again.', 'error');
-      }
-    }
-
-    async function initializeAuthRedirect() {
-      if (window.FirebaseAPI && typeof window.FirebaseAPI.onAuthStateChanged === 'function') {
-        window.FirebaseAPI.onAuthStateChanged(function(user) {
-          if (user) {
-            persistSession(user, user);
-            window.location.href = 'index.html';
-          } else {
-            localStorage.removeItem(SESSION_KEY);
-          }
-        });
-        return;
-      }
-
-      var storedUser = JSON.parse(localStorage.getItem(SESSION_KEY) || 'null');
-      if (storedUser && storedUser.loginStatus === true) {
-        window.location.href = 'index.html';
-      }
-    }
-
-    initializeAuthRedirect();
-
-    async function handleLogin(e) {
+    // ===== LOGIN HANDLER (Updated for index.html compatibility) =====
+    function handleLogin(e) {
       e.preventDefault();
       clearErrors();
 
-      var email = document.getElementById('login-email').value.trim();
+      var email    = document.getElementById('login-email').value.trim();
       var password = document.getElementById('login-password').value;
-      var valid = true;
+      var valid    = true;
 
-      if (!email || !/\S+@\S+\.\S+/.test(email)) {
-        showErr('err-login-email', 'Please enter a valid email');
-        valid = false;
-      }
-      if (!password) {
-        showErr('err-login-password', 'Password is required');
-        valid = false;
-      }
+      if (!email || !/\S+@\S+\.\S+/.test(email)) { showErr('err-login-email',    'Please enter a valid email'); valid = false; }
+      if (!password)                               { showErr('err-login-password', 'Password is required');      valid = false; }
       if (!valid) return;
 
       var btn = document.getElementById('btn-login');
       btn.textContent = 'Signing in...';
       btn.classList.add('loading');
 
-      try {
-        if (!window.FirebaseAPI || typeof window.FirebaseAPI.signIn !== 'function') {
-          throw new Error('Firebase is not ready yet.');
-        }
-        var credential = await window.FirebaseAPI.signIn(email, password);
-        var profile = await window.FirebaseAPI.getUserProfile(credential.user.uid);
-        persistSession(credential.user, profile);
-        toast('✅ Welcome back! Syncing your account...', 'success');
-        setTimeout(function() { window.location.href = 'index.html'; }, 900);
-      } catch (error) {
-        console.error(error);
-        var message = 'Wrong email or password. Please try again.';
-        if (error && error.code === 'auth/invalid-credential') {
-          message = 'Wrong email or password. Please try again.';
-        } else if (error && error.code === 'auth/too-many-requests') {
-          message = 'Too many attempts. Please try again later.';
-        }
-        toast('❌ ' + message, 'error');
-      } finally {
+      setTimeout(function() {
         btn.textContent = 'Sign In →';
         btn.classList.remove('loading');
-      }
+
+        // Admin login
+        if (email === ADMIN.email && password === ADMIN.password) {
+          var loginTime = new Date().toISOString();
+          localStorage.setItem(SESSION_KEY, JSON.stringify({
+            id:             ADMIN.id,
+            firstName:      ADMIN.firstName,
+            lastName:       ADMIN.lastName,
+            name:           ADMIN.name,
+            email:          ADMIN.email,
+            phone:          ADMIN.phone,
+            city:           ADMIN.city,
+            role:           'admin',
+            profilePhoto:   null,
+            isSeller:       true,
+            loginStatus:    true,
+            loginTime:      loginTime,
+          }));
+          toast('✅ Welcome back, Admin!', 'success');
+          setTimeout(function() { window.location.href = 'index.html'; }, 1200);
+          return;
+        }
+
+        // Regular user login
+        var users = JSON.parse(localStorage.getItem('kagaUsers') || '[]');
+        var user  = users.find(function(u) {
+          return u.email.toLowerCase() === email.toLowerCase() && u.password === password;
+        });
+
+        if (!user) {
+          toast('❌ Wrong email or password. Please try again.', 'error');
+          return;
+        }
+
+        var loginTime = new Date().toISOString();
+        user.lastLogin = loginTime;
+        localStorage.setItem('kagaUsers', JSON.stringify(users));
+
+        // Save complete user data for index.html My Market dropdown
+        localStorage.setItem(SESSION_KEY, JSON.stringify({
+          id:             user.id,
+          firstName:      user.firstName,
+          lastName:       user.lastName || '',
+          name:           user.name,
+          email:          user.email,
+          phone:          user.phone || '',
+          city:           user.city || '',
+          role:           user.role || 'buyer',
+          profilePhoto:   user.profilePhoto || null,
+          isSeller:       (user.role === 'seller'),
+          loginStatus:    true,
+          loginTime:      loginTime,
+        }));
+
+        toast('✅ Welcome back, ' + user.firstName + '!', 'success');
+        setTimeout(function() { window.location.href = 'index.html'; }, 1200);
+      }, 800);
     }
 
-    async function handleRegister(e) {
+    // ===== REGISTER HANDLER (Updated for auto-login) =====
+    function handleRegister(e) {
       e.preventDefault();
       clearErrors();
 
       var firstName = document.getElementById('reg-firstname').value.trim();
-      var lastName = document.getElementById('reg-lastname').value.trim();
-      var email = document.getElementById('reg-email').value.trim();
-      var phone = document.getElementById('reg-phone').value.trim();
-      var city = document.getElementById('reg-city').value;
-      var password = document.getElementById('reg-password').value;
-      var confirm = document.getElementById('reg-confirm').value;
-      var terms = document.getElementById('terms-check').checked;
+      var lastName  = document.getElementById('reg-lastname').value.trim();
+      var email     = document.getElementById('reg-email').value.trim();
+      var phone     = document.getElementById('reg-phone').value.trim();
+      var city      = document.getElementById('reg-city').value;
+      var password  = document.getElementById('reg-password').value;
+      var confirm   = document.getElementById('reg-confirm').value;
+      var terms     = document.getElementById('terms-check').checked;
+
       var selectedType = document.querySelector('input[name="actype"]:checked').value;
-      var role = selectedType === 'seller' ? 'seller' : 'buyer';
+      var role = (selectedType === 'seller') ? 'seller' : 'buyer';
 
       var valid = true;
-      if (!firstName) { showErr('err-reg-firstname', 'First name is required'); valid = false; }
-      if (!lastName) { showErr('err-reg-lastname', 'Last name is required'); valid = false; }
-      if (!email || !/\S+@\S+\.\S+/.test(email)) { showErr('err-reg-email', 'Enter a valid email address'); valid = false; }
-      if (!phone || phone.replace(/\s/g, '').length < 9) { showErr('err-reg-phone', 'Enter a valid phone number'); valid = false; }
-      if (!city) { showErr('err-reg-city', 'Please select your city'); valid = false; }
-      if (!password || password.length < 6) { showErr('err-reg-password', 'Password must be at least 6 chars'); valid = false; }
-      if (password !== confirm) { showErr('err-reg-confirm', 'Passwords do not match'); valid = false; }
-      if (!terms) { toast('⚠️ Please agree to the Terms of Service', 'info'); valid = false; }
+      if (!firstName)                             { showErr('err-reg-firstname', 'First name is required');           valid = false; }
+      if (!lastName)                              { showErr('err-reg-lastname',  'Last name is required');            valid = false; }
+      if (!email || !/\S+@\S+\.\S+/.test(email))  { showErr('err-reg-email',     'Enter a valid email address');      valid = false; }
+      if (!phone || phone.replace(/\s/g,'').length < 9) { showErr('err-reg-phone', 'Enter a valid phone number');     valid = false; }
+      if (!city)                                  { showErr('err-reg-city',      'Please select your city');          valid = false; }
+      if (!password || password.length < 6)        { showErr('err-reg-password',  'Password must be at least 6 chars'); valid = false; }
+      if (password !== confirm)                    { showErr('err-reg-confirm',   'Passwords do not match');           valid = false; }
+      if (!terms)                                  { toast('⚠️ Please agree to the Terms of Service', 'info'); valid = false; }
       if (!valid) return;
+
+      var users = JSON.parse(localStorage.getItem('kagaUsers') || '[]');
+
+      if (users.find(function(u) { return u.email.toLowerCase() === email.toLowerCase(); })) {
+        showErr('err-reg-email', 'This email is already registered. Please sign in.');
+        return;
+      }
+      if (email.toLowerCase() === ADMIN.email.toLowerCase()) {
+        showErr('err-reg-email', 'This email is not available.');
+        return;
+      }
 
       var btn = document.getElementById('btn-register');
       btn.textContent = 'Creating account...';
       btn.classList.add('loading');
 
-      try {
-        if (!window.FirebaseAPI || typeof window.FirebaseAPI.registerUser !== 'function') {
-          throw new Error('Firebase is not ready yet.');
-        }
-        var result = await window.FirebaseAPI.registerUser(email, password, {
-          role: role,
-          firstName: firstName,
-          lastName: lastName,
-          phone: phone,
-          city: city
-        });
-        persistSession(result.user, result.profile);
-        toast('✨ Account created successfully! Please verify your email.', 'success');
-        setTimeout(function() { window.location.href = 'index.html'; }, 1200);
-      } catch (error) {
-        console.error(error);
-        var regMessage = 'Unable to create your account right now.';
-        if (error && error.code === 'auth/email-already-in-use') {
-          regMessage = 'This email is already registered. Please sign in.';
-        } else if (error && error.code === 'auth/weak-password') {
-          regMessage = 'Please choose a stronger password.';
-        }
-        toast('❌ ' + regMessage, 'error');
-      } finally {
+      setTimeout(function() {
         btn.textContent = 'Create Account →';
         btn.classList.remove('loading');
-      }
+
+        var loginTime = new Date().toISOString();
+        var newUser = {
+          id:           Date.now(),
+          firstName:    firstName,
+          lastName:     lastName,
+          name:         firstName + ' ' + lastName,
+          email:        email,
+          phone:        phone,
+          city:         city,
+          password:     password,
+          role:         role,
+          status:       'active',
+          joinDate:     new Date().toLocaleDateString(),
+          registeredAt: new Date().toISOString(),
+          lastLogin:    loginTime,
+          profilePhoto: null,
+        };
+
+        users.push(newUser);
+        localStorage.setItem('kagaUsers', JSON.stringify(users));
+
+        // Auto-login: Save complete user data for index.html
+        localStorage.setItem(SESSION_KEY, JSON.stringify({
+          id:             newUser.id,
+          firstName:      newUser.firstName,
+          lastName:       newUser.lastName,
+          name:           newUser.name,
+          email:          newUser.email,
+          phone:          newUser.phone,
+          city:           newUser.city,
+          role:           newUser.role,
+          profilePhoto:   null,
+          isSeller:       (newUser.role === 'seller'),
+          loginStatus:    true,
+          loginTime:      loginTime,
+        }));
+
+        toast('✨ Account created successfully!', 'success');
+        setTimeout(function() { window.location.href = 'index.html'; }, 1200);
+      }, 800);
     }
   </script>
 </body>
